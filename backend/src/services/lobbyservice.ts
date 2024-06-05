@@ -26,7 +26,7 @@ export const createNewLobby = (): {lobbyCode: string, hostID: string} => {
     const userCodes = generateCodes()
 
 
-    lobbyInfo[lobbyCode] = {hostID: hostID, status: 'STANDBY', availableUserCodes: userCodes}
+    lobbyInfo[lobbyCode] = {hostID: hostID, status: 'STANDBY', availableUserCodes: userCodes, queuedUsers: {}}
 
     return {lobbyCode, hostID}
 }
@@ -36,5 +36,12 @@ export const isValidLobbyCode = (lobbyCode: string) : boolean => {
 }
 
 export const getNewUserCode = (lobbyCode : string) : string => {
-    return lobbyInfo[lobbyCode]['availableUserCodes'].pop()
+    const userCode = lobbyInfo[lobbyCode]['availableUserCodes'].pop()
+    lobbyInfo[lobbyCode]['queuedUsers'][userCode] = null
+
+    return userCode
+}
+
+export const isUserInQueue = (userCode : string, lobbyCode : string) : boolean => {
+    return (userCode in lobbyInfo[lobbyCode]['queuedUsers'])
 }

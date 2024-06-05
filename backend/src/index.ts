@@ -2,7 +2,7 @@ import express, { Router } from 'express'
 import cors from 'cors'
 import { createServer } from 'node:http'
 import { Server } from 'socket.io'
-import { handleJoinSocketConnection } from './sockets/lobbysockets'
+import { handleQueueSocketConnection } from './sockets/lobbysockets'
 
 const PORT : number = 3000
 
@@ -19,8 +19,8 @@ const io = new Server(server, {
 app.use(cors())
 app.use('/lobby', lobbyRouter)
 
-io.of("/join").on('connection', (socket) => {
-    handleJoinSocketConnection(socket)
+io.of("/queue").on('connection', (socket) => {
+    handleQueueSocketConnection(socket)
 })
 
 server.listen(PORT, () => {

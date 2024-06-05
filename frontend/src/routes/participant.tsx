@@ -1,29 +1,40 @@
-import { Socket, io } from "socket.io-client"
 import { useState } from "react"
 import { JoinLobbyForm } from "./participant/lobby"
 import { UserCode } from "./participant/usercode"
+import axios, { AxiosError } from "axios"
 
 export const ParticipantView : () => JSX.Element = () => {
     const [viewTab, setViewTab] = useState<"joinLobby" | "showCode" | "authenticated">("joinLobby")
     const [userCode, setUserCode] = useState<string | null>(null)
+    const [lobbyCode, setLobbyCode] = useState<string | null>(null)
 
     const handleSubmitLobbyCode = async (lobbyCode : string) => {
         try {
-            const joinSocket: Socket = io(`${import.meta.env.VITE_SOCKETIO_URI}/join`)
-            joinSocket.connect()
-            joinSocket.emit('connect to lobby', lobbyCode, (response : {lobbyCode: string}) => {
-                if (!response.lobbyCode) {
-                    console.error("Got a response from socket, but did not get a lobby code!")
-                    joinSocket.disconnect()
-                    return
-                }
-                setUserCode(response.lobbyCode)
-                setViewTab('showCode')
-                })
-                console.log("Tried to emit")
+            if (lobbyCode === null) return
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/joinLobby`,
+            {params: 
+                {lobbyCode}
+            })
+
+            if (!response.data['userCode']) {
+                console.error("Got response for lobbyCode, but did not receive userCode!")
             }
+
+            const userCode = response.data['userCode']
+
+            setUserCode(userCode)
+            setLobbyCode(lobbyCode)
+            setViewTab('showCode')
+        }
         catch (e){
-            console.error(e)
+            if (e instanceof AxiosError) {
+                if (e.code === "404") {
+                    window.alert("No lobby was found with the given code. Please try again!")
+                }
+                else {
+                    console.error(e.response?.data)
+                }
+            }
         }
     }
 
@@ -31,8 +42,8 @@ export const ParticipantView : () => JSX.Element = () => {
         {(viewTab === 'joinLobby') &&
             <JoinLobbyForm handleSubmitLobbyCode={handleSubmitLobbyCode} />
         }
-        {(viewTab === 'showCode') && userCode !== null && 
-            <UserCode code={userCode} />
+        {(viewTab === 'showCode') && userCode !== null && lobbyCode !== null &&
+            <UserCode userCode={userCode} lobbyCode={lobbyCode}/>
         }
         </>
     )
