@@ -2,7 +2,8 @@ export interface LobbyInfo {
     hostID: string,
     status: LobbyStatus,
     availableUserCodes: string[]
-    queuedUsers: Record<string, null>
+    queuedUsers: Record<string, string|null>
+    participants: Record<string, null>
 }
 
 type LobbyStatus = "STANDBY" | "VOTING"

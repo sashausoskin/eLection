@@ -8,13 +8,23 @@ export const ParticipantView : () => JSX.Element = () => {
     const [userCode, setUserCode] = useState<string | null>(null)
     const [lobbyCode, setLobbyCode] = useState<string | null>(null)
 
+    const handleAuthentication = (userID : string) => {
+        setViewTab("authenticated")
+        console.log("UserID: ", userID)
+    }
+
     const handleSubmitLobbyCode = async (lobbyCode : string) => {
         try {
             if (lobbyCode === null) return
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/joinLobby`,
+            console.log(import.meta.env.VITE_BACKEND_URL)
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/lobby/joinLobby`,
             {params: 
                 {lobbyCode}
             })
+
+            if (response.status === 404) {
+                window.alert("Did not find a lobby with the given code. Try again!")
+            }
 
             if (!response.data['userCode']) {
                 console.error("Got response for lobbyCode, but did not receive userCode!")
@@ -28,7 +38,8 @@ export const ParticipantView : () => JSX.Element = () => {
         }
         catch (e){
             if (e instanceof AxiosError) {
-                if (e.code === "404") {
+                console.log(e.code)
+                if (e.response?.status === 404) {
                     window.alert("No lobby was found with the given code. Please try again!")
                 }
                 else {
@@ -43,7 +54,10 @@ export const ParticipantView : () => JSX.Element = () => {
             <JoinLobbyForm handleSubmitLobbyCode={handleSubmitLobbyCode} />
         }
         {(viewTab === 'showCode') && userCode !== null && lobbyCode !== null &&
-            <UserCode userCode={userCode} lobbyCode={lobbyCode}/>
+            <UserCode userCode={userCode} lobbyCode={lobbyCode} onAuthenticated={handleAuthentication}/>
+        }
+        {(viewTab === 'authenticated') &&
+            <a>You are now authenticated. Welcome! :)</a>
         }
         </>
     )

@@ -1,10 +1,28 @@
-import { io } from "socket.io-client"
+import { useEffect, useState } from "react"
+import { Socket } from "socket.io-client"
+import { createLobbySocket } from "../../sockets"
 
-export const UserCode = ({userCode, lobbyCode} : {userCode : string, lobbyCode : string}) => {
-    const lobbySocket = io(`${import.meta.env.VITE_BACKEND_URL}/queue`, 
-        {query: 
-            {"userCode": userCode, "lobbyCode": lobbyCode}
+export const UserCode = ({userCode, lobbyCode, onAuthenticated} : {userCode : string, lobbyCode : string, onAuthenticated : (userID: string) => void}) => {
+    const [isConnecting, setIsConnecting] = useState<boolean>(true)
+
+    useEffect(() => {
+        setIsConnecting(true)
+        const lobbySocket : Socket = createLobbySocket(userCode, lobbyCode)
+        lobbySocket.on('connect', () => {
+            console.log('Connected to socket')
         })
+        lobbySocket.on('error', ({error})=> {
+            console.error('A socket error occurred: ', error)
+        })
+        lobbySocket.on('authorize', (userID) => {
+            console.log("Got authentication")
+            onAuthenticated(userID)
+        })
+        lobbySocket.connect()
+        setIsConnecting(false)
+    })
+
+    if (isConnecting) return <a>Connecting...</a>
 
     return (
     <>
