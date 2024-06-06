@@ -14,7 +14,7 @@ export const UserCode = ({userCode, lobbyCode, onAuthenticated} : {userCode : st
         lobbySocket.on('error', ({error})=> {
             console.error('A socket error occurred: ', error)
         })
-        lobbySocket.on('authorize', (userID) => {
+        lobbySocket.on('authorize', ({userID}) => {
             console.log("Got authentication")
             onAuthenticated(userID)
         })

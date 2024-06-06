@@ -50,6 +50,14 @@ export const isUserInQueue = (userCode : string, lobbyCode : string) : boolean =
     return (userCode in lobbyInfo[lobbyCode]['queuedUsers'])
 }
 
+export const getUsersInQueue = (lobbyCode : string) : string[] => {
+    return Object.keys(lobbyInfo[lobbyCode]['queuedUsers'])
+}
+
+export const getParticipants = (lobbyCode : string) : string[] => {
+    return Object.keys(lobbyInfo[lobbyCode]['participants'])
+} 
+
 export const assignSocketIdToUser = (userCode : string, lobbyCode : string, socketID : string) => {
     if (lobbyInfo[lobbyCode]['queuedUsers'][userCode] !== null) {
         throw new Error('Another user has already connected with the given user code')
@@ -78,4 +86,20 @@ export const removeUserFromQueue = (lobbyCode : string, userCode: string) => {
     delete lobbyInfo[lobbyCode]['queuedUsers'][userCode]
     //TODO: Perhaps make the function below add the user code to a random position?
     lobbyInfo[lobbyCode]['availableUserCodes'].push(userCode)
+}
+
+export const getUserSocketID = (lobbyCode : string, userCode : string) => {
+    return lobbyInfo[lobbyCode]['queuedUsers'][userCode]
+}
+
+export const getNumberOfLobbies = () => {
+    return Object.keys(lobbyInfo).length
+}
+
+export const resetLobbies = () => {
+    lobbyInfo = {}
+}
+
+export const getLobby = (lobbyCode : string) => {
+    return lobbyInfo[lobbyCode]
 }

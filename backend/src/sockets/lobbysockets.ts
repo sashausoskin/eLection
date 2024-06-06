@@ -1,14 +1,12 @@
 import express from "express"
-import { assignSocketIdToUser, getNewUserCode, isUserInQueue, isValidLobbyCode } from "../services/lobbyservice"
+import { assignSocketIdToUser, getLobby, getNewUserCode, getUsersInQueue, isUserInQueue, isValidLobbyCode } from "../services/lobbyservice"
 import { Socket } from "socket.io"
 
 export const handleQueueSocketConnection = (socket: Socket) => {
     const userCode = socket.handshake.query.userCode as string
     const lobbyCode = socket.handshake.query.lobbyCode as string
-    console.log("A user joined: ", userCode)
 
     if (!(typeof userCode === 'string')) {
-        console.log('Sending error message to', socket.id)
         socket.emit('error', "userCode is malformatted. Disconnecting...")
         socket.disconnect()
         return
@@ -42,8 +40,4 @@ export const handleQueueSocketConnection = (socket: Socket) => {
             return
         }
     }
-    
-    socket.join(`queue_lobby${lobbyCode}_user${userCode}`)
-
-    console.log(socket.rooms)
 }

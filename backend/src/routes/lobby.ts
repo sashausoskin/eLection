@@ -1,5 +1,5 @@
 import express from 'express'
-import { UserNotFound, createAuthenticatedUser, createNewLobby, getNewUserCode, isLobbyHost,
+import { UserNotFound, createAuthenticatedUser, createNewLobby, getLobby, getNewUserCode, getUserSocketID, isLobbyHost,
         isValidLobbyCode, removeUserFromQueue } from '../services/lobbyservice'
 import {io} from '../util/server'
 
@@ -8,18 +8,16 @@ const router = express.Router()
 
 router.post('/createLobby', async (req, res) => {
     const {lobbyCode, hostID} = createNewLobby()
-
-    console.log("Sending lobby code", lobbyCode)
     res.send({lobbyCode, hostID})
 })
 
 router.get('/joinLobby', async (req, res) => {
-    if (!req.query.lobbyCode) {
+    if (!req.body.lobbyCode) {
         res.status(400).json({error: "The request is missing field lobbyCode"})
         return
     }
 
-    const lobbyCode : string = req.query.lobbyCode as string
+    const lobbyCode : string = req.body.lobbyCode as string
 
     if (!isValidLobbyCode(lobbyCode)) {
         res.status(404).json({error: "No lobby was found with the given code"})
@@ -60,6 +58,8 @@ router.post('/authenticateUser', (req, res) => {
 
     const userToAuthorize = req.body.userCode
 
+    const userSocketID = getUserSocketID(lobbyCode, userToAuthorize)
+
     try {
         removeUserFromQueue(lobbyCode, userToAuthorize)
     }
@@ -71,15 +71,9 @@ router.post('/authenticateUser', (req, res) => {
         return
     }
 
-    console.log("Removed user ", userToAuthorize)
-
     const newUserID = createAuthenticatedUser(lobbyCode)
 
-    console.log('Created userID')
-
-    console.log(io.sockets.adapter.rooms)
-
-    io.of('/queue').to(`queue_lobby${lobbyCode}_user${userToAuthorize}`).emit('authorize', newUserID)
+    io.of('/queue').to(userSocketID).emit('authorize', {userID: newUserID})
     res.status(200).send()
 })
 
