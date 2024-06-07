@@ -1,5 +1,5 @@
 export interface LobbyCreationResponse {
-    lobbyCode: number;
+    lobbyCode: string;
     hostID: string
 }
 

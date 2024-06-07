@@ -14,7 +14,7 @@ export const JoinLobbyForm = ({handleSubmitLobbyCode} : {handleSubmitLobbyCode: 
 
     return (
         <>
-            <a>Welcome! Enter the lobby code below</a>
+            <a data-testid="lobbyFormHeader">Welcome! Enter the lobby code below</a>
             <Formik
             initialValues={{ lobbyCode: ''}}
             validationSchema={lobbyFormSchema}
@@ -22,9 +22,9 @@ export const JoinLobbyForm = ({handleSubmitLobbyCode} : {handleSubmitLobbyCode: 
             >
                 {({ errors, touched, isValid }) => (
                     <Form>
-                        <Field name="lobbyCode" />
+                        <Field name="lobbyCode" data-testid="lobbyCodeField"/>
                         {errors.lobbyCode && touched.lobbyCode ? (
-                            <a>{errors.lobbyCode}</a>
+                            <a data-testid="lobbyCodeFieldError">{errors.lobbyCode}</a>
                         ) : null}
                         <button type="submit" disabled={!isValid}>
                             Submit

@@ -77,4 +77,4 @@ router.post('/authenticateUser', (req, res) => {
     res.status(200).send()
 })
 
-module.exports = router
+export default router

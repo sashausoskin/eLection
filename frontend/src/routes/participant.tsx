@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { JoinLobbyForm } from "./participant/lobby"
+import { JoinLobbyForm } from "./participant/JoinLobbyForm"
 import { UserCode } from "./participant/usercode"
 import axios, { AxiosError } from "axios"
 

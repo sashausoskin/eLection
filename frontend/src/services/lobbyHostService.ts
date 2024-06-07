@@ -1,23 +1,25 @@
-import axios from "axios"
+import { LobbyCreationResponse } from "../types"
+import { apiClient } from "../util/apiClient"
 
 let hostID : string | null= null
 let lobbyCode : string | null = null
 
+export const createLobby = async () => {
+    await apiClient.post<LobbyCreationResponse>(`/lobby/createLobby`).then(response => {
+        lobbyCode = response.data.lobbyCode
+        window.localStorage.setItem('authToken', response.data.hostID)
+        hostID = response.data.hostID
+    })
+}
+
+
 export const auhtenticateUserWithCode = async (userCode: string) => {
-    await axios.post(`${import.meta.env.VITE_BACKEND_URL}/lobby/authenticateUser`, {
+    await apiClient.post(`/lobby/authenticateUser`, {
         userCode,
         lobbyCode
     }, {
         headers: {Authorization: hostID}
     })
-}
-
-export const setHostID = (newHostID: string) => {
-    hostID = newHostID
-}
-
-export const setLobbyCode = (newLobbyCode : string) => {
-    lobbyCode = newLobbyCode
 }
 
 export const getLobbyCode = () : string | null => {

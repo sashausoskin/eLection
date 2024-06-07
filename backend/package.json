@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --detectOpenHandles",
-    "dev": "ts-node-dev src/index.ts"
+    "dev": "ts-node-dev src/index.ts",
+    "build:ui": "cd ../frontend && npm run build && shx cp -r ./dist ../backend && shx rm -rf dist",
+    "start:test": "cross-env NODE_ENV=test ts-node-dev src/index.ts"
   },
   "author": "Sasha Usoskin",
   "license": "ISC",
@@ -26,6 +28,8 @@
   "devDependencies": {
     "@types/supertest": "^6.0.2",
     "@types/uuid": "^9.0.8",
+    "cross-env": "^7.0.3",
+    "shx": "^0.3.4",
     "socket.io-client": "^4.7.5",
     "supertest": "^7.0.0",
     "ts-jest": "^29.1.4",
