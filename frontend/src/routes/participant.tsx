@@ -1,64 +1,31 @@
 import { useState } from "react"
 import { JoinLobbyForm } from "./participant/JoinLobbyForm"
 import { UserCode } from "./participant/usercode"
-import axios, { AxiosError } from "axios"
+import { SetParticipantViewContext } from "../Contexts"
+import { ParticipantViewTab } from "../types"
+import * as participantService from '../services/participantService'
 
 export const ParticipantView : () => JSX.Element = () => {
-    const [viewTab, setViewTab] = useState<"joinLobby" | "showCode" | "authenticated">("joinLobby")
-    const [userCode, setUserCode] = useState<string | null>(null)
-    const [lobbyCode, setLobbyCode] = useState<string | null>(null)
+    const [viewTab, setViewTab] = useState<ParticipantViewTab>("joinLobby")
+
+    const userCode = participantService.getUserCode()
+    const lobbyCode = participantService.getLobbyCode()
 
     const handleAuthentication = (userID : string) => {
-        setViewTab("authenticated")
+        setViewTab("inLobby")
         console.log("UserID: ", userID)
     }
 
-    const handleSubmitLobbyCode = async (lobbyCode : string) => {
-        try {
-            if (lobbyCode === null) return
-            console.log(import.meta.env.VITE_BACKEND_URL)
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/lobby/joinLobby`,
-            {params: 
-                {lobbyCode}
-            })
-
-            if (response.status === 404) {
-                window.alert("Did not find a lobby with the given code. Try again!")
-            }
-
-            if (!response.data['userCode']) {
-                console.error("Got response for lobbyCode, but did not receive userCode!")
-            }
-
-            const userCode = response.data['userCode']
-
-            setUserCode(userCode)
-            setLobbyCode(lobbyCode)
-            setViewTab('showCode')
-        }
-        catch (e){
-            if (e instanceof AxiosError) {
-                console.log(e.code)
-                if (e.response?.status === 404) {
-                    window.alert("No lobby was found with the given code. Please try again!")
-                }
-                else {
-                    console.error(e.response?.data)
-                }
-            }
-        }
-    }
-
-    return (<>
+    return (<SetParticipantViewContext.Provider value={setViewTab}>
         {(viewTab === 'joinLobby') &&
-            <JoinLobbyForm handleSubmitLobbyCode={handleSubmitLobbyCode} />
+            <JoinLobbyForm />
         }
-        {(viewTab === 'showCode') && userCode !== null && lobbyCode !== null &&
+        {(viewTab === 'inQueue') && userCode !== null && lobbyCode !== null &&
             <UserCode userCode={userCode} lobbyCode={lobbyCode} onAuthenticated={handleAuthentication}/>
         }
-        {(viewTab === 'authenticated') &&
-            <a>You are now authenticated. Welcome! :)</a>
+        {(viewTab === 'inLobby') &&
+            <a data-testid="lobbyHeader">You are now authenticated. Welcome! :)</a>
         }
-        </>
+        </SetParticipantViewContext.Provider>
     )
 }

@@ -66,6 +66,10 @@ export const assignSocketIdToUser = (userCode : string, lobbyCode : string, sock
     lobbyInfo[lobbyCode]['queuedUsers'][userCode] = socketID
 }
 
+export const deleteUserFromQueue = (userCode : string, lobbyCode : string) => {
+    delete lobbyInfo[lobbyCode]['queuedUsers'][userCode]
+}
+
 export const createAuthenticatedUser = (lobbyCode : string) => {
     const newUserID = uuidv4()
 

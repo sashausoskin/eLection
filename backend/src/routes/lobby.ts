@@ -11,7 +11,7 @@ router.post('/createLobby', async (req, res) => {
     res.send({lobbyCode, hostID})
 })
 
-router.get('/joinLobby', async (req, res) => {
+router.post('/joinLobby', async (req, res) => {
     if (!req.body.lobbyCode) {
         res.status(400).json({error: "The request is missing field lobbyCode"})
         return

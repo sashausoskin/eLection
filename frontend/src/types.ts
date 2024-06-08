@@ -11,3 +11,5 @@ export interface StatusMessage {
 export interface JoinLobbyResponse {
     userCode: string
 }
+
+export type ParticipantViewTab = "joinLobby" | "inQueue" | "inLobby"

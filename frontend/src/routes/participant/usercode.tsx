@@ -11,7 +11,7 @@ export const UserCode = ({userCode, lobbyCode, onAuthenticated} : {userCode : st
         lobbySocket.on('connect', () => {
             console.log('Connected to socket')
         })
-        lobbySocket.on('error', ({error})=> {
+        lobbySocket.on('error', (error)=> {
             console.error('A socket error occurred: ', error)
         })
         lobbySocket.on('authorize', ({userID}) => {
@@ -27,7 +27,7 @@ export const UserCode = ({userCode, lobbyCode, onAuthenticated} : {userCode : st
     return (
     <>
     <a>Here is your code</a>
-    <a style={{fontSize: 20}}>{userCode}</a>
+    <a style={{fontSize: 20}} data-testid={"userCode"}>{userCode}</a>
     <a>Show this code to the secretary</a>
     </>
     )

@@ -1,11 +1,11 @@
 import { Field, Form, Formik } from "formik";
-import { auhtenticateUserWithCode, getLobbyCode } from "../../services/lobbyHostService";
+import { auhtenticateUserWithCode } from "../../services/lobbyHostService";
 import * as Yup from 'yup'
 import { useState } from "react";
 import { StatusMessage } from "../../types";
 import { AxiosError } from "axios";
 
-export const Authentication = ({onSubmitUserCode} : {onSubmitUserCode?: Function}): React.ReactElement => {
+export const Authentication = ({lobbyCode, onSubmitUserCode} : {lobbyCode : string, onSubmitUserCode?: Function}): React.ReactElement => {
     const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
     const statusMessageColor = statusMessage?.status === "success" ? "green" : "red"
 
@@ -38,7 +38,7 @@ export const Authentication = ({onSubmitUserCode} : {onSubmitUserCode?: Function
     return (
     <>
         <a>Lobby code:</a>
-        <a data-testid="lobbyCode">{getLobbyCode()}</a>
+        <a data-testid="lobbyCode">{lobbyCode}</a>
         <Formik
         initialValues={{userCode: ''}}
         validationSchema={userCodeSchema}

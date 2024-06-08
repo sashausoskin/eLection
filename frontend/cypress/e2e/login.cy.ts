@@ -1,6 +1,4 @@
 import { expect } from "chai"
-import { config } from "dotenv"
-import path = require("path")
 
 beforeEach(() => {
   cy.request('post', `${Cypress.env('BACKEND_URL')}/testing/reset`)
@@ -52,7 +50,7 @@ describe('Host view', () => {
     cy.get('[data-testid="lobbyCode"]').then(($value) => {
       const lobbyCode = $value.text()
 
-      cy.request('get', `${Cypress.env('BACKEND_URL')}/lobby/joinLobby`, {lobbyCode}).then((response) => {
+      cy.request('post', `${Cypress.env('BACKEND_URL')}/lobby/joinLobby`, {lobbyCode}).then((response) => {
         const userCode = response.body.userCode
 
         cy.get('[data-testid="userCodeField"]').type(userCode)
@@ -70,7 +68,7 @@ describe('Host view', () => {
         expect(response.body.length).equal(0)
       })
 
-      cy.request('get', `${Cypress.env('BACKEND_URL')}/lobby/joinLobby`, {lobbyCode}).then((response) => {
+      cy.request('post', `${Cypress.env('BACKEND_URL')}/lobby/joinLobby`, {lobbyCode}).then((response) => {
         const userCode = response.body.userCode
         cy.get('[data-testid="userCodeField"]').type(userCode)
         cy.get('button').click()
@@ -78,6 +76,54 @@ describe('Host view', () => {
         cy.request(`${Cypress.env('BACKEND_URL')}/testing/getParticipants`, {lobbyCode}).then((response) => {
           expect(response.body.length).equal(1)
         })
+      })
+    })
+  })
+})
+
+describe('Joining a lobby', () => {
+  beforeEach(() => {
+    cy.visit('http://localhost:5173/participant')
+  })
+  it('displays an error message when typing an invalid code', () => {
+    cy.get('[data-testid="lobbyCodeFieldError"]').should('not.exist')
+    cy.get('[data-testid="lobbyCodeField"]').type('1234')
+    cy.get('button').click()
+    cy.get('[data-testid="lobbyCodeFieldError"]').should('exist')
+  })
+
+  it('shows the user code when entering a valid lobby', () => {
+    cy.request('post', `${Cypress.env('BACKEND_URL')}/lobby/createLobby`).then((res) => {
+      const lobbyCode : string = res.body.lobbyCode
+
+      cy.get('[data-testid="lobbyCodeField"]').type(lobbyCode)
+      cy.get('button').click()
+      cy.get('[data-testid="userCode"]')
+    })
+  })
+
+  it('shows a message when authenticated', () => {
+    cy.request('post', `${Cypress.env('BACKEND_URL')}/lobby/createLobby`).then((res) => {
+      cy.get('[data-testid="lobbyHeader"]').should('not.exist')
+      const lobbyCode : string = res.body.lobbyCode
+      const hostID : string = res.body.hostID
+
+      cy.get('[data-testid="lobbyCodeField"]').type(lobbyCode)
+      cy.get('button').click()
+
+      cy.get('[data-testid="lobbyHeader"]').should('not.exist')
+      cy.get('[data-testid="userCode"]').then(($value) => {
+        const userCode : string = $value.text()
+
+        cy.request({
+          method: "POST",
+          url: `${Cypress.env('BACKEND_URL')}/lobby/authenticateUser`,
+          body: {userCode, lobbyCode},
+          headers: {
+            Authorization: hostID
+          }
+        })
+        cy.get('[data-testid="lobbyHeader"]')
       })
     })
   })

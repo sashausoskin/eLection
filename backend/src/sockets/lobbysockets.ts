@@ -1,5 +1,5 @@
 import express from "express"
-import { assignSocketIdToUser, getLobby, getNewUserCode, getUsersInQueue, isUserInQueue, isValidLobbyCode } from "../services/lobbyservice"
+import { assignSocketIdToUser, getLobby, getNewUserCode, getUsersInQueue, isUserInQueue, isValidLobbyCode, removeUserFromQueue } from "../services/lobbyservice"
 import { Socket } from "socket.io"
 
 export const handleQueueSocketConnection = (socket: Socket) => {

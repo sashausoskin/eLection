@@ -1,23 +1,23 @@
 import { useEffect, useState } from "react"
-import { createLobby } from "../services/lobbyHostService"
+import { createLobby, getLobbyCode } from "../services/lobbyHostService"
 import { Authentication } from "./host/Authentication"
 
 export const Host = () => {
 
-    const [isLoading, setIsLoading] = useState<boolean>(true)
+    const [lobbyCode, setLobbyCode] = useState<string | null>(null)
     
     
     // Note that the effect below is run twice in React's StrictMode. This shouldn't be a problem in production.
     useEffect(() => {
-        setIsLoading(true)
+        setLobbyCode(null)
         createLobby().then(() => {
-            setIsLoading(false)
+            setLobbyCode(getLobbyCode())
         })}
     , [])
 
 
-    if (isLoading) return <a>Creating a lobby...</a>
+    if (lobbyCode === null) return <a>Creating a lobby...</a>
 
     
-    return <Authentication />
+    return <Authentication lobbyCode={lobbyCode}/>
 }
