@@ -23,11 +23,11 @@ jobs:
           working-directory: ./frontend
           run: npm test
         - name: Start frontend & backend servers
-          run: cd backend |
-               npm run start:test & |
-               cd ../frontend |
-               npm run dev & |
-               sleep 3
+          run: |
+              cd backend 
+              npm run start:test &
+              cd ../frontend
+              npm run dev &
         - name: Cypress run
           uses: cypress-io/github-action@v6
           with:
