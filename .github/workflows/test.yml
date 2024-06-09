@@ -32,4 +32,5 @@ jobs:
           uses: cypress-io/github-action@v6
           with:
             wait-on: http://localhost:5173
+            working-directory: ./frontend
                
