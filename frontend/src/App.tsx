@@ -1,8 +1,8 @@
 import './App.css'
 import { Route, Routes } from 'react-router'
 import { Home } from './routes/Home'
-import { Host } from './routes/host'
-import { ParticipantView } from './routes/participant'
+import { Host } from './routes/Host'
+import { ParticipantView } from './routes/Participant'
 
 function App() {
 
