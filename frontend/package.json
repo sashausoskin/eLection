@@ -9,7 +9,8 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:e2e-ui": "cypress open"
+    "test:e2e-ui": "cypress open",
+    "test:e2e": "cypress run"
   },
   "dependencies": {
     "axios": "^1.7.2",
