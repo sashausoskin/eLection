@@ -1,0 +1,35 @@
+name: Run tests
+run-name: Running unit and end-to-end tests
+on: [push]
+jobs:
+  unit_tests:
+      name: Run unit tests
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v4.1.5
+        - name: Setup Node
+          uses: actions/setup-node@v4.0.2
+        - name: Install backend dependencies
+          working-directory: ./backend
+          run: npm install
+        - name: Run backend unit tests
+          working-directory: ./backend
+          run: npm test
+        - name: Install frontend dependencies
+          working-directory: ./frontend
+          run: npm install
+        - name: Run frontend unit tests
+          working-directory: ./frontend
+          run: npm test
+        - name: Start frontend & backend servers
+          run: cd backend |
+               npm run start:test & |
+               cd ../frontend |
+               npm run dev & |
+               sleep 3
+        - name: Cypress run
+          uses: cypress-io/github-action@v6
+          with:
+            wait-on: http://localhost:5173
+               
