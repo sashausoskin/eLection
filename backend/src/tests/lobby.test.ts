@@ -26,7 +26,7 @@ describe('With one lobby created', () => {
 
     test('can join a lobby queue', async () => {
         expect(lobbyService.getUsersInQueue(lobbyCode).length).toBe(0)
-        const userCodeRequest = await request(app).get('/lobby/joinLobby').send({lobbyCode})
+        const userCodeRequest = await request(app).post('/lobby/joinLobby').send({lobbyCode})
         expect(userCodeRequest.statusCode).toBe(200)
         const userCode = userCodeRequest.body.userCode
         expect(lobbyService.isUserInQueue(userCode, lobbyCode)).toBe(true)
@@ -37,7 +37,7 @@ describe('With one lobby created', () => {
         const testLobbyCode = "1234" === lobbyCode ? "1234" : "4321"
 
         expect(lobbyService.getUsersInQueue(lobbyCode).length).toBe(0)
-        const lobbyRequest = await request(app).get('/lobby/joinLobby').send({lobbyCode: testLobbyCode})
+        const lobbyRequest = await request(app).post('/lobby/joinLobby').send({lobbyCode: testLobbyCode})
         expect(lobbyRequest.statusCode).toBe(404)
         expect(lobbyService.getUsersInQueue(lobbyCode).length).toBe(0)
     })
@@ -65,7 +65,7 @@ describe('With one lobby created and one user in queue', () => {
         const lobbyCreationRequest = await request(app).post('/lobby/createLobby')
         lobbyCode = lobbyCreationRequest.body.lobbyCode
         hostID = lobbyCreationRequest.body.hostID
-        const userCodeRequest = await request(app).get('/lobby/joinLobby').send({lobbyCode})
+        const userCodeRequest = await request(app).post('/lobby/joinLobby').send({lobbyCode})
         userCode = userCodeRequest.body.userCode
     })
     

@@ -11,7 +11,7 @@ describe('In join lobby view', () => {
 
     beforeEach(() => {
         submitCallback = vi.fn<string[]>() as Function
-        render(<JoinLobbyForm handleSubmitLobbyCode={(lobbyCode) => (submitCallback as Function)(lobbyCode)} />)
+        render(<JoinLobbyForm handleSubmitLobbyCode={submitCallback} />)
 
         lobbyCodeField = screen.getByTestId('lobbyCodeField')
         lobbyCodeSubmit = screen.getByText("Submit")
@@ -21,7 +21,7 @@ describe('In join lobby view', () => {
         userEvent.clear(lobbyCodeField as HTMLElement)
     })
 
-    test.only('Cannot submit with invalid code', async () => {
+    test('Cannot submit with invalid code', async () => {
         expect(() => screen.getAllByTestId("lobbyCodeFieldError")).toThrow()
         await userEvent.type(lobbyCodeField as HTMLElement, "123")
         await userEvent.click(lobbyCodeSubmit as HTMLElement)
