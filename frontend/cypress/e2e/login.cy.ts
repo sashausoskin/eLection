@@ -6,7 +6,7 @@ beforeEach(() => {
 
 describe('Main menu', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:5173')
+    cy.visit('/')
   })
 
   it('user can get to the main menu', () => {
@@ -31,7 +31,7 @@ describe('Main menu', () => {
 
 describe('Host view', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:5173/host')
+    cy.visit('/host')
     //Wait until the lobby code is visible
   })
 
@@ -83,7 +83,7 @@ describe('Host view', () => {
 
 describe('Joining a lobby', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:5173/participant')
+    cy.visit('/participant')
   })
   it('displays an error message when typing an invalid code', () => {
     cy.get('[data-testid="lobbyCodeFieldError"]').should('not.exist')

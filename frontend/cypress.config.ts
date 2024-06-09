@@ -4,6 +4,8 @@ import { defineConfig } from "cypress";
 
 export default defineConfig({
   e2e: {
+    baseUrl: 'http://localhost:4173',
+    port: 4174,
     setupNodeEvents(on, config) {
       config.env = {
         ...process.env,

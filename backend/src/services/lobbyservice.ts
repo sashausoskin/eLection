@@ -42,6 +42,7 @@ export const isValidLobbyCode = (lobbyCode: string) : boolean => {
 export const getNewUserCode = (lobbyCode : string) : string => {
     const userCode = lobbyInfo[lobbyCode]['availableUserCodes'].pop()
     lobbyInfo[lobbyCode]['queuedUsers'][userCode] = null
+    console.log('User list is now', Object.keys(lobbyInfo[lobbyCode]['queuedUsers']), 'in', lobbyCode)
 
     return userCode
 }
@@ -84,6 +85,7 @@ export const isLobbyHost = (lobbyCode : string, hostID) => {
 
 export const removeUserFromQueue = (lobbyCode : string, userCode: string) => {
     if (!(userCode in lobbyInfo[lobbyCode]['queuedUsers'])) {
+        console.log('Did not find', userCode, 'in lobby', lobbyCode, Object.keys(lobbyInfo[lobbyCode]['queuedUsers']))
         throw new UserNotFound('Could not find a user with given userCode')
     }
 

@@ -26,12 +26,10 @@ router.post('/joinLobby', async (req, res) => {
 
     const userCode = getNewUserCode(lobbyCode)
 
-    res.send({userCode})
-
-    return
+    return res.send({userCode})
 })
 
-router.post('/authenticateUser', (req, res) => {
+router.post('/authenticateUser', async (req, res) => {
     if (!req.headers.authorization) {
         res.status(401).json({error: 'Missing authorization header!'})
         return
@@ -73,7 +71,8 @@ router.post('/authenticateUser', (req, res) => {
 
     const newUserID = createAuthenticatedUser(lobbyCode)
 
-    io.of('/queue').to(userSocketID).emit('authorize', {userID: newUserID})
+    io.of('/queue').to(userSocketID).timeout(1000).emit('authorize', {userID: newUserID})
+
     res.status(200).send()
 })
 
