@@ -3,7 +3,6 @@ import { createServer } from 'node:http'
 import { Server } from 'socket.io'
 import cors from 'cors'
 import { handleQueueSocketConnection } from '../sockets/lobbysockets'
-import path from 'path'
 
 import lobbyRouter from '../routes/lobby'
 import testingRouter from '../routes/testing'
@@ -12,7 +11,7 @@ export const app = express()
 export const server = createServer(app)
 export const io = new Server(server, {
     cors: {
-        origin: 'http://localhost:4173'
+        origin: process.env.CORS_ORIGIN
     }
 })
 

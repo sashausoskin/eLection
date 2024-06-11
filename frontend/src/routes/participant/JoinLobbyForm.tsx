@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios"
+import { AxiosError } from "axios"
 import { Field, Form, Formik, FormikHelpers } from "formik"
 import * as Yup from "yup"
 import * as participantService from '../../services/participantService'
@@ -14,27 +14,16 @@ export const JoinLobbyForm = ({handleSubmitLobbyCode} : {handleSubmitLobbyCode?:
             const lobbyCode = values.lobbyCode
 
             if (lobbyCode === null) return
-            console.log(import.meta.env.VITE_BACKEND_URL)
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/lobby/joinLobby`,
-            {lobbyCode})
+            
+            const userCode = await participantService.joinQueue(lobbyCode)
 
-
-            if (!response.data['userCode']) {
-                console.error("Got response for lobbyCode, but did not receive userCode!")
+            if (!userCode) {
+                console.error('Got response for lobby code but did not receive a user code!')
                 return
             }
-
-            const userCode = response.data['userCode']
 
             participantService.setUserCode(userCode)
             participantService.setLobbyCode(lobbyCode)
-
-            if (setViewTab === null) {
-                if (process.env.NODE_ENV === "development") {
-                    console.error('Succesfully received userCode, but did not receive setViewTab context! Unable to change the view!')
-                }
-                return
-            }
             setViewTab('inQueue')
         }
         catch (e){

@@ -5,6 +5,8 @@ jobs:
   unit_tests:
       name: Run unit tests
       runs-on: ubuntu-latest
+      env:
+        CORS_ORIGIN: http://localhost:4137
       steps:
         - name: Checkout
           uses: actions/checkout@v4.1.5
