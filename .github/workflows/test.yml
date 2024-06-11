@@ -32,8 +32,6 @@ jobs:
               npm run build
               npm run preview &
         - name: Cypress run
-          uses: cypress-io/github-action@v6
-          with:
-            wait-on: http://localhost:4173
-            working-directory: ./frontend
+          run: npm run test:e2e
+          working-directory: ./frontend
                
