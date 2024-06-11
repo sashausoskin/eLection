@@ -3,9 +3,12 @@ import { createServer } from 'node:http'
 import { Server } from 'socket.io'
 import cors from 'cors'
 import { handleQueueSocketConnection } from '../sockets/lobbysockets'
+import * as dotenv from 'dotenv'
 
 import lobbyRouter from '../routes/lobby'
 import testingRouter from '../routes/testing'
+
+dotenv.config()
 
 export const app = express()
 export const server = createServer(app)

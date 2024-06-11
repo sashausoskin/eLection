@@ -4,13 +4,14 @@ import * as Yup from 'yup'
 import { useState } from 'react'
 import { StatusMessage } from '../../types'
 import { AxiosError } from 'axios'
+import { Mock } from 'vitest'
 
 export const Authentication = ({
 	lobbyCode,
 	onSubmitUserCode,
 }: {
 	lobbyCode: string;
-	onSubmitUserCode?: (userCode: string) => never;
+	onSubmitUserCode?: ((userCode: string) => never ) | Mock<string[]>;
 }): React.ReactElement => {
 	const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
 	const statusMessageColor = statusMessage?.status === 'success' ? 'green' : 'red'

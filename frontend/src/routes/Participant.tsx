@@ -14,15 +14,14 @@ export const ParticipantView: () => JSX.Element = () => {
 			try {
 				participantService.loadValuesFromStorage()
 				await participantService.validateStoredUserValues()
-				console.log('Values are valid')
 				setViewTab('inLobby')
 			} catch (e) {
-				participantService.clearValues()
+                true
 			}
 			setIsLoading(false)
 		}
 		validateStoredValues()
-	})
+	}, [setViewTab])
 
 	if (isLoading) return <a>Loading....</a>
 

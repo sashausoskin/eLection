@@ -27,7 +27,6 @@ export const UserCode = ({ onAuthenticated }: { onAuthenticated?: (userID: strin
 		setIsConnecting(true)
 		const lobbySocket: Socket = createLobbySocket(userCode, lobbyCode)
 		lobbySocket.on('connect', () => {
-			console.log('Connected to socket')
 			setIsConnecting(false)
 		})
 		lobbySocket.on('error', (error) => {
