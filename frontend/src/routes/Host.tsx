@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { createLobby, getLobbyCode } from "../services/lobbyHostService"
+import * as lobbyService from "../services/lobbyHostService"
 import { Authentication } from "./host/Authentication"
 
 export const Host = () => {
@@ -8,15 +8,25 @@ export const Host = () => {
     
     
     // Note that the effect below is run twice in React's StrictMode. This shouldn't be a problem in production.
+    // This is why lobbyCode is also saved to a state, as otherwise it may cause bugs in development mode.
     useEffect(() => {
-        setLobbyCode(null)
-        createLobby().then(() => {
-            setLobbyCode(getLobbyCode())
-        })}
+        const initLobby = async () => {
+            setLobbyCode(null)
+            try {
+                await lobbyService.validateInfoFromStorage()
+                setLobbyCode(lobbyService.getLobbyCode())
+            }
+            catch {
+                lobbyService.clearSavedInfo()
+                lobbyService.createLobby().then(() => {
+                    setLobbyCode(lobbyService.getLobbyCode())})
+            }}
+        initLobby()
+    }
     , [])
 
 
-    if (lobbyCode === null) return <a>Creating a lobby...</a>
+    if (lobbyCode === null) return <a>Loading...</a>
 
     
     return <Authentication lobbyCode={lobbyCode}/>

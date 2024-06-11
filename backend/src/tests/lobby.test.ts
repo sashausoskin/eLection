@@ -68,6 +68,14 @@ describe('With one lobby created and one user in queue', () => {
         const userCodeRequest = await request(app).post('/lobby/joinLobby').send({lobbyCode})
         userCode = userCodeRequest.body.userCode
     })
+
+    const validateUser = async (lobbyCode? : string, userID? : string) => {
+        return await request(app).post('/lobby/validateUserInfo').send({lobbyCode, userID})
+    }
+
+    const validateHost = async (lobbyCode? : string, hostID? : string) => {
+        return await request(app).post('/lobby/validateHostInfo').send({lobbyCode, hostID})
+    }
     
     test("host can authenticate a user in queue", async () => {
         expect(lobbyService.getParticipants(lobbyCode).length).toBe(0)
@@ -112,7 +120,27 @@ describe('With one lobby created and one user in queue', () => {
         expect(lobbyService.getParticipants(lobbyCode).length).toBe(0)
     })
 
-    test("Authenticated user gets a socket message when authenticated", (done) => {
+    test("host validation works", async () => {
+        const hostValidationRequest = await validateHost(lobbyCode, hostID)
+
+        expect(hostValidationRequest.statusCode).toBe(200)
+    })
+
+    test("host validation throws error with invalid info", async () => {
+        let hostValidationRequest = await validateHost(lobbyCode === "1234" ? "4321" : "1234", hostID)
+        expect(hostValidationRequest.statusCode).toBe(403)
+
+        hostValidationRequest = await validateHost(lobbyCode, "11111111-1111-1111-1111-111111111111")
+        expect(hostValidationRequest.statusCode).toBe(403)
+
+        hostValidationRequest = await validateHost(lobbyCode)
+        expect(hostValidationRequest.statusCode).toBe(400)
+
+        hostValidationRequest = await validateHost(undefined, hostID)
+        expect(hostValidationRequest.statusCode).toBe(400)
+    })
+
+    test("authenticated user gets a socket message when authenticated", (done) => {
         const socketCallback = jest.fn()
         lobbySocket = ioc('http://localhost:3000/queue', {query: {lobbyCode, userCode}})
         lobbySocket.on('error', (error) => {
@@ -130,5 +158,28 @@ describe('With one lobby created and one user in queue', () => {
                 .set('Authorization', hostID)
                 .send({lobbyCode, userCode})
         })
+    })
+    test("user validation works", async () => {
+        const userID = lobbyService.createAuthenticatedUser(lobbyCode)
+
+        const validationRequest = await validateUser(lobbyCode, userID)
+
+        expect(validationRequest.statusCode).toBe(200)
+    })
+
+    test("user validation returns error with invalid parameters", async () => {
+        const userID = lobbyService.createAuthenticatedUser(lobbyCode)
+
+        let validationRequest = await validateUser(lobbyCode === "1234" ? "4321" : "1234", userID)
+        expect(validationRequest.statusCode).toBe(403)
+
+        validationRequest = await validateUser(lobbyCode, "11111111-1111-1111-1111-111111111111")
+        expect(validationRequest.statusCode).toBe(403)
+
+        validationRequest = await validateUser(lobbyCode)
+        expect(validationRequest.statusCode).toBe(400)
+
+        validationRequest = await validateUser(undefined, userID)
+        expect(validationRequest.statusCode).toBe(400)
     })
 })

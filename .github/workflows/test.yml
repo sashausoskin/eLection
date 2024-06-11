@@ -27,8 +27,6 @@ jobs:
               cd backend 
               npm run start:test &
               cd ../frontend
-              sudo apt install tree
-              tree src
               npm run build
               npm run preview &
         - name: Cypress run

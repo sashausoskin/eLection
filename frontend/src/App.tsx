@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router'
 import { Home } from './routes/Home'
 import { Host } from './routes/Host'
 import { ParticipantView } from './routes/Participant'
+import { SetParticipantViewContextProvider } from './Contexts'
 
 function App() {
 
@@ -11,7 +12,11 @@ function App() {
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/host' element={<Host />} />
-        <Route path='/participant' element={<ParticipantView />} />
+        <Route path='/participant' element={
+          <SetParticipantViewContextProvider>
+            <ParticipantView />
+          </SetParticipantViewContextProvider>} 
+          />
       </Routes>
     </>
   )

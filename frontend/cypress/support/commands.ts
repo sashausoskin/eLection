@@ -35,3 +35,17 @@
 //     }
 //   }
 // }
+
+Cypress.Commands.add('createLobbyAndUser', (context) => {
+    cy.request('post', '/testing/createLobbyWithUser')
+    .then((res) => {
+        const lobbyCode = res.body.lobbyCode
+        const userID = res.body.userID
+        const hostID = res.body.hostID
+
+        localStorage.setItem('lobbyCode', lobbyCode)
+        localStorage.setItem('authToken', context === "host" ? hostID : context === "participant" ? userID : null)
+
+    })
+})
+

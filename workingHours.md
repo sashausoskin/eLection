@@ -8,4 +8,5 @@
 | 6.6 | 3    | Finished backend's unit tests. Got stuck on getting the sockets to work with unit tests |
 | 7.6 | 5    | Finished frontend unit tests & started work on end-to-end tests. Got stuck on getting the frontend and the end-to-end tests to work. Cypress is very weird sometimes... |
 | 8.6 | 3    | Finished end-to-end tests and refactored some code to better support end-to-end tests |
-| total   | 28   | | 
+| 9.6 | 3    | Debugging end-to-end tests' edge cases and creating a unit test CI/CD pipeline |
+| total   | 32   | | 

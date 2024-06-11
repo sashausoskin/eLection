@@ -16,4 +16,11 @@ router.get('/getParticipants', (req, res) => {
     return res.send(lobbyService.getParticipants(req.body.lobbyCode))
 })
 
+router.post('/createLobbyWithUser', (req, res) => {
+    const {lobbyCode, hostID} = lobbyService.createNewLobby()
+    const userID = lobbyService.createAuthenticatedUser(lobbyCode)
+
+    res.json({lobbyCode, hostID, userID})
+})
+
 export default router

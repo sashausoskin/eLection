@@ -7,7 +7,8 @@ let lobbyCode : string | null = null
 export const createLobby = async () => {
     await apiClient.post<LobbyCreationResponse>(`/lobby/createLobby`).then(response => {
         lobbyCode = response.data.lobbyCode
-        window.localStorage.setItem('authToken', response.data.hostID)
+        window.localStorage.setItem('hostID', response.data.hostID)
+        window.localStorage.setItem('hostLobbyCode', lobbyCode)
         hostID = response.data.hostID
     })
 }
@@ -24,4 +25,26 @@ export const auhtenticateUserWithCode = async (userCode: string) => {
 
 export const getLobbyCode = () : string | null => {
     return lobbyCode
+}
+
+export const validateInfoFromStorage = async () => {
+    lobbyCode = window.localStorage.getItem('hostLobbyCode')
+    hostID = window.localStorage.getItem('hostID')
+
+    if (lobbyCode === undefined || hostID === undefined) {
+        throw new Error('Did not find values in local storage')
+    }
+
+    await apiClient.post('/lobby/validateHostInfo', {
+        lobbyCode,
+        hostID
+    })
+
+}
+
+export const clearSavedInfo = () => {
+    window.localStorage.removeItem('hostLobbyCode')
+    window.localStorage.removeItem('hostID')
+    hostID = null
+    lobbyCode = null
 }

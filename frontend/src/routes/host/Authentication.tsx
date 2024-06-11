@@ -1,11 +1,11 @@
-import { Field, Form, Formik } from "formik";
+import { Field, Form, Formik, FormikHelpers } from "formik";
 import { auhtenticateUserWithCode } from "../../services/lobbyHostService";
 import * as Yup from 'yup'
 import { useState } from "react";
 import { StatusMessage } from "../../types";
 import { AxiosError } from "axios";
 
-export const Authentication = ({lobbyCode, onSubmitUserCode} : {lobbyCode : string, onSubmitUserCode?: Function}): React.ReactElement => {
+export const Authentication = ({lobbyCode, onSubmitUserCode} : {lobbyCode : string, onSubmitUserCode?: (userCode : string) => {}}): React.ReactElement => {
     const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
     const statusMessageColor = statusMessage?.status === "success" ? "green" : "red"
 
@@ -17,10 +17,11 @@ export const Authentication = ({lobbyCode, onSubmitUserCode} : {lobbyCode : stri
             .max(4, 'Please enter a valid user code')
     })
 
-    const defaultOnSubmitUserCode = async (userCode : string) => {
+    const defaultOnSubmitUserCode = async (userCode : string, actions : FormikHelpers<{userCode: string}>) => {
         try {
             await auhtenticateUserWithCode(userCode)
             setStatusMessage({status: "success", message: "User is now authenticated!"})
+            actions.resetForm()
         }
         catch (e){
             if (e instanceof AxiosError) {
@@ -42,8 +43,10 @@ export const Authentication = ({lobbyCode, onSubmitUserCode} : {lobbyCode : stri
         <Formik
         initialValues={{userCode: ''}}
         validationSchema={userCodeSchema}
-        onSubmit={(values) => {
-            (onSubmitUserCode !== undefined ? onSubmitUserCode : defaultOnSubmitUserCode)(values.userCode)}}
+        onSubmit={(values, actions) => {
+            onSubmitUserCode !== undefined 
+            ? onSubmitUserCode (values.userCode) 
+            : defaultOnSubmitUserCode (values.userCode, actions)}}
         >
             {({errors, touched, isValid}) => (
                 <Form>

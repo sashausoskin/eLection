@@ -47,8 +47,8 @@ describe('Host view', () => {
 
     // Is there a better way than nesting?
     // For some reason Cypress doesn't let you use variables outside of promises
-    cy.get('[data-testid="lobbyCode"]').then(($value) => {
-      const lobbyCode = $value.text()
+    cy.get('[data-testid="lobbyCode"]').then((value) => {
+      const lobbyCode = value.text()
 
       cy.request('post', `${Cypress.env('BACKEND_URL')}/lobby/joinLobby`, {lobbyCode}).then((response) => {
         const userCode = response.body.userCode
@@ -61,8 +61,8 @@ describe('Host view', () => {
   })
 
   it('can actually authenticate user', () => {
-    cy.get('[data-testid="lobbyCode"]').then(($value) => {
-      const lobbyCode = $value.text()
+    cy.get('[data-testid="lobbyCode"]').then((value) => {
+      const lobbyCode = value.text()
 
       cy.request(`${Cypress.env('BACKEND_URL')}/testing/getParticipants`, {lobbyCode}).then((response) => {
         expect(response.body.length).equal(0)
@@ -76,6 +76,18 @@ describe('Host view', () => {
         cy.request(`${Cypress.env('BACKEND_URL')}/testing/getParticipants`, {lobbyCode}).then((response) => {
           expect(response.body.length).equal(1)
         })
+      })
+    })
+  })
+
+  it('retains info after page reload', () => {
+    cy.get('[data-testid="lobbyCode"]').then((value) => {
+      const lobbyCode : string = value.text()
+
+      cy.visit('/host')
+      cy.get('[data-testid="lobbyCode"]').then((reloadValue) => {
+        const lobbyCode2 : string = reloadValue.text()
+        expect(lobbyCode).equal(lobbyCode2)
       })
     })
   })
@@ -112,8 +124,8 @@ describe('Joining a lobby', () => {
       cy.get('button').click()
 
       cy.get('[data-testid="lobbyHeader"]').should('not.exist')
-      cy.get('[data-testid="userCode"]').then(($value) => {
-        const userCode : string = $value.text()
+      cy.get('[data-testid="userCode"]').then((value) => {
+        const userCode : string = value.text()
 
         cy.request({
           method: "POST",
@@ -123,6 +135,32 @@ describe('Joining a lobby', () => {
             Authorization: hostID
           }
         })
+        cy.get('[data-testid="lobbyHeader"]')
+      })
+    })
+  })
+
+  it('is still authenticated after reload', () => {
+    cy.request('post', `${Cypress.env('BACKEND_URL')}/lobby/createLobby`).then((res) => {
+      const lobbyCode : string = res.body.lobbyCode
+      const hostID : string = res.body.hostID
+
+      cy.get('[data-testid="lobbyCodeField"]').type(lobbyCode)
+      cy.get('button').click()
+
+      cy.get('[data-testid="userCode"]').then((value) => {
+        const userCode : string = value.text()
+
+        cy.request({
+          method: "POST",
+          url: `${Cypress.env('BACKEND_URL')}/lobby/authenticateUser`,
+          body: {userCode, lobbyCode},
+          headers: {
+            Authorization: hostID
+          }
+        })
+        cy.get('[data-testid="lobbyHeader"]')
+        cy.visit('/participant')
         cy.get('[data-testid="lobbyHeader"]')
       })
     })

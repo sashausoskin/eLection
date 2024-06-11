@@ -7,7 +7,7 @@ import { SetParticipantViewContext } from "../../Contexts"
 
 export const JoinLobbyForm = ({handleSubmitLobbyCode} : {handleSubmitLobbyCode?: Function}) : React.ReactElement => {
 
-    const setViewTab = useContext(SetParticipantViewContext)
+    const {setViewTab} = useContext(SetParticipantViewContext)
 
     const defaultHandleSubmitLobbyCode = async (values : {lobbyCode : string}, {setErrors} : FormikHelpers<{lobbyCode :string}>) => {
         try {

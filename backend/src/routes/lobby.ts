@@ -1,5 +1,6 @@
 import express from 'express'
-import { UserNotFound, createAuthenticatedUser, createNewLobby, getLobby, getNewUserCode, getUserSocketID, isLobbyHost,
+import { UserNotFound, createAuthenticatedUser, createNewLobby, getLobby, getNewUserCode, getUserSocketID, isHostOfLobby, isLobbyHost,
+        isUserInLobby,
         isValidLobbyCode, removeUserFromQueue } from '../services/lobbyservice'
 import {io} from '../util/server'
 
@@ -74,6 +75,40 @@ router.post('/authenticateUser', async (req, res) => {
     io.of('/queue').to(userSocketID).timeout(1000).emit('authorize', {userID: newUserID})
 
     res.status(200).send()
+})
+
+router.post('/validateUserInfo', async (req, res) => {
+    const lobbyCode = req.body.lobbyCode
+    const userID = req.body.userID
+
+    if (!lobbyCode) {
+        return res.status(400).json({error: "The request is missing field lobbyCode"})
+    }
+
+    if (!userID) {
+        return res.status(400).json({error: "The request is missing field userID"})
+    }
+
+    const userIsValid = isUserInLobby(lobbyCode, userID)
+
+    if (!userIsValid) {
+        return res.status(403).json({error: "The given information is not valid"})
+    }
+
+    return res.status(200).send()
+})
+
+router.post('/validateHostInfo', async (req, res) => {
+    const lobbyCode = req.body.lobbyCode
+    const hostID = req.body.hostID
+
+    if (!lobbyCode) return res.status(400).json({error: "Request is missing field lobbyCode"})
+
+    if (!hostID) return res.status(400).json({error: "Request is missing field hostID"})
+
+    if (!isHostOfLobby(lobbyCode, hostID)) return res.status(403).send()
+    
+    return res.status(200).send()
 })
 
 export default router

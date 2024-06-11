@@ -96,6 +96,20 @@ export const getUserSocketID = (lobbyCode : string, userCode : string) => {
     return lobbyInfo[lobbyCode]['queuedUsers'][userCode]
 }
 
+export const isUserInLobby = (lobbyCode : string, userID : string) => {
+    if (!(lobbyCode in lobbyInfo)) {
+        return false
+    }
+
+    return userID in lobbyInfo[lobbyCode]['participants']
+}
+
+export const isHostOfLobby = (lobbyCode : string, hostID) => {
+    if (!(lobbyCode in lobbyInfo)) return false
+
+    return lobbyInfo[lobbyCode]['hostID'] === hostID
+}
+
 export const getNumberOfLobbies = () => {
     return Object.keys(lobbyInfo).length
 }
