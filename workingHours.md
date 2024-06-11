@@ -9,5 +9,5 @@
 | 7.6 | 5    | Finished frontend unit tests & started work on end-to-end tests. Got stuck on getting the frontend and the end-to-end tests to work. Cypress is very weird sometimes... |
 | 8.6 | 3    | Finished end-to-end tests and refactored some code to better support end-to-end tests |
 | 9.6 | 3    | Debugging end-to-end tests' edge cases and creating a unit test CI/CD pipeline |
-| 11.6 | 6.5    | Added storing authentication info in local storage and restoring sessions, set up linting |
-| total   | 37.5   | | 
+| 11.6 | 7   | Added storing authentication info in local storage and restoring sessions, set up linting |
+| total   | 38   | | 
