@@ -1,4 +1,4 @@
-import express, { Router } from 'express'
+import express from 'express'
 import { createServer } from 'node:http'
 import { Server } from 'socket.io'
 import cors from 'cors'
@@ -19,10 +19,10 @@ app.use(cors())
 app.use(express.json())
 app.use('/lobby', lobbyRouter)
 
-if (process.env.NODE_ENV === "test") app.use('/testing', testingRouter)
+if (process.env.NODE_ENV === 'test') app.use('/testing', testingRouter)
 
 app.use('/', express.static('dist'))
 
-io.of("/queue").on('connection', (socket) => {
+io.of('/queue').on('connection', (socket) => {
     handleQueueSocketConnection(socket)
 })

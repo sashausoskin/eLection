@@ -1,50 +1,52 @@
-import { LobbyCreationResponse } from "../types"
-import { apiClient } from "../util/apiClient"
+import { LobbyCreationResponse } from '../types'
+import { apiClient } from '../util/apiClient'
 
-let hostID : string | null= null
-let lobbyCode : string | null = null
+let hostID: string | null = null
+let lobbyCode: string | null = null
 
 export const createLobby = async () => {
-    await apiClient.post<LobbyCreationResponse>(`/lobby/createLobby`).then(response => {
-        lobbyCode = response.data.lobbyCode
-        window.localStorage.setItem('hostID', response.data.hostID)
-        window.localStorage.setItem('hostLobbyCode', lobbyCode)
-        hostID = response.data.hostID
-    })
+	await apiClient.post<LobbyCreationResponse>('/lobby/createLobby').then((response) => {
+		lobbyCode = response.data.lobbyCode
+		window.localStorage.setItem('hostID', response.data.hostID)
+		window.localStorage.setItem('hostLobbyCode', lobbyCode)
+		hostID = response.data.hostID
+	})
 }
-
 
 export const auhtenticateUserWithCode = async (userCode: string) => {
-    await apiClient.post(`/lobby/authenticateUser`, {
-        userCode,
-        lobbyCode
-    }, {
-        headers: {Authorization: hostID}
-    })
+	await apiClient.post(
+		'/lobby/authenticateUser',
+		{
+			userCode,
+			lobbyCode,
+		},
+		{
+			headers: { Authorization: hostID },
+		}
+	)
 }
 
-export const getLobbyCode = () : string | null => {
-    return lobbyCode
+export const getLobbyCode = (): string | null => {
+	return lobbyCode
 }
 
 export const validateInfoFromStorage = async () => {
-    lobbyCode = window.localStorage.getItem('hostLobbyCode')
-    hostID = window.localStorage.getItem('hostID')
+	lobbyCode = window.localStorage.getItem('hostLobbyCode')
+	hostID = window.localStorage.getItem('hostID')
 
-    if (lobbyCode === undefined || hostID === undefined) {
-        throw new Error('Did not find values in local storage')
-    }
+	if (lobbyCode === undefined || hostID === undefined) {
+		throw new Error('Did not find values in local storage')
+	}
 
-    await apiClient.post('/lobby/validateHostInfo', {
-        lobbyCode,
-        hostID
-    })
-
+	await apiClient.post('/lobby/validateHostInfo', {
+		lobbyCode,
+		hostID,
+	})
 }
 
 export const clearSavedInfo = () => {
-    window.localStorage.removeItem('hostLobbyCode')
-    window.localStorage.removeItem('hostID')
-    hostID = null
-    lobbyCode = null
+	window.localStorage.removeItem('hostLobbyCode')
+	window.localStorage.removeItem('hostID')
+	hostID = null
+	lobbyCode = null
 }

@@ -1,13 +1,12 @@
-import express from "express"
-import { assignSocketIdToUser, getLobby, getNewUserCode, getUsersInQueue, isUserInQueue, isValidLobbyCode, removeUserFromQueue } from "../services/lobbyservice"
-import { Socket } from "socket.io"
+import { assignSocketIdToUser, isUserInQueue, isValidLobbyCode } from '../services/lobbyservice'
+import { Socket } from 'socket.io'
 
 export const handleQueueSocketConnection = (socket: Socket) => {
     const userCode = socket.handshake.query.userCode as string
     const lobbyCode = socket.handshake.query.lobbyCode as string
 
     if (!(typeof userCode === 'string')) {
-        socket.emit('error', "userCode is malformatted. Disconnecting...")
+        socket.emit('error', 'userCode is malformatted. Disconnecting...')
         socket.disconnect()
         return
     }

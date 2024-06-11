@@ -6,4 +6,4 @@ export interface LobbyInfo {
     participants: Record<string, null>
 }
 
-type LobbyStatus = "STANDBY" | "VOTING"
+type LobbyStatus = 'STANDBY' | 'VOTING'

@@ -1,5 +1,5 @@
 import express from 'express'
-import { UserNotFound, createAuthenticatedUser, createNewLobby, getLobby, getNewUserCode, getUserSocketID, isHostOfLobby, isLobbyHost,
+import { UserNotFound, createAuthenticatedUser, createNewLobby, getNewUserCode, getUserSocketID, isHostOfLobby, isLobbyHost,
         isUserInLobby,
         isValidLobbyCode, removeUserFromQueue } from '../services/lobbyservice'
 import {io} from '../util/server'
@@ -14,14 +14,14 @@ router.post('/createLobby', async (req, res) => {
 
 router.post('/joinLobby', async (req, res) => {
     if (!req.body.lobbyCode) {
-        res.status(400).json({error: "The request is missing field lobbyCode"})
+        res.status(400).json({error: 'The request is missing field lobbyCode'})
         return
     }
 
     const lobbyCode : string = req.body.lobbyCode as string
 
     if (!isValidLobbyCode(lobbyCode)) {
-        res.status(404).json({error: "No lobby was found with the given code"})
+        res.status(404).json({error: 'No lobby was found with the given code'})
         return
     }
 
@@ -82,17 +82,17 @@ router.post('/validateUserInfo', async (req, res) => {
     const userID = req.body.userID
 
     if (!lobbyCode) {
-        return res.status(400).json({error: "The request is missing field lobbyCode"})
+        return res.status(400).json({error: 'The request is missing field lobbyCode'})
     }
 
     if (!userID) {
-        return res.status(400).json({error: "The request is missing field userID"})
+        return res.status(400).json({error: 'The request is missing field userID'})
     }
 
     const userIsValid = isUserInLobby(lobbyCode, userID)
 
     if (!userIsValid) {
-        return res.status(403).json({error: "The given information is not valid"})
+        return res.status(403).json({error: 'The given information is not valid'})
     }
 
     return res.status(200).send()
@@ -102,9 +102,9 @@ router.post('/validateHostInfo', async (req, res) => {
     const lobbyCode = req.body.lobbyCode
     const hostID = req.body.hostID
 
-    if (!lobbyCode) return res.status(400).json({error: "Request is missing field lobbyCode"})
+    if (!lobbyCode) return res.status(400).json({error: 'Request is missing field lobbyCode'})
 
-    if (!hostID) return res.status(400).json({error: "Request is missing field hostID"})
+    if (!hostID) return res.status(400).json({error: 'Request is missing field hostID'})
 
     if (!isHostOfLobby(lobbyCode, hostID)) return res.status(403).send()
     
