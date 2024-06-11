@@ -9,6 +9,7 @@ import lobbyRouter from '../routes/lobby'
 import testingRouter from '../routes/testing'
 
 dotenv.config()
+console.log(process.env.CORS_ORIGIN)
 
 export const app = express()
 export const server = createServer(app)
