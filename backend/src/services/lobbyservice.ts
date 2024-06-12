@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import { LobbyInfo } from '../types'
+import { LobbyInfo, LobbyStatusInfo } from '../types'
 import shuffleArray from '../util/shuffle'
 
 let lobbyInfo : Record<string, LobbyInfo>  = {}
@@ -78,7 +78,7 @@ export const createAuthenticatedUser = (lobbyCode : string) => {
     return newUserID
 }
 
-export const isLobbyHost = (lobbyCode : string, hostID) => {
+export const isLobbyHost = (lobbyCode : string, hostID : string) => {
     return lobbyInfo[lobbyCode]['hostID'] === hostID
 }
 
@@ -121,3 +121,9 @@ export const resetLobbies = () => {
 export const getLobby = (lobbyCode : string) => {
     return lobbyInfo[lobbyCode]
 }
+
+export const getLobbyStatus = (lobbyCode : string) : LobbyStatusInfo => {
+    const { hostID, queuedUsers, availableUserCodes, participants, ...info} = lobbyInfo[lobbyCode]
+
+    return info
+} 

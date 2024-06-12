@@ -56,7 +56,7 @@ export const JoinLobbyForm = ({
 
 	return (
 		<>
-			<a data-testid="lobbyFormHeader">Welcome! Enter the lobby code below</a>
+			<a data-testid="lobby-form-header">Welcome! Enter the lobby code below</a>
 			<Formik
 				initialValues={{ lobbyCode: '' }}
 				validationSchema={lobbyFormSchema}
@@ -68,9 +68,9 @@ export const JoinLobbyForm = ({
 			>
 				{({ errors, touched, isValid }) => (
 					<Form>
-						<Field name="lobbyCode" data-testid="lobbyCodeField" />
+						<Field name="lobbyCode" data-testid="lobbycode-field" />
 						{errors.lobbyCode && touched.lobbyCode ? (
-							<a data-testid="lobbyCodeFieldError" style={{ color: 'red' }}>
+							<a data-testid="lobbycode-field-error" style={{ color: 'red' }}>
 								{errors.lobbyCode}
 							</a>
 						) : null}

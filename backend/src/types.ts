@@ -7,3 +7,5 @@ export interface LobbyInfo {
 }
 
 type LobbyStatus = 'STANDBY' | 'VOTING'
+
+export type LobbyStatusInfo = Omit<LobbyInfo, "hostID" | "availableUserCodes" | "queuedUsers" | "participants">

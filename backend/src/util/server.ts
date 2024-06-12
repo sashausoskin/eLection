@@ -7,6 +7,7 @@ import * as dotenv from 'dotenv'
 
 import lobbyRouter from '../routes/lobby'
 import testingRouter from '../routes/testing'
+import { getAuthenticationMiddleware, handleViewerSocketConnection } from '../sockets/viewersockets'
 
 dotenv.config()
 
@@ -28,4 +29,12 @@ app.use('/', express.static('dist'))
 
 io.of('/queue').on('connection', (socket) => {
     handleQueueSocketConnection(socket)
+})
+
+io.of('/viewer').on('connection', (socket) => {
+    handleViewerSocketConnection(socket)
+} )
+
+io.of('/viewer').use((socket, next) => {
+    getAuthenticationMiddleware(socket, next)
 })

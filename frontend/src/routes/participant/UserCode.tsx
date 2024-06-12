@@ -43,7 +43,7 @@ export const UserCode = ({ onAuthenticated }: { onAuthenticated?: (userID: strin
 	return (
 		<>
 			<a>Here is your code</a>
-			<a style={{ fontSize: 20 }} data-testid={'userCode'}>
+			<a style={{ fontSize: 20 }} data-testid={'usercode'}>
 				{userCode}
 			</a>
 			<a>Show this code to the secretary</a>

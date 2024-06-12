@@ -13,7 +13,7 @@ describe('In authentication view', () => {
 		submitCallback = vi.fn<string[]>()
 		render(<Authentication lobbyCode={'1234'} onSubmitUserCode={submitCallback} />)
 
-		userCodeField = screen.getByTestId('userCodeField')
+		userCodeField = screen.getByTestId('usercode-field')
 		userCodeSubmit = screen.getByText('Submit')
 	})
 
@@ -22,13 +22,13 @@ describe('In authentication view', () => {
 	})
 
 	test('Cannot submit with invalid code', async () => {
-		expect(() => screen.getAllByTestId('userCodeFieldError')).toThrow()
+		expect(() => screen.getAllByTestId('usercode-field-error')).toThrow()
 
 		await userEvent.type(userCodeField as HTMLElement, '123')
 		await userEvent.click(userCodeSubmit as HTMLElement)
 
 		await waitFor(() => {
-			expect(screen.getByTestId('userCodeFieldError')).toBeDefined()
+			expect(screen.getByTestId('usercode-field-error')).toBeDefined()
 			expect((submitCallback as Mock).mock.calls).toHaveLength(0)
 		})
 	})
@@ -40,7 +40,7 @@ describe('In authentication view', () => {
 		await userEvent.click(userCodeSubmit as HTMLElement)
 
 		await waitFor(() => {
-			expect(() => screen.getByTestId('userCodeFieldError')).toThrow()
+			expect(() => screen.getByTestId('usercode-field-error')).toThrow()
 			expect((submitCallback as Mock).mock.calls).toHaveLength(1)
 		})
 	})

@@ -30,7 +30,7 @@ export const ParticipantView: () => JSX.Element = () => {
 			{viewTab === 'joinLobby' && <JoinLobbyForm />}
 			{viewTab === 'inQueue' && <UserCode />}
 			{viewTab === 'inLobby' && (
-				<a data-testid="lobbyHeader">You are now authenticated. Welcome! :)</a>
+				<a data-testid="lobby-header">You are now authenticated. Welcome! :)</a>
 			)}
 		</>
 	)

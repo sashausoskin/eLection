@@ -4,6 +4,7 @@ import { Home } from './routes/Home'
 import { Host } from './routes/Host'
 import { ParticipantView } from './routes/Participant'
 import { SetParticipantViewContextProvider } from './Contexts'
+import Viewer from './routes/Viewer'
 
 function App() {
 	return (
@@ -11,6 +12,7 @@ function App() {
 			<Routes>
 				<Route path="/" element={<Home />} />
 				<Route path="/host" element={<Host />} />
+				<Route path='/viewer' element={<Viewer />} />
 				<Route
 					path="/participant"
 					element={

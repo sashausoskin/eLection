@@ -52,7 +52,7 @@ export const Authentication = ({
 	return (
 		<>
 			<a>Lobby code:</a>
-			<a data-testid="lobbyCode">{lobbyCode}</a>
+			<a data-testid="lobbycode">{lobbyCode}</a>
 			<Formik
 				initialValues={{ userCode: '' }}
 				validationSchema={userCodeSchema}
@@ -64,19 +64,19 @@ export const Authentication = ({
 			>
 				{({ errors, touched, isValid }) => (
 					<Form>
-						<Field name="userCode" data-testid="userCodeField" />
+						<Field name="userCode" data-testid="usercode-field" />
 						{statusMessage && (
 							<a
-								data-testid={`statusMessage_${statusMessage.status}`}
+								data-testid={`status-message-${statusMessage.status}`}
 								style={{ color: statusMessageColor }}
 							>
 								{statusMessage.message}
 							</a>
 						)}
 						{errors.userCode && touched.userCode ? (
-							<a data-testid="userCodeFieldError">{errors.userCode}</a>
+							<a data-testid="usercode-field-error">{errors.userCode}</a>
 						) : null}
-						<button type="submit" disabled={!isValid}>
+						<button type="submit" disabled={!isValid} data-testid="submit-authentication">
 							Submit
 						</button>
 					</Form>

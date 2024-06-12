@@ -13,3 +13,9 @@ export interface JoinLobbyResponse {
 }
 
 export type ParticipantViewTab = 'joinLobby' | 'inQueue' | 'inLobby';
+
+export interface LobbyStatusInfo {
+	status: "STANDBY" | "VOTING"
+}
+
+export type VoteType = "FPTP" | "ranked"

@@ -10,4 +10,5 @@
 | 8.6 | 3    | Finished end-to-end tests and refactored some code to better support end-to-end tests |
 | 9.6 | 3    | Debugging end-to-end tests' edge cases and creating a unit test CI/CD pipeline |
 | 11.6 | 7   | Added storing authentication info in local storage and restoring sessions, set up linting |
-| total   | 38   | | 
+| 12.6 | 6   | Started working on the results window and added UI for creating FTPT elections|
+| total   | 44   | | 
