@@ -1,4 +1,4 @@
-import { LobbyCreationResponse } from '../types'
+import { ElectionInfo, LobbyCreationResponse } from '../types'
 import { apiClient } from '../util/apiClient'
 
 let hostID: string | null = null
@@ -49,4 +49,13 @@ export const clearSavedInfo = () => {
 	window.localStorage.removeItem('hostID')
 	hostID = null
 	lobbyCode = null
+}
+
+export const createElection = async (electionInfo : ElectionInfo) => {
+	await apiClient.post('/host/createElection',
+		{lobbyCode, electionInfo},
+		{headers: {
+			Authorization: hostID
+		}}
+	)
 }

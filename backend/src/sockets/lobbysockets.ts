@@ -1,42 +1,43 @@
-import { assignSocketIdToUser, isUserInQueue, isValidLobbyCode } from '../services/lobbyservice'
-import { Socket } from 'socket.io'
+import { Socket } from "socket.io";
+import { ExtendedError } from "socket.io/dist/namespace";
+import * as lobbyService from '../services/lobbyservice'
 
-export const handleQueueSocketConnection = (socket: Socket) => {
-    const userCode = socket.handshake.query.userCode as string
-    const lobbyCode = socket.handshake.query.lobbyCode as string
+export const handleParticipantSocketConnection = (participantSocket : Socket) => {
+    participantSocket.emit('statusChange', lobbyService.getLobbyStatus(participantSocket['lobbyCode']))
 
-    if (!(typeof userCode === 'string')) {
-        socket.emit('error', 'userCode is malformatted. Disconnecting...')
-        socket.disconnect()
+    participantSocket.on('disconnect', () => {
+        lobbyService.removeParticipantSocket(participantSocket['lobbyCode'], participantSocket.id)
+    })
+}
+
+export const isParticipantMiddleware = (socket : Socket, next: (err?: ExtendedError) => void) => {
+    const authToken = socket.handshake.auth.userID
+    const lobbyCode = socket.handshake.auth.lobbyCode
+
+    if (!authToken) {
+        const err = new Error("Did not receive a token with the request")
+        next(err)
+        return
+    }
+    if (!lobbyCode) {
+        const err = new Error("Did not receive a lobby code with the request")
+        next(err)
         return
     }
 
-    if (!(typeof lobbyCode === 'string')) {
-        socket.emit('error', 'lobbyCode is malformatted. Disconnecting...')
-        socket.disconnect()
+    if (!lobbyService.isValidLobbyCode(lobbyCode) || !lobbyService.isParticipant(lobbyCode, authToken)) {
+        const err = new Error("You do not have access to this lobby!")
+        next(err)
         return
     }
 
-    if (!isValidLobbyCode(lobbyCode)) {
-        socket.emit('error', 'lobbyCode is malformatted. Disconnecting...')
-        socket.disconnect()
+    if (lobbyService.isParticipantConnected(lobbyCode, authToken)) {
+        const err = new Error("Another user has already connected to this lobby with this token!")
+        next(err)
         return
     }
 
-    if (!isUserInQueue(userCode, lobbyCode)) {
-        socket.emit('error', 'userCode not found. Disconnecting...')
-        socket.disconnect()
-        return
-    }
 
-    try {
-        assignSocketIdToUser(userCode, lobbyCode, socket.id)
-    }
-    catch (e) {
-        if (e instanceof Error) {
-            socket.emit('error', e.message)
-            socket.disconnect()
-            return
-        }
-    }
+
+    socket['lobbyCode'] = lobbyCode
 }

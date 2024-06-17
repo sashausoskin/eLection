@@ -44,7 +44,7 @@ const Viewer = () => {
     if (loading) return <a>Loading...</a>
 
     return <>
-        <a>Enter the lobby code</a>
+        <a>Go to {window.location.host}, select "Participate" and enter the lobby code</a>
         <h1>{lobbyCode}</h1>
         <a>on your device</a>
         </>

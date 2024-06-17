@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import { LobbyInfo, LobbyStatusInfo } from '../types'
+import { ElectionInfo, LobbyInfo, LobbyStatusInfo } from '../types/types'
 import shuffleArray from '../util/shuffle'
 
 let lobbyInfo : Record<string, LobbyInfo>  = {}
@@ -30,7 +30,7 @@ export const createNewLobby = (): {lobbyCode: string, hostID: string} => {
     const userCodes = generateCodes()
 
 
-    lobbyInfo[lobbyCode] = {hostID: hostID, status: 'STANDBY', availableUserCodes: userCodes, queuedUsers: {}, participants: {}}
+    lobbyInfo[lobbyCode] = {hostID: hostID, status: 'STANDBY', availableUserCodes: userCodes, queuedUsers: {}, participants: {}, currentVote: null}
 
     return {lobbyCode, hostID}
 }
@@ -58,7 +58,7 @@ export const getParticipants = (lobbyCode : string) : string[] => {
     return Object.keys(lobbyInfo[lobbyCode]['participants'])
 } 
 
-export const assignSocketIdToUser = (userCode : string, lobbyCode : string, socketID : string) => {
+export const assignSocketIdToQueueingUser = (userCode : string, lobbyCode : string, socketID : string) => {
     if (lobbyInfo[lobbyCode]['queuedUsers'][userCode] !== null) {
         throw new Error('Another user has already connected with the given user code')
     }
@@ -96,18 +96,12 @@ export const getUserSocketID = (lobbyCode : string, userCode : string) => {
     return lobbyInfo[lobbyCode]['queuedUsers'][userCode]
 }
 
-export const isUserInLobby = (lobbyCode : string, userID : string) => {
+export const isParticipant = (lobbyCode : string, userID : string) => {
     if (!(lobbyCode in lobbyInfo)) {
         return false
     }
 
     return userID in lobbyInfo[lobbyCode]['participants']
-}
-
-export const isHostOfLobby = (lobbyCode : string, hostID) => {
-    if (!(lobbyCode in lobbyInfo)) return false
-
-    return lobbyInfo[lobbyCode]['hostID'] === hostID
 }
 
 export const getNumberOfLobbies = () => {
@@ -123,7 +117,24 @@ export const getLobby = (lobbyCode : string) => {
 }
 
 export const getLobbyStatus = (lobbyCode : string) : LobbyStatusInfo => {
-    const { hostID, queuedUsers, availableUserCodes, participants, ...info} = lobbyInfo[lobbyCode]
+    const { status, currentVote} = lobbyInfo[lobbyCode]
 
-    return info
+    return { status, currentVote}
 } 
+
+export const createElection = (lobbyCode : string, electionInfo : ElectionInfo) => {
+    lobbyInfo[lobbyCode].status = "VOTING"
+    lobbyInfo[lobbyCode].currentVote = electionInfo
+}
+
+export const isParticipantConnected = (lobbyCode : string, participantID : string) => {
+    return (lobbyInfo[lobbyCode]["participants"][participantID] !== null)
+}
+
+export const assignSocketIDToParticipant = (lobbyCode : string, participantID : string, socketID) => {
+    lobbyInfo[lobbyCode]["participants"][participantID] = socketID
+}
+
+export const removeParticipantSocket = (lobbyCode : string, participantID : string) => {
+    lobbyInfo[lobbyCode]["participants"][participantID] = null
+}

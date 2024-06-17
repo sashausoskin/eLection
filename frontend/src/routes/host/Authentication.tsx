@@ -53,6 +53,7 @@ export const Authentication = ({
 		<>
 			<a>Lobby code:</a>
 			<a data-testid="lobbycode">{lobbyCode}</a>
+			<p>Let someone in to the lobby by entering their user code below</p>
 			<Formik
 				initialValues={{ userCode: '' }}
 				validationSchema={userCodeSchema}
@@ -64,7 +65,7 @@ export const Authentication = ({
 			>
 				{({ errors, touched, isValid }) => (
 					<Form>
-						<Field name="userCode" data-testid="usercode-field" />
+						<Field name="userCode" placeholder="User code" data-testid="usercode-field" />
 						{statusMessage && (
 							<a
 								data-testid={`status-message-${statusMessage.status}`}

@@ -8,7 +8,8 @@
     "dev": "ts-node-dev src/index.ts",
     "build:ui": "cd ../frontend && npm run build && shx cp -r ./dist ../backend && shx rm -rf dist",
     "start:test": "cross-env NODE_ENV=test ts-node-dev src/index.ts",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "build:validators": "typescript-json-schema ./tsconfig.json ElectionInfo -o ./src/types/ElectionInfo_schema.json"
   },
   "author": "Sasha Usoskin",
   "license": "ISC",
@@ -17,6 +18,7 @@
     "@types/express": "^4.17.21",
     "@types/express-ws": "^3.0.4",
     "@types/jest": "^29.5.12",
+    "ajv": "^8.16.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "eslint": "^8.57.0",
@@ -24,6 +26,7 @@
     "express-ws": "^5.0.2",
     "redis": "^4.6.14",
     "socket.io": "^4.7.5",
+    "typescript-json-schema": "^0.64.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {

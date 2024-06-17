@@ -1,6 +1,6 @@
 import express from 'express'
-import { UserNotFound, createAuthenticatedUser, createNewLobby, getNewUserCode, getUserSocketID, isHostOfLobby, isLobbyHost,
-        isUserInLobby,
+import { UserNotFound, createAuthenticatedUser, createNewLobby, getNewUserCode, getUserSocketID, isLobbyHost,
+        isParticipant,
         isValidLobbyCode, removeUserFromQueue } from '../services/lobbyservice'
 import {io} from '../util/server'
 
@@ -89,7 +89,7 @@ router.post('/validateUserInfo', async (req, res) => {
         return res.status(400).json({error: 'The request is missing field userID'})
     }
 
-    const userIsValid = isUserInLobby(lobbyCode, userID)
+    const userIsValid = isParticipant(lobbyCode, userID)
 
     if (!userIsValid) {
         return res.status(403).json({error: 'The given information is not valid'})
@@ -106,7 +106,9 @@ router.post('/validateHostInfo', async (req, res) => {
 
     if (!hostID) return res.status(400).json({error: 'Request is missing field hostID'})
 
-    if (!isHostOfLobby(lobbyCode, hostID)) return res.status(403).send()
+    if (!isValidLobbyCode(lobbyCode)) return res.status(404).json({error: 'Could not find a lobby with the given code'})
+
+    if (!isLobbyHost(lobbyCode, hostID)) return res.status(403).send()
     
     return res.status(200).send()
 })

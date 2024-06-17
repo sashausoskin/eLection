@@ -3,7 +3,6 @@ import { ExtendedError } from "socket.io/dist/namespace";
 import { getLobbyStatus, isLobbyHost, isValidLobbyCode } from "../services/lobbyservice";
 
 export const handleViewerSocketConnection = (viewerSocket : Socket) => {
-    console.log(viewerSocket.id, 'is connecting...')
     viewerSocket.emit('statusChange', getLobbyStatus(viewerSocket['lobbyCode']))
 
     viewerSocket.on('disconnect', () => {

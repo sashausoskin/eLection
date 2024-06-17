@@ -26,7 +26,7 @@ describe('When selecting voting type', () => {
 describe('When creating a FTPT election', () => {
     let mockFn = vi.fn()
     let titleField = null as unknown as HTMLElement
-    let candidateField = null as unknown as HTMLElement
+    let candidateFields = null as unknown as HTMLElement[]
     let addCandidateButton = null as unknown as HTMLElement
     let submitButton = null as unknown as HTMLElement
 
@@ -36,7 +36,7 @@ describe('When creating a FTPT election', () => {
         
         titleField = screen.getByTestId("title-field")
         
-        candidateField = screen.getByTestId("candidate-field")
+        candidateFields = screen.getAllByTestId("candidate-field")
 
         submitButton = screen.getByTestId("create-election-submit")
 
@@ -47,7 +47,8 @@ describe('When creating a FTPT election', () => {
     test('cannot submit without entering title', async () => {
         expect(() => screen.getByTestId("title-error")).toThrow()
 
-        await userEvent.type(candidateField, "Test")
+        await userEvent.type(candidateFields[0], "Test")
+        await userEvent.type(candidateFields[1], "Test")
         await userEvent.click(submitButton)
 
         expect(mockFn.mock.calls.length).toBe(0)
@@ -55,10 +56,11 @@ describe('When creating a FTPT election', () => {
         expect(titleError).toBeDefined()
     })
 
-    test('cannot submit without entering a candidate', async () => {
+    test('cannot submit without entering two candidates', async () => {
         expect(() => screen.getByTestId("candidate-error")).toThrow()
 
         await userEvent.type(titleField, "Test")
+        await userEvent.type(candidateFields[0], "Test")
         await userEvent.click(submitButton)
 
         expect(mockFn.mock.calls.length).toBe(0)
@@ -67,20 +69,19 @@ describe('When creating a FTPT election', () => {
     })
 
     test('can add and remove candidates', async () => {
-        expect((await screen.findAllByTestId("candidate-field")).length).toBe(1)
+        expect((await screen.findAllByTestId("candidate-field")).length).toBe(2)
 
         await userEvent.click(addCandidateButton)
-        expect(screen.getAllByTestId("candidate-field").length).toBe(2)
+        expect(screen.getAllByTestId("candidate-field").length).toBe(3)
         const removeCandidateButton = screen.getAllByTestId("remove-candidate-button")
         await userEvent.click(removeCandidateButton[0])
-        expect(screen.getAllByTestId("candidate-field").length).toBe(1)
+        expect(screen.getAllByTestId("candidate-field").length).toBe(2)
 
     })
 
     test('can submit form', async () => {
         expect(mockFn.mock.calls.length).toBe(0)
         await userEvent.type(titleField, "title")
-        await userEvent.click(addCandidateButton)
 
         expect(screen.getAllByTestId("candidate-field").length).toBe(2)
 

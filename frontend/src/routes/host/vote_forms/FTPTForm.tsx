@@ -1,8 +1,27 @@
+import { AxiosError } from "axios"
 import { ErrorMessage, Field, FieldArray, Form, Formik, FormikHelpers } from "formik"
 import { Mock } from "vitest"
 import * as Yup from 'yup'
+import { createElection } from "../../../services/lobbyHostService"
+import { useEffect, useState } from "react"
+import { StatusMessage } from "../../../types"
 
 const FTPTForm = ({onSubmitForm} : {onSubmitForm?:((values: {title: string, candidates: string[]}) => never )| Mock<any, any>}) => {
+    const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
+
+    useEffect(() => {
+        if (!statusMessage) return
+
+        console.log("Setting timeout")
+
+        const timeout = setTimeout(() => {
+            setStatusMessage(null)
+        }, 5000)
+
+        // This clears the timeout when the component is unmounted
+        return () => clearTimeout(timeout)
+
+    }, [statusMessage])
 
     const FTPTVoteSchema = Yup.object().shape({
         title: Yup.string()
@@ -15,17 +34,25 @@ const FTPTForm = ({onSubmitForm} : {onSubmitForm?:((values: {title: string, cand
     })
 
     const defaultOnSubmit = 
-        (values: {title: string; candidates: string[];}, 
+        async (values: {title: string; candidates: string[];}, 
         formikHelpers: FormikHelpers<{title: string;candidates: string[];}>) => {
-            console.log(values)
-            formikHelpers.resetForm()
+            try {
+                await createElection({type: "FPTP", ...values})
+                formikHelpers.resetForm()
+                setStatusMessage({status: "success", message: "Succesfully created the election"})
+            }
+            catch(e) {
+                if (e instanceof AxiosError) {
+                    window.alert(e.message)
+                }
+            }
     }
 
     return (
         <Formik
             initialValues={{
                 title: '',
-                candidates: [''],
+                candidates: ['', ''],
             }}
             onSubmit={(values, helpers) => onSubmitForm !== undefined ? onSubmitForm(values) : defaultOnSubmit(values, helpers)}
             validationSchema={FTPTVoteSchema}
@@ -65,7 +92,7 @@ const FTPTForm = ({onSubmitForm} : {onSubmitForm?:((values: {title: string, cand
                                         data-testid="candidate-error"
                                         className="field-error"
                                     />
-                                    <button disabled={values.candidates.length <= 1}onClick={() => remove(index)} data-testid="remove-candidate-button">X</button>
+                                    <button disabled={values.candidates.length <= 2}onClick={() => remove(index)} data-testid="remove-candidate-button">X</button>
                                     </div>
                             ))
                             }
@@ -74,6 +101,7 @@ const FTPTForm = ({onSubmitForm} : {onSubmitForm?:((values: {title: string, cand
                         )}
                     </FieldArray>
                     <button type="submit" data-testid="create-election-submit">Create</button>
+                    {statusMessage && <a style={{color: statusMessage.status === "success" ? "green" : "red"}}>{statusMessage.message}</a>}
                 </Form>
             )}
         </Formik>

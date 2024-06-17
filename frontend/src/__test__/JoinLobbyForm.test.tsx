@@ -5,7 +5,7 @@ import { Mock, vi } from 'vitest'
 import { JoinLobbyForm } from '../routes/participant/JoinLobbyForm'
 
 describe('In join lobby view', () => {
-	let submitCallback: Mock<string[]> = vi.fn<string[]>()
+	const submitCallback: Mock<string[]> = vi.fn<string[]>()
 	let lobbyCodeField: HTMLElement = null as unknown as HTMLElement
 	let lobbyCodeSubmit: HTMLElement = null as unknown as HTMLElement
 
