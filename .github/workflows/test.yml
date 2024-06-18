@@ -15,7 +15,7 @@ jobs:
           run: npm install
         - name: Build schemas
           working-directory: ./backend
-          run: npm run build:schemas
+          run: npm run build:schema
         - name: Run backend unit tests
           working-directory: ./backend
           run: npm test
