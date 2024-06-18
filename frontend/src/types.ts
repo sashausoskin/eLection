@@ -14,8 +14,37 @@ export interface JoinLobbyResponse {
 
 export type ParticipantViewTab = 'joinLobby' | 'inQueue' | 'inLobby';
 
-export interface LobbyStatusInfo {
-	status: "STANDBY" | "VOTING"
+export type LobbyStatusInfo = {
+	status: "STANDBY",
+    currentVote: null
+} | {
+    status: "VOTING",
+    currentVote: ElectionInfo
 }
 
+
+
 export type VoteType = "FPTP" | "ranked"
+
+type ElectionInfoBase = {
+    /**
+     * The name of the election
+     * 
+     * @minimum 0
+     * @TJS-type string
+     */
+    title: string,
+    /**
+     * The list of candidates
+     * 
+     * @items.type string
+     * @items.minimum 2
+     */
+    candidates: string[]
+}
+
+interface FPRPElectionInfo extends ElectionInfoBase {
+    type: "FPTP"
+}
+
+export type ElectionInfo = FPRPElectionInfo

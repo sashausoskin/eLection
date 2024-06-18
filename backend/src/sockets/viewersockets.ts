@@ -1,9 +1,16 @@
 import { Socket } from "socket.io";
 import { ExtendedError } from "socket.io/dist/namespace";
-import { getLobbyStatus, isLobbyHost, isValidLobbyCode } from "../services/lobbyservice";
+import * as lobbyService from "../services/lobbyservice";
+import { io } from "../util/server";
 
 export const handleViewerSocketConnection = (viewerSocket : Socket) => {
-    viewerSocket.emit('statusChange', getLobbyStatus(viewerSocket['lobbyCode']))
+    const existingViewerSocket = lobbyService.getViewerSocket(viewerSocket['lobbyCode'])
+
+    if (existingViewerSocket) io.of('/queue').in(existingViewerSocket).disconnectSockets(true)
+
+    lobbyService.assignViewerSocket(viewerSocket['lobbyCode'], viewerSocket.id)
+
+    viewerSocket.emit('status-change', lobbyService.getLobbyStatus(viewerSocket['lobbyCode']))
 
     viewerSocket.on('disconnect', () => {
         console.log(viewerSocket.id, "disconnected...")
@@ -20,14 +27,13 @@ export const getAuthenticationMiddleware = (socket : Socket, next: (err?: Extend
         return
     }
 
-    if (!isValidLobbyCode(lobbyCode)) {
-        console.log('Emitting error...')
+    if (!lobbyService.isValidLobbyCode(lobbyCode)) {
         const err = new Error('Lobby does not exist')
         next(err)
         return
     }
 
-    if (!isLobbyHost(lobbyCode, hostID)) {
+    if (!lobbyService.isLobbyHost(lobbyCode, hostID)) {
         const err = new Error('You are not the host of this lobby.')
         next(err)
         return

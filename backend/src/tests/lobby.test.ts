@@ -1,53 +1,23 @@
-import request from 'supertest'
 import * as lobbyService from '../services/lobbyservice'
+import { agent as request } from 'supertest'
 import { app, server } from '../util/server'
-import ioc, { Socket as ClientSocket } from 'socket.io-client'
-import { io } from '../util/server'
+import { LobbyWithUserCreationResponse } from '../types/testTypes'
+import { io as ioc, Socket as ClientSocket } from 'socket.io-client'
+import { ElectionInfo, LobbyStatusInfo } from '../types/types'
 
-beforeEach(() => {
-    lobbyService.resetLobbies()
-})
-
-describe('In a clean state', () => {
-    test('can create a new lobby', async () => {
-        expect(lobbyService.getNumberOfLobbies()).toBe(0)
-        await request(app).post('/lobby/createLobby')
-        expect(lobbyService.getNumberOfLobbies()).toBe(1)
-    })
-})
-
-describe('With one lobby created', () => {
-    let lobbyCode = null
+describe("With a lobby created and one authenticated user in lobby", () => {
+    let participantID : string = null as unknown as string
+    let hostID : string = null as unknown as string
+    let lobbyCode : string = null as unknown as string 
+    let lobbySocket : ClientSocket 
 
     beforeEach(async () => {
-        const lobbyCreationRequest = await request(app).post('/lobby/createLobby')
-        lobbyCode = lobbyCreationRequest.body.lobbyCode
+        lobbyService.resetLobbies()
+        const createLobbyResponse = (await request(app).post('/testing/createLobbyWithUser')).body as LobbyWithUserCreationResponse
+        participantID = createLobbyResponse.participantID
+        hostID = createLobbyResponse.hostID
+        lobbyCode = createLobbyResponse.lobbyCode
     })
-
-    test('can join a lobby queue', async () => {
-        expect(lobbyService.getUsersInQueue(lobbyCode).length).toBe(0)
-        const userCodeRequest = await request(app).post('/lobby/joinLobby').send({lobbyCode})
-        expect(userCodeRequest.statusCode).toBe(200)
-        const userCode = userCodeRequest.body.userCode
-        expect(lobbyService.isUserInQueue(userCode, lobbyCode)).toBe(true)
-    })
-
-    test('error if tries to join a nonexistent lobby', async () => {
-        // This is to avoid the 1/10000 chance that the lobby code is the same
-        const testLobbyCode = '1234' === lobbyCode ? '1234' : '4321'
-
-        expect(lobbyService.getUsersInQueue(lobbyCode).length).toBe(0)
-        const lobbyRequest = await request(app).post('/lobby/joinLobby').send({lobbyCode: testLobbyCode})
-        expect(lobbyRequest.statusCode).toBe(404)
-        expect(lobbyService.getUsersInQueue(lobbyCode).length).toBe(0)
-    })
-})
-
-describe('With one lobby created and one user in queue', () => {
-    let lobbyCode : string | null = null
-    let hostID : string | null = null
-    let userCode : string | null = null
-    let lobbySocket : ClientSocket = null
 
     beforeAll((done) => {
         server.listen(3000, () => {
@@ -55,131 +25,120 @@ describe('With one lobby created and one user in queue', () => {
         })
     })
 
+    afterEach(() => {
+        if (lobbySocket) lobbySocket.disconnect()
+            
+    })
+
     afterAll(() => {
-        io.close()
-        lobbySocket.close()
         server.close()
     })
 
-    beforeEach(async () => {
-        const lobbyCreationRequest = await request(app).post('/lobby/createLobby')
-        lobbyCode = lobbyCreationRequest.body.lobbyCode
-        hostID = lobbyCreationRequest.body.hostID
-        const userCodeRequest = await request(app).post('/lobby/joinLobby').send({lobbyCode})
-        userCode = userCodeRequest.body.userCode
-    })
 
-    const validateUser = async (lobbyCode? : string, userID? : string) => {
-        return await request(app).post('/lobby/validateUserInfo').send({lobbyCode, userID})
-    }
 
-    const validateHost = async (lobbyCode? : string, hostID? : string) => {
-        return await request(app).post('/lobby/validateHostInfo').send({lobbyCode, hostID})
-    }
-    
-    test('host can authenticate a user in queue', async () => {
-        expect(lobbyService.getParticipants(lobbyCode).length).toBe(0)
+    describe("When user is connecting to the lobby socket", () => {
+        const testSocketConnection = (lobbyCode : string, participantID : string, done? : jest.DoneCallback, expectToConnect? : boolean) => {
+            lobbySocket = ioc('http://localhost:3000/lobby', {auth: {lobbyCode, participantID}})
+            lobbySocket.on('connect_error', () => {
+                if (expectToConnect) expect(1).toBe(2)
+                else done && done()
+            })
+            lobbySocket.on('connect', () => {
+                if (expectToConnect) done && done()
+                else expect(1).toBe(2)
+            })
+        }
 
-        await request(app).post('/lobby/authenticateUser')
-            .set('Authorization', hostID)
-            .send({lobbyCode, userCode})
-    })
-
-    test('host cannot authenticate with invalid token', async () => {
-        expect(lobbyService.getParticipants(lobbyCode).length).toBe(0)
-
-        const authRequest = await request(app).post('/lobby/authenticateUser')
-            .set('Authorization', '11111111-1111-1111-1111-111111111111')
-            .send({lobbyCode, userCode})
-        
-        expect(authRequest.statusCode).toBe(401)
-        expect(lobbyService.getParticipants(lobbyCode).length).toBe(0)
-    })
-
-    test('host cannot authenticate other lobbies\' users', async () => {
-        const lobby2CreationRequest = await request(app).post('/lobby/createLobby')
-        const host2ID = lobby2CreationRequest.body.hostID
-        
-        expect(lobbyService.getParticipants(lobbyCode).length).toBe(0)
-        const authRequest = await request(app).post('/lobby/authenticateUser')
-            .set('Authorization', host2ID)
-            .send({lobbyCode, userCode})
-        
-        expect(authRequest.statusCode).toBe(401)
-        expect(lobbyService.getParticipants(lobbyCode).length).toBe(0)
-    })
-
-    test('host cannot authenticate nonexistent user', async () => {
-        const invalidUserCode = '1234' === userCode ? '1234' : '4321'
-
-        const authRequest = await request(app).post('/lobby/authenticateUser')
-            .set('Authorization', hostID)
-            .send({lobbyCode, userCode: invalidUserCode})
-        
-        expect(authRequest.statusCode).toBe(404)
-        expect(lobbyService.getParticipants(lobbyCode).length).toBe(0)
-    })
-
-    test('host validation works', async () => {
-        const hostValidationRequest = await validateHost(lobbyCode, hostID)
-
-        expect(hostValidationRequest.statusCode).toBe(200)
-    })
-
-    test('host validation throws error with invalid info', async () => {
-        let hostValidationRequest = await validateHost(lobbyCode === '1234' ? '4321' : '1234', hostID)
-        expect(hostValidationRequest.statusCode).toBe(403)
-
-        hostValidationRequest = await validateHost(lobbyCode, '11111111-1111-1111-1111-111111111111')
-        expect(hostValidationRequest.statusCode).toBe(403)
-
-        hostValidationRequest = await validateHost(lobbyCode)
-        expect(hostValidationRequest.statusCode).toBe(400)
-
-        hostValidationRequest = await validateHost(undefined, hostID)
-        expect(hostValidationRequest.statusCode).toBe(400)
-    })
-
-    test('authenticated user gets a socket message when authenticated', (done) => {
-        const socketCallback = jest.fn()
-        lobbySocket = ioc('http://localhost:3000/queue', {query: {lobbyCode, userCode}})
-        lobbySocket.on('error', (error) => {
-            console.error(error)
+        test("Cannot connect without a proper auth token", (done) => {
+            testSocketConnection(lobbyCode, "123412421412313", done)
         })
-        lobbySocket.on('authorize', (userID : string) => {
-            socketCallback(userID)
-            expect(socketCallback.mock.calls).toHaveLength(1)
-            expect(socketCallback.mock.lastCall[0].userID).toBeDefined()
-            done()
+
+        test("Cannot connect without a proper lobby code", (done) => {
+            testSocketConnection(lobbyCode === "1234" ? "4321" : "1234", participantID, done)
         })
-        lobbySocket.on('connect', async () => {
-            expect(socketCallback.mock.calls).toHaveLength(0)
-            await request(app).post('/lobby/authenticateUser')
-                .set('Authorization', hostID)
-                .send({lobbyCode, userCode})
+
+        test("Can connect with proper values", (done) => {
+            testSocketConnection(lobbyCode, participantID, done, true)
+        })
+
+        test("Immediately gets the status-change emit", (done) => {
+            lobbySocket = ioc('http://localhost:3000/lobby', {auth: {lobbyCode, participantID}})
+            lobbySocket.on('connect_error', () => {
+                expect(1).toBe(2)
+            })
+            lobbySocket.on('status-change', () => {
+                done()
+            })
+        })
+
+        test("Cannot have two connections at the same time", (done) => {
+            lobbySocket = ioc('http://localhost:3000/lobby', {auth: {lobbyCode, participantID}})
+            lobbySocket.on('connect_error', (err) => {
+                throw new Error(err.message)
+            })
+            lobbySocket.on('connect', () => {
+                const lobbySocket2 = ioc('http://localhost:3000/lobby', {auth: {lobbyCode, participantID}})
+                lobbySocket2.on('connect', () => {
+                    throw new Error("Second socket connected")
+                })
+                lobbySocket2.on('connect_error', () => {
+                    lobbySocket.disconnect()
+                    lobbySocket2.disconnect()
+                    done()
+                })
+            })
         })
     })
-    test('user validation works', async () => {
-        const userID = lobbyService.createAuthenticatedUser(lobbyCode)
 
-        const validationRequest = await validateUser(lobbyCode, userID)
+    describe("When creating an election", () => {
+        const exampleElectionInfo : ElectionInfo = {type: "FPTP", title: "Which language should we use?", candidates: ["Python", "JavaScript"]}
 
-        expect(validationRequest.statusCode).toBe(200)
-    })
+        const requestElectionCreation = (lobbyCode : string, authToken : string, electionInfo) => {
+            return request(app).post('/host/createElection')
+            .set('Authorization', authToken)
+            .send({lobbyCode, electionInfo})
+        }
 
-    test('user validation returns error with invalid parameters', async () => {
-        const userID = lobbyService.createAuthenticatedUser(lobbyCode)
+        test("Cannot create an election without a valid lobby code", async () => {
+            const createElectionResponse = await requestElectionCreation(lobbyCode === "1234" ? "4321" : "1234", hostID, exampleElectionInfo)
+            expect(createElectionResponse.status).toBe(404)
+        })
 
-        let validationRequest = await validateUser(lobbyCode === '1234' ? '4321' : '1234', userID)
-        expect(validationRequest.statusCode).toBe(403)
+        test("Cannot create an election without a valid token", async () => {
+            const createElectionResponse = await requestElectionCreation(lobbyCode, "11111111111", exampleElectionInfo)
+            expect(createElectionResponse.status).toBe(403)
+        })
 
-        validationRequest = await validateUser(lobbyCode, '11111111-1111-1111-1111-111111111111')
-        expect(validationRequest.statusCode).toBe(403)
+        test("Cannot create an election with invalid election info", async () => {
+            // No title
+            let createElectionResponse = await requestElectionCreation(lobbyCode, hostID, {type: "FPTP", candidates: ["Candidate 1", "Candidate 2"]} as ElectionInfo)
+            expect(createElectionResponse.status).toBe(400)
 
-        validationRequest = await validateUser(lobbyCode)
-        expect(validationRequest.statusCode).toBe(400)
+            //Invalid type
+            createElectionResponse = await requestElectionCreation(lobbyCode, hostID, {type: "Authoritarian", title: "Presidential election", candidates: ["Candidate 1", "Candidate 2"]})
+            expect(createElectionResponse.status).toBe(400)
 
-        validationRequest = await validateUser(undefined, userID)
-        expect(validationRequest.statusCode).toBe(400)
+            //Only two candidates
+            createElectionResponse = await requestElectionCreation(lobbyCode, hostID, {type: "FPTP", title: "Presidential election", candidates: ["Candidate 1"]} as ElectionInfo)
+            expect(createElectionResponse.status).toBe(400)
+        })
+
+        test("Can create an election with valid info", async () => {
+            const createElectionResponse = await requestElectionCreation(lobbyCode, hostID, exampleElectionInfo)
+            expect(createElectionResponse.status).toBe(200)
+        })
+
+        test("Participant sockets receive a message when an election is created", (done) => {
+            lobbySocket = ioc('http://localhost:3000/lobby', {auth: {lobbyCode, participantID}})
+            lobbySocket.on('status-change', async (newStatus : LobbyStatusInfo) => {
+                if (newStatus.status === "STANDBY") {
+                    await requestElectionCreation(lobbyCode, hostID, exampleElectionInfo)
+                }
+                if (newStatus.status === "VOTING") {
+                    expect(newStatus.currentVote).toEqual(exampleElectionInfo)
+                    done()
+                }
+            })
+        })
     })
 })

@@ -1,5 +1,6 @@
 import express from 'express'
 import * as lobbyService from '../services/lobbyservice'
+import { LobbyWithUserCreationResponse } from '../types/testTypes'
 
 const router = express.Router()
 
@@ -16,11 +17,11 @@ router.get('/getParticipants', (req, res) => {
     return res.send(lobbyService.getParticipants(req.body.lobbyCode))
 })
 
-router.post('/createLobbyWithUser', (req, res) => {
+router.post<LobbyWithUserCreationResponse>('/createLobbyWithUser', (req, res) => {
     const {lobbyCode, hostID} = lobbyService.createNewLobby()
-    const userID = lobbyService.createAuthenticatedUser(lobbyCode)
+    const participantID = lobbyService.createAuthenticatedUser(lobbyCode)
 
-    res.json({lobbyCode, hostID, userID})
+    res.json({lobbyCode, hostID, participantID})
 })
 
 export default router

@@ -128,3 +128,6 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Schema file for election information. Can be generated using 'npm run build:schema"
+src/types/ElectionInfo_schema.json

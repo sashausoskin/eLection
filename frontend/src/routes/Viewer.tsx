@@ -26,14 +26,15 @@ const Viewer = () => {
             viewerSocket.disconnect()
         })
 
-        viewerSocket.on('statusChange', (lobbyStatus : LobbyStatusInfo) => {
-            console.log("Succesfully connected to the server!")
+        viewerSocket.on('status-change', (lobbyStatus : LobbyStatusInfo) => {
             if (lobbyStatus.status === "STANDBY") {
                 console.log("Lobby is on standby")
             }
+            if (lobbyStatus.status === "VOTING") {
+                setStatusText(lobbyStatus.currentVote.toString())
+            }
         })
 
-        console.log('Connecting...')
         viewerSocket.connect()
     }, [setLoading, setStatusText, hostID, lobbyCode])
 

@@ -1,6 +1,6 @@
 import { Socket, io } from 'socket.io-client'
 
-export const createLobbySocket = (userCode: string, lobbyCode: string): Socket =>
+export const createQueueSocket = (userCode: string, lobbyCode: string): Socket =>
 	io(`${import.meta.env.VITE_BACKEND_URL}/queue`, {
 		query: { userCode, lobbyCode},
 		autoConnect: false,
@@ -11,3 +11,10 @@ export const createViewerSocket = (lobbyCode : string, hostID : string) : Socket
 		auth: {lobbyCode, hostID },
 		autoConnect: false,
 	})
+
+export const createLobbySocket = (lobbyCode : string, participantID : string) : Socket => 
+	io(`${import.meta.env.VITE_BACKEND_URL}/lobby`, {
+		auth: {lobbyCode, participantID },
+		autoConnect: false,
+	})
+

@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react'
 import { Socket } from 'socket.io-client'
-import { createLobbySocket } from '../../sockets'
+import { createQueueSocket } from '../../sockets'
 import { SetParticipantViewContext } from '../../Contexts'
 import { getLobbyCode, getUserCode, setAuthToken } from '../../services/participantService'
 
@@ -25,7 +25,7 @@ export const UserCode = ({ onAuthenticated }: { onAuthenticated?: (userID: strin
 		}
 
 		setIsConnecting(true)
-		const lobbySocket: Socket = createLobbySocket(userCode, lobbyCode)
+		const lobbySocket: Socket = createQueueSocket(userCode, lobbyCode)
 		lobbySocket.on('connect', () => {
 			setIsConnecting(false)
 		})

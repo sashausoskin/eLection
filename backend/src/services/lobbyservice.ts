@@ -30,7 +30,7 @@ export const createNewLobby = (): {lobbyCode: string, hostID: string} => {
     const userCodes = generateCodes()
 
 
-    lobbyInfo[lobbyCode] = {hostID: hostID, status: 'STANDBY', availableUserCodes: userCodes, queuedUsers: {}, participants: {}, currentVote: null}
+    lobbyInfo[lobbyCode] = {hostID: hostID, status: 'STANDBY', availableUserCodes: userCodes, queuedUsers: {}, participants: {}, currentVote: null, viewerSocket: null}
 
     return {lobbyCode, hostID}
 }
@@ -64,6 +64,14 @@ export const assignSocketIdToQueueingUser = (userCode : string, lobbyCode : stri
     }
 
     lobbyInfo[lobbyCode]['queuedUsers'][userCode] = socketID
+}
+
+export const getViewerSocket = (lobbyCode : string) => {
+    return lobbyInfo[lobbyCode].viewerSocket
+}
+
+export const assignViewerSocket = (lobbyCode : string, socketID : string) => {
+    lobbyInfo[lobbyCode]['viewerSocket'] = socketID
 }
 
 export const deleteUserFromQueue = (userCode : string, lobbyCode : string) => {
@@ -125,16 +133,26 @@ export const getLobbyStatus = (lobbyCode : string) : LobbyStatusInfo => {
 export const createElection = (lobbyCode : string, electionInfo : ElectionInfo) => {
     lobbyInfo[lobbyCode].status = "VOTING"
     lobbyInfo[lobbyCode].currentVote = electionInfo
+
+    
 }
 
 export const isParticipantConnected = (lobbyCode : string, participantID : string) => {
     return (lobbyInfo[lobbyCode]["participants"][participantID] !== null)
 }
 
-export const assignSocketIDToParticipant = (lobbyCode : string, participantID : string, socketID) => {
+export const assignSocketIDToParticipant = (lobbyCode : string, participantID : string, socketID : string) => {
     lobbyInfo[lobbyCode]["participants"][participantID] = socketID
 }
 
 export const removeParticipantSocket = (lobbyCode : string, participantID : string) => {
     lobbyInfo[lobbyCode]["participants"][participantID] = null
+}
+
+export const getParticipantSocket = (lobbyCode : string, participantID : string) => {
+    return lobbyInfo[lobbyCode].participants[participantID]
+}
+
+export const getAllParticipantSockets = (lobbyCode : string) : string[] => {
+    return Object.values(lobbyInfo[lobbyCode]["participants"])
 }

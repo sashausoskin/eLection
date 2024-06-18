@@ -1,17 +1,19 @@
 import { Socket } from "socket.io";
 import { ExtendedError } from "socket.io/dist/namespace";
 import * as lobbyService from '../services/lobbyservice'
+import { io } from "../util/server";
 
 export const handleParticipantSocketConnection = (participantSocket : Socket) => {
-    participantSocket.emit('statusChange', lobbyService.getLobbyStatus(participantSocket['lobbyCode']))
+    participantSocket.emit('status-change', lobbyService.getLobbyStatus(participantSocket['lobbyCode']))
 
     participantSocket.on('disconnect', () => {
-        lobbyService.removeParticipantSocket(participantSocket['lobbyCode'], participantSocket.id)
+        if (!lobbyService.isValidLobbyCode(participantSocket['lobbyCode'])) return
+        lobbyService.removeParticipantSocket(participantSocket['lobbyCode'], participantSocket['authToken'])
     })
 }
 
-export const isParticipantMiddleware = (socket : Socket, next: (err?: ExtendedError) => void) => {
-    const authToken = socket.handshake.auth.userID
+export const isParticipantMiddleware = async (socket : Socket, next: (err?: ExtendedError) => void) => {
+    const authToken = socket.handshake.auth.participantID
     const lobbyCode = socket.handshake.auth.lobbyCode
 
     if (!authToken) {
@@ -31,13 +33,19 @@ export const isParticipantMiddleware = (socket : Socket, next: (err?: ExtendedEr
         return
     }
 
-    if (lobbyService.isParticipantConnected(lobbyCode, authToken)) {
-        const err = new Error("Another user has already connected to this lobby with this token!")
+    const existingParticipantSocket = lobbyService.getParticipantSocket(lobbyCode, authToken)
+
+    if (existingParticipantSocket !== null) {
+        const err = new Error("You are already connected to this lobby, probably in another tab. Please open that tab!")
         next(err)
         return
     }
 
 
-
     socket['lobbyCode'] = lobbyCode
+    socket['authToken'] = authToken
+
+    lobbyService.assignSocketIDToParticipant(lobbyCode, authToken, socket.id)
+
+    next()
 }

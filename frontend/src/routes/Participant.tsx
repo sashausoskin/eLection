@@ -3,6 +3,7 @@ import { JoinLobbyForm } from './participant/JoinLobbyForm'
 import { UserCode } from './participant/UserCode'
 import { SetParticipantViewContext } from '../Contexts'
 import * as participantService from '../services/participantService'
+import LobbyView from './participant/Lobby'
 
 export const ParticipantView: () => JSX.Element = () => {
 	const { viewTab, setViewTab } = useContext(SetParticipantViewContext)
@@ -29,9 +30,10 @@ export const ParticipantView: () => JSX.Element = () => {
 		<>
 			{viewTab === 'joinLobby' && <JoinLobbyForm />}
 			{viewTab === 'inQueue' && <UserCode />}
-			{viewTab === 'inLobby' && (
-				<a data-testid="lobby-header">You are now authenticated. Welcome! :)</a>
-			)}
+			{viewTab === 'inLobby' && <>
+				<a data-testid="lobby-header" hidden></a>
+				<LobbyView />
+				</>}
 		</>
 	)
 }
