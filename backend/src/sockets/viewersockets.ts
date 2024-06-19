@@ -1,19 +1,13 @@
-import { Socket } from "socket.io";
-import { ExtendedError } from "socket.io/dist/namespace";
-import * as lobbyService from "../services/lobbyservice";
-import { io } from "../util/server";
+import { Socket } from 'socket.io'
+import { ExtendedError } from 'socket.io/dist/namespace'
+import * as lobbyService from '../services/lobbyservice'
+import { io } from '../util/server'
 
 export const handleViewerSocketConnection = (viewerSocket : Socket) => {
-    const existingViewerSocket = lobbyService.getViewerSocket(viewerSocket['lobbyCode'])
-
-    if (existingViewerSocket) io.of('/queue').in(existingViewerSocket).disconnectSockets(true)
-
-    lobbyService.assignViewerSocket(viewerSocket['lobbyCode'], viewerSocket.id)
-
     viewerSocket.emit('status-change', lobbyService.getLobbyStatus(viewerSocket['lobbyCode']))
 
     viewerSocket.on('disconnect', () => {
-        console.log(viewerSocket.id, "disconnected...")
+        console.log(viewerSocket.id, 'disconnected...')
     })
 }
 
@@ -22,7 +16,7 @@ export const getAuthenticationMiddleware = (socket : Socket, next: (err?: Extend
     const hostID = socket.handshake.auth.hostID
 
     if (!lobbyCode || !hostID) {
-        const err = new Error("Did not receive required authentication info")
+        const err = new Error('Did not receive required authentication info')
         next(err)
         return
     }
@@ -38,7 +32,14 @@ export const getAuthenticationMiddleware = (socket : Socket, next: (err?: Extend
         next(err)
         return
     }
+
     socket['lobbyCode'] = lobbyCode
+
+    const existingViewerSocket = lobbyService.getViewerSocket(lobbyCode)
+
+    if (existingViewerSocket) io.of('/viewer').in(existingViewerSocket).disconnectSockets(true)
+
+    lobbyService.assignViewerSocket(lobbyCode, socket.id)
 
     next()
 }

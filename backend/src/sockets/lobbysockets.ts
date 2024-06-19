@@ -1,7 +1,6 @@
-import { Socket } from "socket.io";
-import { ExtendedError } from "socket.io/dist/namespace";
+import { Socket } from 'socket.io'
+import { ExtendedError } from 'socket.io/dist/namespace'
 import * as lobbyService from '../services/lobbyservice'
-import { io } from "../util/server";
 
 export const handleParticipantSocketConnection = (participantSocket : Socket) => {
     participantSocket.emit('status-change', lobbyService.getLobbyStatus(participantSocket['lobbyCode']))
@@ -17,18 +16,18 @@ export const isParticipantMiddleware = async (socket : Socket, next: (err?: Exte
     const lobbyCode = socket.handshake.auth.lobbyCode
 
     if (!authToken) {
-        const err = new Error("Did not receive a token with the request")
+        const err = new Error('Did not receive a token with the request')
         next(err)
         return
     }
     if (!lobbyCode) {
-        const err = new Error("Did not receive a lobby code with the request")
+        const err = new Error('Did not receive a lobby code with the request')
         next(err)
         return
     }
 
     if (!lobbyService.isValidLobbyCode(lobbyCode) || !lobbyService.isParticipant(lobbyCode, authToken)) {
-        const err = new Error("You do not have access to this lobby!")
+        const err = new Error('You do not have access to this lobby!')
         next(err)
         return
     }
@@ -36,7 +35,7 @@ export const isParticipantMiddleware = async (socket : Socket, next: (err?: Exte
     const existingParticipantSocket = lobbyService.getParticipantSocket(lobbyCode, authToken)
 
     if (existingParticipantSocket !== null) {
-        const err = new Error("You are already connected to this lobby, probably in another tab. Please open that tab!")
+        const err = new Error('You are already connected to this lobby, probably in another tab. Please open that tab!')
         next(err)
         return
     }

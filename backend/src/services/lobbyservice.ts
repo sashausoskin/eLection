@@ -131,22 +131,22 @@ export const getLobbyStatus = (lobbyCode : string) : LobbyStatusInfo => {
 } 
 
 export const createElection = (lobbyCode : string, electionInfo : ElectionInfo) => {
-    lobbyInfo[lobbyCode].status = "VOTING"
+    lobbyInfo[lobbyCode].status = 'VOTING'
     lobbyInfo[lobbyCode].currentVote = electionInfo
 
     
 }
 
 export const isParticipantConnected = (lobbyCode : string, participantID : string) => {
-    return (lobbyInfo[lobbyCode]["participants"][participantID] !== null)
+    return (lobbyInfo[lobbyCode]['participants'][participantID] !== null)
 }
 
 export const assignSocketIDToParticipant = (lobbyCode : string, participantID : string, socketID : string) => {
-    lobbyInfo[lobbyCode]["participants"][participantID] = socketID
+    lobbyInfo[lobbyCode]['participants'][participantID] = socketID
 }
 
 export const removeParticipantSocket = (lobbyCode : string, participantID : string) => {
-    lobbyInfo[lobbyCode]["participants"][participantID] = null
+    lobbyInfo[lobbyCode]['participants'][participantID] = null
 }
 
 export const getParticipantSocket = (lobbyCode : string, participantID : string) => {
@@ -154,5 +154,5 @@ export const getParticipantSocket = (lobbyCode : string, participantID : string)
 }
 
 export const getAllParticipantSockets = (lobbyCode : string) : string[] => {
-    return Object.values(lobbyInfo[lobbyCode]["participants"])
+    return Object.values(lobbyInfo[lobbyCode]['participants'])
 }

@@ -13,13 +13,13 @@ const ajv = new Ajv()
 router.use((req, res, next) => {
     const authToken = req.headers.authorization
 
-    if (!authToken) return res.status(401).json({type: "MISSING_AUTH_TOKEN", message: "Did not receive an authorization token with the request"} as ErrorMessage)
+    if (!authToken) return res.status(401).json({type: 'MISSING_AUTH_TOKEN', message: 'Did not receive an authorization token with the request'} as ErrorMessage)
 
     const lobbyCode = req.body.lobbyCode
 
-    if (!lobbyCode) return res.status(400).json({type: "MISSING_LOBBY_CODE", message: "Did not receive a lobby code"} as ErrorMessage)
-    if (!lobbyService.isValidLobbyCode(lobbyCode)) return res.status(404).json({type: "UNAUTHORIZED", message: "Did not receive a valid lobby token"} as ErrorMessage)
-    if (!lobbyService.isLobbyHost(lobbyCode, authToken)) return res.status(403).json({type: "UNAUTHORIZED", message: "You do not have access to this lobby!"} as ErrorMessage)
+    if (!lobbyCode) return res.status(400).json({type: 'MISSING_LOBBY_CODE', message: 'Did not receive a lobby code'} as ErrorMessage)
+    if (!lobbyService.isValidLobbyCode(lobbyCode)) return res.status(404).json({type: 'UNAUTHORIZED', message: 'Did not receive a valid lobby token'} as ErrorMessage)
+    if (!lobbyService.isLobbyHost(lobbyCode, authToken)) return res.status(403).json({type: 'UNAUTHORIZED', message: 'You do not have access to this lobby!'} as ErrorMessage)
 
     next()
 })
@@ -37,6 +37,8 @@ router.post('/createElection', (req, res) => {
     lobbyService.getAllParticipantSockets(lobbyCode).forEach(socket => {
         if (socket) io.of('/lobby').to(socket).emit('status-change', lobbyService.getLobbyStatus(lobbyCode))
     })
+
+    io.of('/viewer').to(lobbyService.getViewerSocket(lobbyCode)).emit('status-change', lobbyService.getLobbyStatus(lobbyCode))
 
     return res.status(200).send()
 })

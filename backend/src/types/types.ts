@@ -10,14 +10,14 @@ export interface LobbyInfo {
 
 type LobbyStatus = 'STANDBY' | 'VOTING'
 
-export type LobbyStatusInfo = Omit<LobbyInfo, "hostID" | "availableUserCodes" | "queuedUsers" | "participants" | "viewerSocket">
+export type LobbyStatusInfo = Omit<LobbyInfo, 'hostID' | 'availableUserCodes' | 'queuedUsers' | 'participants' | 'viewerSocket'>
 
 export type ErrorMessage = {
     type: ErrorType,
     message: string
 }
 
-type ErrorType = "MISSING_AUTH_TOKEN" | "MISSING_LOBBY_CODE" | "UNAUTHORIZED"
+type ErrorType = 'MISSING_AUTH_TOKEN' | 'MISSING_LOBBY_CODE' | 'UNAUTHORIZED'
 
 type ElectionInfoBase = {
     /**
@@ -38,7 +38,7 @@ type ElectionInfoBase = {
 }
 
 interface FPRPElectionInfo extends ElectionInfoBase {
-    type: "FPTP"
+    type: 'FPTP'
 }
 
 export type ElectionInfo = FPRPElectionInfo

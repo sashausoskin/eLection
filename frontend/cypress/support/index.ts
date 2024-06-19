@@ -1,3 +1,5 @@
+import { ElectionInfo } from '../../src/types'
+
 export {};
 
 declare global {
@@ -7,7 +9,9 @@ declare global {
 			 * Custom command to create a lobby with an authenticated user.
 			 * @example cy.dataCy('greeting')
 			 */
-			createLobbyAndUser(context: 'host' | 'participant'): void;
+			createLobbyAndUser(): void;
+			resetServer(): void
+			createElection(electionInfo: ElectionInfo): void
 		}
 	}
 }

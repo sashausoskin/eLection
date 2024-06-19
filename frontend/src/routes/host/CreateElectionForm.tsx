@@ -1,18 +1,17 @@
-import { AxiosError } from "axios"
-import { ErrorMessage, Field, FieldArray, Form, Formik, FormikHelpers } from "formik"
-import { Mock } from "vitest"
+import { AxiosError } from 'axios'
+import { ErrorMessage, Field, FieldArray, Form, Formik, FormikHelpers } from 'formik'
 import * as Yup from 'yup'
-import { createElection } from "../../../services/lobbyHostService"
-import { useEffect, useState } from "react"
-import { StatusMessage } from "../../../types"
+import { createElection } from '../../services/lobbyHostService'
+import { useEffect, useState } from 'react'
+import { ElectionInfo, StatusMessage } from '../../types'
 
-const FTPTForm = ({onSubmitForm} : {onSubmitForm?:((values: {title: string, candidates: string[]}) => never )| Mock<any, any>}) => {
+const CreateElectionForm = ({onSubmitForm} : {onSubmitForm?: ((values: ElectionInfo) => undefined)}) => {
     const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
 
     useEffect(() => {
         if (!statusMessage) return
 
-        console.log("Setting timeout")
+        console.log('Setting timeout')
 
         const timeout = setTimeout(() => {
             setStatusMessage(null)
@@ -23,23 +22,26 @@ const FTPTForm = ({onSubmitForm} : {onSubmitForm?:((values: {title: string, cand
 
     }, [statusMessage])
 
-    const FTPTVoteSchema = Yup.object().shape({
+    const ElectionCreationSchema = Yup.object().shape({
+        type: Yup.string()
+        .required(),
+
         title: Yup.string()
-        .required("Please enter a title for your election"),
+        .required('Please enter a title for your election'),
 
         candidates: Yup.array()
                 .of(Yup.string()
-                    .required("Please enter a name for the candidate or remove the candidate")
-                ).min(1, "Please enter at least one candidate")
+                    .required('Please enter a name for the candidate or remove the candidate')
+                ).min(1, 'Please enter at least one candidate')
     })
 
     const defaultOnSubmit = 
-        async (values: {title: string; candidates: string[];}, 
-        formikHelpers: FormikHelpers<{title: string;candidates: string[];}>) => {
+        async (values: ElectionInfo, 
+        formikHelpers: FormikHelpers<ElectionInfo>) => {
             try {
-                await createElection({type: "FPTP", ...values})
+                await createElection(values)
                 formikHelpers.resetForm()
-                setStatusMessage({status: "success", message: "Succesfully created the election"})
+                setStatusMessage({status: 'success', message: 'Succesfully created the election'})
             }
             catch(e) {
                 if (e instanceof AxiosError) {
@@ -48,18 +50,29 @@ const FTPTForm = ({onSubmitForm} : {onSubmitForm?:((values: {title: string, cand
             }
     }
 
+    const initialValues : ElectionInfo = {
+        type: 'FPTP',
+        title: '',
+        candidates: ['', ''],
+    }
+
     return (
         <Formik
-            initialValues={{
-                title: '',
-                candidates: ['', ''],
-            }}
-            onSubmit={(values, helpers) => onSubmitForm !== undefined ? onSubmitForm(values) : defaultOnSubmit(values, helpers)}
-            validationSchema={FTPTVoteSchema}
+            initialValues ={initialValues}
+            onSubmit={(values : ElectionInfo, helpers : FormikHelpers<ElectionInfo>) => onSubmitForm !== undefined ? onSubmitForm(values) : defaultOnSubmit(values, helpers)}
+            validationSchema={ElectionCreationSchema}
         >
             {({ values }) => (
                 <Form>
-                    <a data-testid="ftpt_form" />
+                    <Field type="radio" name="type" value="FPTP" data-testid="fptp_radio"/>First-past-the-post election
+                    <Field type="radio" name="type" value="ranked" data-testid="ranked_radio"/>Ranked election
+                    <ErrorMessage
+                        name="type"
+                        component="div"
+                        className="field-error"
+                        data-testid="radio-error"
+                    />
+                    <br />
                     <label htmlFor={'title'}>Title</label>
                     <Field
                         name="title"
@@ -84,7 +97,7 @@ const FTPTForm = ({onSubmitForm} : {onSubmitForm?:((values: {title: string, cand
                                         name={`candidates.${index}`} 
                                         placeholder="Barack Obama"
                                         type="string"
-                                        data-testid="candidate-field"
+                                        data-testid={'candidate-field'}
                                         />
                                     <ErrorMessage 
                                         name={`candidates.${index}`}
@@ -92,7 +105,7 @@ const FTPTForm = ({onSubmitForm} : {onSubmitForm?:((values: {title: string, cand
                                         data-testid="candidate-error"
                                         className="field-error"
                                     />
-                                    <button disabled={values.candidates.length <= 2}onClick={() => remove(index)} data-testid="remove-candidate-button">X</button>
+                                    <button type="button" disabled={values.candidates.length <= 2}onClick={() => remove(index)} data-testid="remove-candidate-button">X</button>
                                     </div>
                             ))
                             }
@@ -100,12 +113,12 @@ const FTPTForm = ({onSubmitForm} : {onSubmitForm?:((values: {title: string, cand
                             </>
                         )}
                     </FieldArray>
-                    <button type="submit" data-testid="create-election-submit">Create</button>
-                    {statusMessage && <a style={{color: statusMessage.status === "success" ? "green" : "red"}}>{statusMessage.message}</a>}
+                    <button data-testid="create-election-submit" type="submit">Create</button>
+                    {statusMessage && <a data-testid={`status-${statusMessage.status}`}style={{color: statusMessage.status === 'success' ? 'green' : 'red'}}>{statusMessage.message}</a>}
                 </Form>
             )}
         </Formik>
     )
 }
 
-export default FTPTForm
+export default CreateElectionForm

@@ -1,54 +1,74 @@
-import { useEffect, useState } from "react"
-import { createViewerSocket } from "../sockets"
-import { LobbyStatusInfo } from "../types"
+import { useEffect, useState } from 'react'
+import { createViewerSocket } from '../sockets'
+import { LobbyStatusInfo } from '../types'
+import ElectionInfoView from './viewer/ElectionInfo'
 
 const Viewer = () => {
-    const [loading, setLoading] = useState<boolean>(true)
-    const [statusText, setStatusText] = useState<string | null>(null)
+    const [errorText, setErrorText] = useState<string | null>(null)
+    const [lobbyStatus, setLobbyStatus] = useState<LobbyStatusInfo>()
 
     const lobbyCode = window.localStorage.getItem('hostLobbyCode')
     const hostID = window.localStorage.getItem('hostID')
 
     useEffect(() => {
         if (!lobbyCode || !hostID) {
-            setStatusText("Could not load the viewercorrectly. Please first create a lobby and only then open this window")
+            setErrorText('Could not load the viewercorrectly. Please first create a lobby and only then open this window')
             return
         }
 
         const viewerSocket = createViewerSocket(lobbyCode, hostID)
 
         viewerSocket.on('connect', () => {
-            setLoading(false)
+            setErrorText(null)
         })
 
         viewerSocket.on('connect_error', (errorMsg) => {
-            setStatusText(`An error occurred: ${errorMsg}`)
+            setErrorText(`An error occurred: ${errorMsg}`)
             viewerSocket.disconnect()
         })
 
+        viewerSocket.on('disconnect', (reason) => {
+            switch(reason) {
+                case 'ping timeout':
+                    setErrorText('Cannot connect to the server. Please check your connection and reload the page!')
+                    break
+                case 'io server disconnect':
+                    setErrorText('You were disconnected from the server. This is probably because you opened the viewer in another tab!')
+            }
+
+        })
+
         viewerSocket.on('status-change', (lobbyStatus : LobbyStatusInfo) => {
-            if (lobbyStatus.status === "STANDBY") {
-                console.log("Lobby is on standby")
-            }
-            if (lobbyStatus.status === "VOTING") {
-                setStatusText(lobbyStatus.currentVote.toString())
-            }
+            setLobbyStatus(lobbyStatus)
         })
 
         viewerSocket.connect()
-    }, [setLoading, setStatusText, hostID, lobbyCode])
+
+        //This is done to circumvent a TypeScript error as writing this directly to the return value causes an error
+        const disconnectFromSocket = () => {
+            viewerSocket.disconnect()
+        }
+
+        return (() => disconnectFromSocket())
+    }, [setErrorText, hostID, lobbyCode])
 
     if (!lobbyCode || !hostID) return <a>Could not load the viewer. Please make sure you are the host of an active lobby and only then open this window</a>
 
-    if (statusText) return <a>{statusText}</a>
+    if (errorText) return <a>{errorText}</a>
 
-    if (loading) return <a>Loading...</a>
+    if (!lobbyStatus) return <a>Loading...</a>
 
-    return <>
-        <a>Go to {window.location.host}, select "Participate" and enter the lobby code</a>
-        <h1>{lobbyCode}</h1>
-        <a>on your device</a>
-        </>
+    if (lobbyStatus.status === 'STANDBY') {
+        return <>
+            <a>Go to {window.location.host}, select "Participate" and enter the lobby code</a>
+            <h1 data-testid="lobbyCode">{lobbyCode}</h1>
+            <a>on your device</a>
+            </>
+    }
+
+    else if (lobbyStatus.status === 'VOTING') {
+        return <ElectionInfoView electionInfo={lobbyStatus.currentVote} />
+    }
 }
 
 export default Viewer

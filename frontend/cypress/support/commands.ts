@@ -36,16 +36,38 @@
 //   }
 // }
 
-Cypress.Commands.add('createLobbyAndUser', (context) => {
-	cy.request('post', '/testing/createLobbyWithUser').then((res) => {
+Cypress.Commands.add('resetServer', () => {
+	cy.request('post', `${Cypress.env('BACKEND_URL')}/testing/reset`);
+})
+
+Cypress.Commands.add('createLobbyAndUser', () => {
+	cy.request('post', `${Cypress.env('BACKEND_URL')}/testing/createLobbyWithUser`).then((res) => {
 		const lobbyCode = res.body.lobbyCode;
-		const userID = res.body.userID;
+		const participantID = res.body.participantID;
 		const hostID = res.body.hostID;
 
-		localStorage.setItem('lobbyCode', lobbyCode);
-		localStorage.setItem(
-			'authToken',
-			context === 'host' ? hostID : context === 'participant' ? userID : null
-		);
+		localStorage.setItem('hostLobbyCode', lobbyCode)
+		localStorage.setItem('hostID', hostID)
+		localStorage.setItem('participantLobbyCode', lobbyCode)
+		localStorage.setItem('participantID', participantID)
+
+		cy.wrap(lobbyCode).as('lobbyCode')
+		cy.wrap(hostID).as('hostID')
+		cy.wrap(participantID).as('participantID')
 	});
 });
+
+Cypress.Commands.add('createElection', (electionInfo) => {
+	cy.get('@lobbyCode').then((lobbyCode) => {
+		cy.get('@hostID').then((hostID) => {
+			cy.request({
+				method: 'post', 
+				url: `${Cypress.env('BACKEND_URL')}/host/createElection`,
+				headers: {Authorization: hostID},
+				body: {lobbyCode,
+					electionInfo
+				}
+			})
+		})
+	})
+})

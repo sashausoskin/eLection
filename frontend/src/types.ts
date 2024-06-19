@@ -15,16 +15,16 @@ export interface JoinLobbyResponse {
 export type ParticipantViewTab = 'joinLobby' | 'inQueue' | 'inLobby';
 
 export type LobbyStatusInfo = {
-	status: "STANDBY",
+	status: 'STANDBY',
     currentVote: null
 } | {
-    status: "VOTING",
+    status: 'VOTING',
     currentVote: ElectionInfo
 }
 
 
 
-export type VoteType = "FPTP" | "ranked"
+export type ElectionType = 'FPTP' | 'ranked'
 
 type ElectionInfoBase = {
     /**
@@ -44,7 +44,7 @@ type ElectionInfoBase = {
 }
 
 interface FPRPElectionInfo extends ElectionInfoBase {
-    type: "FPTP"
+    type: 'FPTP'
 }
 
 export type ElectionInfo = FPRPElectionInfo

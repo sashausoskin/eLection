@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import * as lobbyService from '../services/lobbyHostService'
 import { Authentication } from './host/Authentication'
-import CreateVoteForm from './host/CreateVoteForm'
+import CreateElectionForm from './host/CreateElectionForm'
 
 export const Host = () => {
 	const [lobbyCode, setLobbyCode] = useState<string | null>(null)
@@ -29,8 +29,8 @@ export const Host = () => {
 	return ( 
     <>
         <Authentication lobbyCode={lobbyCode} />
-        <CreateVoteForm />
-        <button onClick={() => window.open('/viewer', "_blank", "popup=true")}>Open the viewer window</button>
+        <CreateElectionForm />
+        <button onClick={() => window.open('/viewer', '_blank', 'popup=true')}>Open the viewer window</button>
     </>
     )
 }
