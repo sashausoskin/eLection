@@ -3,6 +3,7 @@ import { LobbyStatusInfo } from '../../types'
 import { createLobbySocket } from '../../sockets'
 import * as participantService from '../../services/participantService'
 import { SetParticipantViewContext } from '../../Contexts'
+import FPTPVotingView from './voting_views/FPTPVotingView'
 
 const LobbyView = () : JSX.Element => {
     const [lobbyStatus, setLobbyStatus] = useState<LobbyStatusInfo | null>(null)
@@ -46,12 +47,9 @@ const LobbyView = () : JSX.Element => {
     }
 
     if (lobbyStatus.status === 'VOTING') {
-        return <>
-            <h2>{lobbyStatus.currentVote.title}</h2>
-            <a>Choose from one of the following:</a>
-            {lobbyStatus.currentVote.candidates.map((candidate) => <p key={candidate}>{candidate}</p>)}
-
-        </>
+        if (lobbyStatus.currentVote.type === "FPTP") {
+            return <FPTPVotingView electionInfo={lobbyStatus.currentVote} />
+        }
     }
 
     return <></>

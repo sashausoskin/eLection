@@ -30,7 +30,7 @@ export const createNewLobby = (): {lobbyCode: string, hostID: string} => {
     const userCodes = generateCodes()
 
 
-    lobbyInfo[lobbyCode] = {hostID: hostID, status: 'STANDBY', availableUserCodes: userCodes, queuedUsers: {}, participants: {}, currentVote: null, viewerSocket: null}
+    lobbyInfo[lobbyCode] = {hostID: hostID, status: 'STANDBY', availableUserCodes: userCodes, queuedUsers: {}, participants: {}, currentVote: null, viewerSocket: null, results: null}
 
     return {lobbyCode, hostID}
 }
@@ -134,7 +134,13 @@ export const createElection = (lobbyCode : string, electionInfo : ElectionInfo) 
     lobbyInfo[lobbyCode].status = 'VOTING'
     lobbyInfo[lobbyCode].currentVote = electionInfo
 
-    
+
+
+    lobbyInfo[lobbyCode].results = {votes: {}, usersVoted: []}
+
+    electionInfo.candidates.forEach((candidate) => {
+        lobbyInfo[lobbyCode].results.votes[candidate] = 0
+    })
 }
 
 export const isParticipantConnected = (lobbyCode : string, participantID : string) => {
@@ -155,4 +161,25 @@ export const getParticipantSocket = (lobbyCode : string, participantID : string)
 
 export const getAllParticipantSockets = (lobbyCode : string) : string[] => {
     return Object.values(lobbyInfo[lobbyCode]['participants'])
+}
+
+export const isValidVote = (lobbyCode : string, candidate : string | string[]) : boolean => {
+    if (Array.isArray(candidate)) {
+        return false
+    }
+    else {
+        return candidate in lobbyInfo[lobbyCode].currentVote.candidates
+    }
+}
+
+export const castVotes = (lobbyCode : string, candidate : string, votes : number) => {
+    lobbyInfo[lobbyCode].results.votes[candidate] += votes
+}
+
+export const saveUserVoted = (lobbyCode : string, participantID : string) => {
+    lobbyInfo[lobbyCode].results.usersVoted.push(participantID)
+}
+
+export const hasUserVoted = (lobbyCode : string, participantID : string) : boolean => {
+    return participantID in lobbyInfo[lobbyCode].results.usersVoted
 }

@@ -13,4 +13,5 @@
 | 12.6 | 6   | Started working on the results window and added UI for creating FTPT elections|
 | 17.6 | 4   | Started working on the backend functionality for creating elections, polished some functionality|
 | 18.6 | 5.5   | Worked on the backend and sockets of lobbies, created backend unit tests, refactored the election creation form|
-| total   | 53.5   | | 
+| 19.6 | 6  | Added the ability for the viewer to show election information, added end-to-end tests for the new functionality, started working on casting votes|
+| total   | 59.5   | | 

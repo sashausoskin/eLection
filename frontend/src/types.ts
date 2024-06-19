@@ -43,8 +43,8 @@ type ElectionInfoBase = {
     candidates: string[]
 }
 
-interface FPRPElectionInfo extends ElectionInfoBase {
+export interface FPTPElectionInfo extends ElectionInfoBase {
     type: 'FPTP'
 }
 
-export type ElectionInfo = FPRPElectionInfo
+export type ElectionInfo = FPTPElectionInfo

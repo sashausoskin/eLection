@@ -6,18 +6,19 @@ export interface LobbyInfo {
     queuedUsers: Record<string, string|null>
     participants: Record<string, null|string>
     currentVote : ElectionInfo | null
+    results: ElectionResults | null
 }
 
 type LobbyStatus = 'STANDBY' | 'VOTING'
 
-export type LobbyStatusInfo = Omit<LobbyInfo, 'hostID' | 'availableUserCodes' | 'queuedUsers' | 'participants' | 'viewerSocket'>
+export type LobbyStatusInfo = Omit<LobbyInfo, 'hostID' | 'availableUserCodes' | 'queuedUsers' | 'participants' | 'viewerSocket' | 'results'>
 
 export type ErrorMessage = {
     type: ErrorType,
     message: string
 }
 
-type ErrorType = 'MISSING_AUTH_TOKEN' | 'MISSING_LOBBY_CODE' | 'UNAUTHORIZED'
+type ErrorType = 'MISSING_AUTH_TOKEN' | 'MISSING_LOBBY_CODE' | 'UNAUTHORIZED' | "NO_ACTIVE_ELECTION" | "MALFORMATTED_REQUEST" | "ALREADY_VOTED"
 
 type ElectionInfoBase = {
     /**
@@ -42,3 +43,8 @@ interface FPRPElectionInfo extends ElectionInfoBase {
 }
 
 export type ElectionInfo = FPRPElectionInfo
+
+export interface ElectionResults {
+    votes: Record<string, number>
+    usersVoted: string[]
+}

@@ -8,6 +8,7 @@ import * as dotenv from 'dotenv'
 import lobbyRouter from '../routes/lobby'
 import testingRouter from '../routes/testing'
 import hostRouter from '../routes/host'
+import participantRouter from '../routes/participant'
 import { getAuthenticationMiddleware, handleViewerSocketConnection } from '../sockets/viewersockets'
 import { handleParticipantSocketConnection, isParticipantMiddleware } from '../sockets/lobbysockets'
 
@@ -25,6 +26,7 @@ app.use(cors())
 app.use(express.json())
 app.use('/lobby', lobbyRouter)
 app.use('/host', hostRouter)
+app.use('/participant', participantRouter)
 
 if (process.env.NODE_ENV === 'test') app.use('/testing', testingRouter)
 
