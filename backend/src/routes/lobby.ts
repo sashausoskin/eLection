@@ -1,8 +1,10 @@
 import express from 'express'
 import { UserNotFound, createAuthenticatedUser, createNewLobby, getNewUserCode, getUserSocketID, isLobbyHost,
         isParticipant,
+        isUserInQueue,
         isValidLobbyCode, removeUserFromQueue } from '../services/lobbyservice'
 import {io} from '../util/server'
+import { ErrorMessage } from '../types/types'
 
 
 const router = express.Router()
@@ -14,14 +16,14 @@ router.post('/createLobby', async (req, res) => {
 
 router.post('/joinLobby', async (req, res) => {
     if (!req.body.lobbyCode) {
-        res.status(400).json({error: 'The request is missing field lobbyCode'})
+        res.status(400).json({type: 'MISSING_LOBBY_CODE', message: 'The request is missing field lobbyCode'} as ErrorMessage)
         return
     }
 
     const lobbyCode : string = req.body.lobbyCode as string
 
     if (!isValidLobbyCode(lobbyCode)) {
-        res.status(404).json({error: 'No lobby was found with the given code'})
+        res.status(404).json({type: 'MALFORMATTED_REQUEST', message: 'No lobby was found with the given code'} as ErrorMessage)
         return
     }
 
@@ -38,8 +40,8 @@ router.post('/authenticateUser', async (req, res) => {
 
     const hostID = req.headers.authorization
 
-    if (!req.body.lobbyCode || typeof req.body.lobbyCode !== 'string') {
-        res.status(400).json({error: 'The request is missing field lobbyCode or it is malformatted'})
+    if (!req.body.lobbyCode) {
+        res.status(400).json({error: 'The request is missing field lobbyCode'})
         return
     }
 
@@ -57,18 +59,16 @@ router.post('/authenticateUser', async (req, res) => {
 
     const userToAuthorize = req.body.userCode
 
-    const userSocketID = getUserSocketID(lobbyCode, userToAuthorize)
-
-    try {
-        removeUserFromQueue(lobbyCode, userToAuthorize)
-    }
-
-    catch (e) {
-        if (e instanceof UserNotFound) {
-            res.status(404).json({error: 'Could not find a user with the given code'})
-        }
+    if (!isUserInQueue(userToAuthorize, lobbyCode)) {
+        res.status(404).json({error: 'Could not find a user with the given code'})
         return
     }
+
+    const userSocketID = getUserSocketID(lobbyCode, userToAuthorize)
+
+
+    removeUserFromQueue(lobbyCode, userToAuthorize)
+
 
     const newUserID = createAuthenticatedUser(lobbyCode)
 

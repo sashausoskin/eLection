@@ -7,7 +7,8 @@ export const handleViewerSocketConnection = (viewerSocket : Socket) => {
     viewerSocket.emit('status-change', lobbyService.getLobbyStatus(viewerSocket['lobbyCode']))
 
     viewerSocket.on('disconnect', () => {
-        console.log(viewerSocket.id, 'disconnected...')
+        if (!lobbyService.isValidLobbyCode(viewerSocket['lobbyCode'])) return
+        lobbyService.removeViewerSocket(viewerSocket['lobbyCode'])
     })
 }
 
@@ -37,7 +38,7 @@ export const getAuthenticationMiddleware = (socket : Socket, next: (err?: Extend
 
     const existingViewerSocket = lobbyService.getViewerSocket(lobbyCode)
 
-    if (existingViewerSocket) io.of('/viewer').in(existingViewerSocket).disconnectSockets(true)
+    if (existingViewerSocket) io.of('/viewer').in(existingViewerSocket).disconnectSockets(false)
 
     lobbyService.assignViewerSocket(lobbyCode, socket.id)
 

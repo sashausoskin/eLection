@@ -1,42 +1,42 @@
-import { assignSocketIdToQueueingUser, isUserInQueue, isValidLobbyCode } from '../services/lobbyservice'
+import { ExtendedError } from 'socket.io/dist/namespace'
+import * as lobbyService from '../services/lobbyservice'
 import { Socket } from 'socket.io'
 
+export const queueSocketAuthenticationMiddleware = async (socket : Socket, next: (err?: ExtendedError) => void) => {
+    const userCode = socket.handshake.auth.userCode
+    const lobbyCode = socket.handshake.auth.lobbyCode
+
+    if (!lobbyService.isValidLobbyCode(lobbyCode)) {
+        const err = new Error('lobbyCode is malformatted.')
+        next(err)
+        return
+    }
+
+    if (!lobbyService.isUserInQueue(userCode, lobbyCode)) {
+        const err = new Error('Could not find a user with the given code')
+        next(err)
+        return
+    }
+
+    if (lobbyService.isUserConnectedToQueue(lobbyCode, userCode)) {
+        const err = new Error('You have already connected to this queue!')
+        next(err)
+        return
+    }
+
+    socket['lobbyCode'] = lobbyCode
+    socket['userCode'] = userCode
+
+    next()
+}
+
 export const handleQueueSocketConnection = (socket: Socket) => {
-    const userCode = socket.handshake.query.userCode as string
-    const lobbyCode = socket.handshake.query.lobbyCode as string
+    lobbyService.assignSocketIdToQueueingUser(socket['userCode'], socket['lobbyCode'], socket.id)
 
-    if (!(typeof userCode === 'string')) {
-        socket.emit('error', 'userCode is malformatted. Disconnecting...')
-        socket.disconnect()
-        return
-    }
+    socket.on('disconnect', () => {
+        if (!lobbyService.isValidLobbyCode(socket['lobbyCode'])) return
+        if (!lobbyService.isUserInQueue(socket['userCode'], socket['lobbyCode'])) return
+        lobbyService.removeUserFromQueue(socket['lobbyCode'], socket['userCode'])
+    })
 
-    if (!(typeof lobbyCode === 'string')) {
-        socket.emit('error', 'lobbyCode is malformatted. Disconnecting...')
-        socket.disconnect()
-        return
-    }
-
-    if (!isValidLobbyCode(lobbyCode)) {
-        socket.emit('error', 'lobbyCode is malformatted. Disconnecting...')
-        socket.disconnect()
-        return
-    }
-
-    if (!isUserInQueue(userCode, lobbyCode)) {
-        socket.emit('error', 'userCode not found. Disconnecting...')
-        socket.disconnect()
-        return
-    }
-
-    try {
-        assignSocketIdToQueueingUser(userCode, lobbyCode, socket.id)
-    }
-    catch (e) {
-        if (e instanceof Error) {
-            socket.emit('error', e.message)
-            socket.disconnect()
-            return
-        }
-    }
 }

@@ -18,7 +18,7 @@ router.use((req, res, next) => {
     const lobbyCode = req.body.lobbyCode
 
     if (!lobbyCode) return res.status(400).json({type: 'MISSING_LOBBY_CODE', message: 'Did not receive a lobby code'} as ErrorMessage)
-    if (!lobbyService.isValidLobbyCode(lobbyCode)) return res.status(404).json({type: 'UNAUTHORIZED', message: 'Did not receive a valid lobby token'} as ErrorMessage)
+    if (!lobbyService.isValidLobbyCode(lobbyCode)) return res.status(404).json({type: 'UNAUTHORIZED', message: 'Did not receive a valid lobby code'} as ErrorMessage)
     if (!lobbyService.isLobbyHost(lobbyCode, authToken)) return res.status(403).json({type: 'UNAUTHORIZED', message: 'You do not have access to this lobby!'} as ErrorMessage)
 
     next()

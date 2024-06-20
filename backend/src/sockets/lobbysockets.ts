@@ -15,13 +15,8 @@ export const isParticipantMiddleware = async (socket : Socket, next: (err?: Exte
     const authToken = socket.handshake.auth.participantID
     const lobbyCode = socket.handshake.auth.lobbyCode
 
-    if (!authToken) {
-        const err = new Error('Did not receive a token with the request')
-        next(err)
-        return
-    }
-    if (!lobbyCode) {
-        const err = new Error('Did not receive a lobby code with the request')
+    if (!authToken || !lobbyCode) {
+        const err = new Error('Did not receive a token or a lobby code with the request')
         next(err)
         return
     }

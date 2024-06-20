@@ -50,6 +50,11 @@ export const isUserInQueue = (userCode : string, lobbyCode : string) : boolean =
     return (userCode in lobbyInfo[lobbyCode]['queuedUsers'])
 }
 
+export const isUserConnectedToQueue = (lobbyCode : string, userCode: string) : boolean => {
+    return (lobbyInfo[lobbyCode].queuedUsers[userCode] !== null)
+}
+
+
 export const getUsersInQueue = (lobbyCode : string) : string[] => {
     return Object.keys(lobbyInfo[lobbyCode]['queuedUsers'])
 }
@@ -59,10 +64,6 @@ export const getParticipants = (lobbyCode : string) : string[] => {
 } 
 
 export const assignSocketIdToQueueingUser = (userCode : string, lobbyCode : string, socketID : string) => {
-    if (lobbyInfo[lobbyCode]['queuedUsers'][userCode] !== null) {
-        throw new Error('Another user has already connected with the given user code')
-    }
-
     lobbyInfo[lobbyCode]['queuedUsers'][userCode] = socketID
 }
 
@@ -72,6 +73,10 @@ export const getViewerSocket = (lobbyCode : string) => {
 
 export const assignViewerSocket = (lobbyCode : string, socketID : string) => {
     lobbyInfo[lobbyCode]['viewerSocket'] = socketID
+}
+
+export const removeViewerSocket = (lobbyCode : string) => {
+    lobbyInfo[lobbyCode].viewerSocket = null
 }
 
 export const deleteUserFromQueue = (userCode : string, lobbyCode : string) => {
@@ -168,7 +173,7 @@ export const isValidVote = (lobbyCode : string, candidate : string | string[]) :
         return false
     }
     else {
-        return candidate in lobbyInfo[lobbyCode].currentVote.candidates
+        return lobbyInfo[lobbyCode].currentVote.candidates.includes(candidate)
     }
 }
 
@@ -181,5 +186,5 @@ export const saveUserVoted = (lobbyCode : string, participantID : string) => {
 }
 
 export const hasUserVoted = (lobbyCode : string, participantID : string) : boolean => {
-    return participantID in lobbyInfo[lobbyCode].results.usersVoted
+    return lobbyInfo[lobbyCode].results.usersVoted.includes(participantID)
 }

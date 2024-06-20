@@ -47,7 +47,7 @@ const LobbyView = () : JSX.Element => {
     }
 
     if (lobbyStatus.status === 'VOTING') {
-        if (lobbyStatus.currentVote.type === "FPTP") {
+        if (lobbyStatus.currentVote.type === 'FPTP') {
             return <FPTPVotingView electionInfo={lobbyStatus.currentVote} />
         }
     }

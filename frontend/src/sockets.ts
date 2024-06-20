@@ -2,7 +2,7 @@ import { Socket, io } from 'socket.io-client'
 
 export const createQueueSocket = (userCode: string, lobbyCode: string): Socket =>
 	io(`${import.meta.env.VITE_BACKEND_URL}/queue`, {
-		query: { userCode, lobbyCode},
+		auth: { userCode, lobbyCode},
 		autoConnect: false,
 	})
 

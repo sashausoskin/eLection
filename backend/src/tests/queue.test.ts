@@ -2,7 +2,6 @@ import request from 'supertest'
 import * as lobbyService from '../services/lobbyservice'
 import { app, server } from '../util/server'
 import ioc, { Socket as ClientSocket } from 'socket.io-client'
-import { io } from '../util/server'
 
 beforeEach(() => {
     lobbyService.resetLobbies()
@@ -22,6 +21,11 @@ describe('With one lobby created', () => {
     beforeEach(async () => {
         const lobbyCreationRequest = await request(app).post('/lobby/createLobby')
         lobbyCode = lobbyCreationRequest.body.lobbyCode
+    })
+
+    test('cannot join a lobby without a lobby code', async () => {
+        const userCodeRequest = await request(app).post('/lobby/joinLobby').send()
+        expect(userCodeRequest.statusCode).toBe(400)
     })
 
     test('can join a lobby queue', async () => {
@@ -47,7 +51,7 @@ describe('With one lobby created and one user in queue', () => {
     let lobbyCode : string | null = null
     let hostID : string | null = null
     let userCode : string | null = null
-    let lobbySocket : ClientSocket = null
+    let queueSocket : ClientSocket = null
 
     beforeAll((done) => {
         server.listen(3000, () => {
@@ -56,9 +60,11 @@ describe('With one lobby created and one user in queue', () => {
     })
 
     afterAll(() => {
-        io.close()
-        lobbySocket.close()
         server.close()
+    })
+
+    afterEach(() => {
+        if (queueSocket) queueSocket.disconnect()
     })
 
     beforeEach(async () => {
@@ -83,6 +89,21 @@ describe('With one lobby created and one user in queue', () => {
         await request(app).post('/lobby/authenticateUser')
             .set('Authorization', hostID)
             .send({lobbyCode, userCode})
+    })
+
+    test('host cannot authenticate with missing info', async () => {
+        // No auth token
+        const authRequest = await request(app).post('/lobby/authenticateUser')
+            .send({lobbyCode, userCode})
+        
+        expect(authRequest.status).toBe(401)
+
+        // No lobby code
+        await request(app).post('/lobby/authenticateUser')
+            .set('Authorization', hostID)
+            .send({ userCode})
+        
+        expect(authRequest.status).toBe(401)
     })
 
     test('host cannot authenticate with invalid token', async () => {
@@ -141,19 +162,15 @@ describe('With one lobby created and one user in queue', () => {
     })
 
     test('authenticated user gets a socket message when authenticated', (done) => {
-        const socketCallback = jest.fn()
-        lobbySocket = ioc('http://localhost:3000/queue', {query: {lobbyCode, userCode}})
-        lobbySocket.on('error', (error) => {
-            console.error(error)
+        queueSocket = ioc('http://localhost:3000/queue', {auth: {lobbyCode, userCode}})
+        queueSocket.on('connect_error', (error) => {
+            console.error(error.message)
         })
-        lobbySocket.on('authorize', (userID : string) => {
-            socketCallback(userID)
-            expect(socketCallback.mock.calls).toHaveLength(1)
-            expect(socketCallback.mock.lastCall[0].userID).toBeDefined()
+        queueSocket.on('authorize', (userID : string) => {
+            expect(userID).toBeDefined()
             done()
         })
-        lobbySocket.on('connect', async () => {
-            expect(socketCallback.mock.calls).toHaveLength(0)
+        queueSocket.on('connect', async () => {
             await request(app).post('/lobby/authenticateUser')
                 .set('Authorization', hostID)
                 .send({lobbyCode, userCode})
@@ -181,5 +198,44 @@ describe('With one lobby created and one user in queue', () => {
 
         validationRequest = await validateUser(undefined, userID)
         expect(validationRequest.statusCode).toBe(400)
+    })
+
+    describe('when connecting to the queue socket', () => {
+
+        const testSocketConnection = (done: jest.DoneCallback, lobbyCode?: string, userCode?: string, expectToConnect?: boolean) => {
+            queueSocket = ioc('http://localhost:3000/queue', {auth: {lobbyCode, userCode}, multiplex: false})
+            queueSocket.on('connect', () => {
+                if (expectToConnect) done()
+                else expect(1).toBe(2)
+            })
+            queueSocket.on('connect_error', () => {
+                if (!expectToConnect) done()
+                else expect(1).toBe(2)
+            })
+        }
+
+        test('cannot connect without lobby and user info', (done) => {
+            testSocketConnection(done)
+        })
+
+        test('cannot connect with invalid user code', (done) => {
+            testSocketConnection(done, lobbyCode, userCode === '1234' ? '4321' : '1234', false)
+        })
+
+        test('cannot connect with invalid lobby code', (done) => {
+            testSocketConnection(done, lobbyCode === '1234' ? '4321' : '1234', userCode, false)
+        })
+
+        test('can connect with valid info', (done) => {
+            testSocketConnection(done, lobbyCode, userCode, true)
+        })
+
+        test('cannot connect twice', (done) => {
+            const queuedSocket2 = ioc('http://localhost:3000/queue', {auth: {lobbyCode, userCode}, multiplex: false})
+            queuedSocket2.on('connect', () => {
+                queuedSocket2.disconnect()
+                testSocketConnection(done, lobbyCode, userCode, false)
+            })
+        })
     })
 })
