@@ -14,4 +14,5 @@
 | 17.6 | 4   | Started working on the backend functionality for creating elections, polished some functionality|
 | 18.6 | 5.5   | Worked on the backend and sockets of lobbies, created backend unit tests, refactored the election creation form|
 | 19.6 | 6  | Added the ability for the viewer to show election information, added end-to-end tests for the new functionality, started working on casting votes|
-| total   | 59.5   | | 
+| 20.6 | 5  | Worked on the unit tests for backend, had trouble with socket connections in unit tests, minor refactoring, started setting up code coverage|
+| total   | 64.5  | | 
