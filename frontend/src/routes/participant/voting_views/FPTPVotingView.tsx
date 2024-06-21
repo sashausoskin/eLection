@@ -1,16 +1,15 @@
 import { Field, Form, Formik } from 'formik'
 import { FPTPElectionInfo } from '../../../types'
 
-const FPTPVotingView = ({electionInfo} : {electionInfo : FPTPElectionInfo}) => {
+const FPTPVotingView = ({electionInfo, canSubmitVote, onSubmitVote} : {electionInfo : FPTPElectionInfo, canSubmitVote : boolean, onSubmitVote : (voteContent: string) => Promise<void>}) => {
     const initialValues = {voteContent : ''}
 
     return<>
         <h2>{electionInfo.title}</h2>
         <Formik
         initialValues={initialValues}
-        onSubmit={(values, helpers) => {
-            console.log(values)
-            helpers.resetForm()
+        onSubmit={async (values) => {
+            onSubmitVote(values.voteContent)
         }}
         >
             <Form>
@@ -23,7 +22,7 @@ const FPTPVotingView = ({electionInfo} : {electionInfo : FPTPElectionInfo}) => {
                 <div style={{backgroundColor: 'blue', display: 'flex', flexDirection: 'row', alignContent: 'center'}}>
                     <Field type="radio" name="voteContent" value={''} /> Vote empty
                 </div>
-                <button type="submit" data-testid="vote-submit">Send vote</button>
+                <button type="submit" disabled={!canSubmitVote} data-testid="vote-submit">Send vote</button>
             </Form>
         </Formik>
     </>

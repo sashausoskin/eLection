@@ -1,6 +1,7 @@
 import express from 'express'
 import { ErrorMessage } from '../types/types'
 import * as lobbyService from '../services/lobbyservice'
+import { io } from '../util/server'
 
 const router = express.Router()
 
@@ -34,23 +35,28 @@ router.post('/castVote', (req, res) => {
 
     const voteContent : string | string[] = req.body.voteContent
 
-    if (!voteContent) return res.status(400).send({type: 'MALFORMATTED_REQUEST', message: 'Did not receive voteContent with the request'} as ErrorMessage)
+    if (voteContent === undefined) return res.status(400).send({type: 'MALFORMATTED_REQUEST', message: 'Did not receive voteContent with the request'} as ErrorMessage)
 
-    const currentElectionType = lobbyService.getLobbyStatus(lobbyCode).currentVote.type
+    const currentElectionType = currentLobbyStatus.electionInfo.type
 
-    switch (currentElectionType) {
-        case 'FPTP':
-            if (Array.isArray(voteContent)) {
-                return res.status(400).send({type: 'MALFORMATTED_REQUEST', message: 'Received an array for a FPTP election, where you can only vote for a single candidate'} as ErrorMessage)
-            }
-            else if (!lobbyService.isValidVote(lobbyCode, voteContent)) {
-                return res.status(400).send({type: 'MALFORMATTED_REQUEST', message: 'Casted a vote for someone or something that isn\'t a candidate'} as ErrorMessage)
-            }
+    if (voteContent !== null){
+        switch (currentElectionType) {
+            case 'FPTP':
+                if (Array.isArray(voteContent)) {
+                    return res.status(400).send({type: 'MALFORMATTED_REQUEST', message: 'Received an array for a FPTP election, where you can only vote for a single candidate'} as ErrorMessage)
+                }
+                else if (!lobbyService.isValidVote(lobbyCode, voteContent)) {
+                    return res.status(400).send({type: 'MALFORMATTED_REQUEST', message: 'Casted a vote for someone or something that isn\'t a candidate'} as ErrorMessage)
+                }
 
-            lobbyService.castVotes(lobbyCode, voteContent, 1)
+                lobbyService.castVotes(lobbyCode, voteContent, 1)
+        }
     }
+    else lobbyService.castVotes(lobbyCode, null, 1)
 
-    lobbyService.saveUserVoted(lobbyCode, req.headers.authorization)
+    const usersVoted = lobbyService.saveUserVoted(lobbyCode, req.headers.authorization)
+
+    io.of('/viewer').to(lobbyService.getViewerSocket(lobbyCode)).emit('vote-casted', usersVoted)
 
     return res.status(200).send()
 })

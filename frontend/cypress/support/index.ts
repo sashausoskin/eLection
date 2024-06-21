@@ -12,6 +12,8 @@ declare global {
 			createLobbyAndUser(): void;
 			resetServer(): void
 			createElection(electionInfo: ElectionInfo): void
+			createUser(): Cypress.Chainable<Cypress.Response<any>>
+			castVote(voteContent: string | string[]): void
 		}
 	}
 }

@@ -24,4 +24,14 @@ router.post<LobbyWithUserCreationResponse>('/createLobbyWithUser', (req, res) =>
     res.json({lobbyCode, hostID, participantID})
 })
 
+router.post('/createUser', (req, res) => {
+    const lobbyCode = req.body.lobbyCode
+
+    if (!lobbyCode) return res.status(400).send()
+
+    const participantID = lobbyService.createAuthenticatedUser(lobbyCode)
+
+    return res.json({participantID})
+})
+
 export default router

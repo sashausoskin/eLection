@@ -38,7 +38,10 @@ router.post('/createElection', (req, res) => {
         if (socket) io.of('/lobby').to(socket).emit('status-change', lobbyService.getLobbyStatus(lobbyCode))
     })
 
-    io.of('/viewer').to(lobbyService.getViewerSocket(lobbyCode)).emit('status-change', lobbyService.getLobbyStatus(lobbyCode))
+    const viewerSocket = lobbyService.getViewerSocket(lobbyCode)
+
+    io.of('/viewer').to(viewerSocket).emit('status-change', lobbyService.getLobbyStatus(lobbyCode))
+    io.of('/viewer').to(viewerSocket).emit('vote-casted', 0)
 
     return res.status(200).send()
 })

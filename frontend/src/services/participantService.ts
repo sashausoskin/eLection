@@ -2,7 +2,7 @@ import { apiClient } from '../util/apiClient'
 
 let lobbyCode: string | null = null
 let userCode: string | null = null
-let userID: string | null = null
+let participantID: string | null = null
 
 export const setUserCode = (newUserCode: string) => {
 	userCode = newUserCode
@@ -23,17 +23,17 @@ export const getLobbyCode = () => {
 
 export const setAuthToken = (newToken: string) => {
 	window.localStorage.setItem('participantID', newToken)
-	userID = newToken
+	participantID = newToken
 }
 
 export const getAuthToken = () => {
-	return userID
+	return participantID
 }
 
 export const clearValues = () => {
 	userCode = null
 	lobbyCode = null
-	userID = null
+	participantID = null
 
 	window.localStorage.clear()
 }
@@ -52,9 +52,9 @@ export const joinQueue = async (lobbyCode: string): Promise<string | undefined> 
 
 export const loadValuesFromStorage = () => {
 	lobbyCode = window.localStorage.getItem('participantLobbyCode')
-	userID = window.localStorage.getItem('participantID')
+	participantID = window.localStorage.getItem('participantID')
 
-	if (lobbyCode === null || userID === null) {
+	if (lobbyCode === null || participantID === null) {
 		throw new Error('Did not find values in local storage')
 	}
 }
@@ -62,6 +62,16 @@ export const loadValuesFromStorage = () => {
 export const validateStoredUserValues = async () => {
 	await apiClient.post('/lobby/validateUserInfo', {
 		lobbyCode,
-		userID,
+		userID: participantID,
+	})
+}
+
+export const castVote = async (voteContent: string | string[]) => {
+	await apiClient.post('/participant/castVote', {
+		lobbyCode, voteContent: voteContent || null
+	}, {
+		headers: {
+			Authorization: participantID
+		}
 	})
 }

@@ -1,7 +1,7 @@
 import { Field, Form, Formik, FormikHelpers } from 'formik'
 import { auhtenticateUserWithCode } from '../../services/lobbyHostService'
 import * as Yup from 'yup'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { StatusMessage } from '../../types'
 import { AxiosError } from 'axios'
 import { Mock } from 'vitest'
@@ -15,6 +15,18 @@ export const Authentication = ({
 }): React.ReactElement => {
 	const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
 	const statusMessageColor = statusMessage?.status === 'success' ? 'green' : 'red'
+
+    useEffect(() => {
+        if (!statusMessage) return
+
+        const timeout = setTimeout(() => {
+            setStatusMessage(null)
+        }, 5000)
+
+        // This clears the timeout when the component is unmounted
+        return () => clearTimeout(timeout)
+
+    }, [statusMessage])
 
 	const userCodeSchema = Yup.object({
 		userCode: Yup.string()

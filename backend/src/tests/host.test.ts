@@ -92,7 +92,7 @@ describe('With a lobby created and one authenticated user in lobby', () => {
                     await requestElectionCreation(lobbyCode, hostID, exampleElectionInfo)
                 }
                 if (newStatus.status === 'VOTING') {
-                    expect(newStatus.currentVote).toEqual(exampleElectionInfo)
+                    expect(newStatus.electionInfo).toEqual(exampleElectionInfo)
                     done()
                 }
             })

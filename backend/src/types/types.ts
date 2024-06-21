@@ -5,13 +5,23 @@ export interface LobbyInfo {
     availableUserCodes: string[]
     queuedUsers: Record<string, string|null>
     participants: Record<string, null|string>
-    currentVote : ElectionInfo | null
-    results: ElectionResults | null
+    currentVote : {
+        electionInfo: ElectionInfo,
+        results: ElectionResults
+    } | null
 }
+type LobbyStatus = 'STANDBY' | 'VOTING' | 'VOTING_ENDED'
 
-type LobbyStatus = 'STANDBY' | 'VOTING'
-
-export type LobbyStatusInfo = Omit<LobbyInfo, 'hostID' | 'availableUserCodes' | 'queuedUsers' | 'participants' | 'viewerSocket' | 'results'>
+export type LobbyStatusInfo = {
+    status: 'STANDBY'
+} | {
+    status: 'VOTING',
+    electionInfo: ElectionInfo
+} | {
+    status: 'VOTING_ENDED',
+    title: string,
+    results: ElectionResults
+}
 
 export type ErrorMessage = {
     type: ErrorType,
@@ -36,6 +46,10 @@ type ElectionInfoBase = {
      * @require(".")
      */
     candidates: string[]
+
+    /**
+     * The results of the election
+     */
 }
 
 interface FPRPElectionInfo extends ElectionInfoBase {
@@ -45,6 +59,12 @@ interface FPRPElectionInfo extends ElectionInfoBase {
 export type ElectionInfo = FPRPElectionInfo
 
 export interface ElectionResults {
-    votes: Record<string, number>
+    votes: Record<string | null, number>
+    emptyVotes: number
     usersVoted: string[]
+}
+
+export interface VoteInfo {
+    votes: number
+    participants: number
 }

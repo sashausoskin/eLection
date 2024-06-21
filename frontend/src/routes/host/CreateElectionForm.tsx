@@ -11,8 +11,6 @@ const CreateElectionForm = ({onSubmitForm} : {onSubmitForm?: ((values: ElectionI
     useEffect(() => {
         if (!statusMessage) return
 
-        console.log('Setting timeout')
-
         const timeout = setTimeout(() => {
             setStatusMessage(null)
         }, 5000)

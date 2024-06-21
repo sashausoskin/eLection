@@ -1,12 +1,16 @@
 import { useContext, useEffect, useState } from 'react'
-import { LobbyStatusInfo } from '../../types'
+import { ErrorMessage, LobbyStatusInfo } from '../../types'
 import { createLobbySocket } from '../../sockets'
 import * as participantService from '../../services/participantService'
 import { SetParticipantViewContext } from '../../Contexts'
 import FPTPVotingView from './voting_views/FPTPVotingView'
+import { AxiosError } from 'axios'
+import VoteSubmitted from './voting_views/VoteSubmitted'
 
 const LobbyView = () : JSX.Element => {
     const [lobbyStatus, setLobbyStatus] = useState<LobbyStatusInfo | null>(null)
+    const [canSubmitVote, setCanSubmitVote] = useState<boolean>(true)
+    const [hasVoted, setHasVoted] = useState<boolean>(false)
     const { setViewTab } = useContext(SetParticipantViewContext)
 
 
@@ -21,6 +25,7 @@ const LobbyView = () : JSX.Element => {
     
         const lobbySocket = createLobbySocket(lobbyCode, participantToken)
         lobbySocket.on('status-change', (newStatus : LobbyStatusInfo) => {
+            console.log('Got status', newStatus)
             setLobbyStatus(newStatus)
             })
         lobbySocket.on('connect_error', (err) => {
@@ -36,6 +41,31 @@ const LobbyView = () : JSX.Element => {
         })
         lobbySocket.connect()
 }, [setLobbyStatus, setViewTab])
+
+    const onSubmitVote = async (voteContent : string | string[]) => {
+        setCanSubmitVote(false)
+        try {
+            await participantService.castVote(voteContent)
+            setHasVoted(true)
+        }
+        catch (e) {
+            if (e instanceof AxiosError) {
+                switch ((e.response?.data as ErrorMessage).type) {
+                    case 'ALREADY_VOTED':
+                        setHasVoted(true)
+                        window.alert('You have already submitted your vote!')
+                        break
+                    case 'NO_ACTIVE_ELECTION':
+                        setLobbyStatus({status: 'STANDBY'})
+                        break
+                    default:
+                        window.alert(`An unexpected error occurred when submitting vote: ${e.response?.data.message}`)
+                        setCanSubmitVote(true)
+
+                }
+            }
+        }
+    }
     
 
     if (lobbyStatus === null) {
@@ -47,8 +77,12 @@ const LobbyView = () : JSX.Element => {
     }
 
     if (lobbyStatus.status === 'VOTING') {
-        if (lobbyStatus.currentVote.type === 'FPTP') {
-            return <FPTPVotingView electionInfo={lobbyStatus.currentVote} />
+        if (hasVoted) {
+            return <VoteSubmitted />
+        }
+
+        if (lobbyStatus.electionInfo.type === 'FPTP') {
+            return <FPTPVotingView electionInfo={lobbyStatus.electionInfo} canSubmitVote={canSubmitVote} onSubmitVote={onSubmitVote}/>
         }
     }
 

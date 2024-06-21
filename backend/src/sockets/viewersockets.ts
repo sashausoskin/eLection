@@ -4,7 +4,11 @@ import * as lobbyService from '../services/lobbyservice'
 import { io } from '../util/server'
 
 export const handleViewerSocketConnection = (viewerSocket : Socket) => {
-    viewerSocket.emit('status-change', lobbyService.getLobbyStatus(viewerSocket['lobbyCode']))
+    const lobbyCode = viewerSocket['lobbyCode']
+
+    viewerSocket.emit('status-change', lobbyService.getLobbyStatus(lobbyCode))
+    viewerSocket.emit('user-joined', lobbyService.getParticipants(lobbyCode).length)
+    if (lobbyService.isElectionActive(lobbyCode)) viewerSocket.emit('vote-casted', lobbyService.getNumberOfVotes(lobbyCode))
 
     viewerSocket.on('disconnect', () => {
         if (!lobbyService.isValidLobbyCode(viewerSocket['lobbyCode'])) return

@@ -15,11 +15,13 @@ export interface JoinLobbyResponse {
 export type ParticipantViewTab = 'joinLobby' | 'inQueue' | 'inLobby';
 
 export type LobbyStatusInfo = {
-	status: 'STANDBY',
-    currentVote: null
+    status: 'STANDBY'
 } | {
     status: 'VOTING',
-    currentVote: ElectionInfo
+    electionInfo: ElectionInfo
+} | {
+    status: 'VOTING_ENDED',
+    title: string,
 }
 
 
@@ -48,3 +50,10 @@ export interface FPTPElectionInfo extends ElectionInfoBase {
 }
 
 export type ElectionInfo = FPTPElectionInfo
+
+export type ErrorMessage = {
+    type: ErrorType,
+    message: string
+}
+
+type ErrorType = 'MISSING_AUTH_TOKEN' | 'MISSING_LOBBY_CODE' | 'UNAUTHORIZED' | 'NO_ACTIVE_ELECTION' | 'MALFORMATTED_REQUEST' | 'ALREADY_VOTED'

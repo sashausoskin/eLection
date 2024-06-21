@@ -30,7 +30,7 @@ export const createNewLobby = (): {lobbyCode: string, hostID: string} => {
     const userCodes = generateCodes()
 
 
-    lobbyInfo[lobbyCode] = {hostID: hostID, status: 'STANDBY', availableUserCodes: userCodes, queuedUsers: {}, participants: {}, currentVote: null, viewerSocket: null, results: null}
+    lobbyInfo[lobbyCode] = {hostID: hostID, status: 'STANDBY', availableUserCodes: userCodes, queuedUsers: {}, participants: {}, currentVote: null, viewerSocket: null}
 
     return {lobbyCode, hostID}
 }
@@ -130,22 +130,36 @@ export const getLobby = (lobbyCode : string) => {
 }
 
 export const getLobbyStatus = (lobbyCode : string) : LobbyStatusInfo => {
-    const { status, currentVote} = lobbyInfo[lobbyCode]
+    const status = lobbyInfo[lobbyCode].status
 
-    return { status, currentVote}
+    switch (status) {
+        case 'STANDBY': return { status }
+        case 'VOTING': return {status, electionInfo: lobbyInfo[lobbyCode].currentVote.electionInfo}
+        case 'VOTING_ENDED': return {status, results: lobbyInfo[lobbyCode].currentVote.results, title: lobbyInfo[lobbyCode].currentVote.electionInfo.title}
+    }
+
+
 } 
+
+export const getNumberOfVotes = (lobbyCode : string) : number => {
+    return lobbyInfo[lobbyCode].currentVote.results.usersVoted.length
+}
 
 export const createElection = (lobbyCode : string, electionInfo : ElectionInfo) => {
     lobbyInfo[lobbyCode].status = 'VOTING'
-    lobbyInfo[lobbyCode].currentVote = electionInfo
+    lobbyInfo[lobbyCode].currentVote = {electionInfo, results: {votes: {}, usersVoted: [], emptyVotes: 0}}
 
 
 
-    lobbyInfo[lobbyCode].results = {votes: {}, usersVoted: []}
+    lobbyInfo[lobbyCode].currentVote.results = {votes: {}, usersVoted: [], emptyVotes: 0}
 
     electionInfo.candidates.forEach((candidate) => {
-        lobbyInfo[lobbyCode].results.votes[candidate] = 0
+        lobbyInfo[lobbyCode].currentVote.results.votes[candidate] = 0
     })
+}
+
+export const isElectionActive = (lobbyCode : string) : boolean => {
+    return lobbyInfo[lobbyCode].status === 'VOTING'
 }
 
 export const isParticipantConnected = (lobbyCode : string, participantID : string) => {
@@ -173,18 +187,29 @@ export const isValidVote = (lobbyCode : string, candidate : string | string[]) :
         return false
     }
     else {
-        return lobbyInfo[lobbyCode].currentVote.candidates.includes(candidate)
+        return lobbyInfo[lobbyCode].currentVote.electionInfo.candidates.includes(candidate)
     }
 }
 
-export const castVotes = (lobbyCode : string, candidate : string, votes : number) => {
-    lobbyInfo[lobbyCode].results.votes[candidate] += votes
+export const castVotes = (lobbyCode : string, candidate : string | null, votes : number) => {
+    if (candidate === null) {
+        lobbyInfo[lobbyCode].currentVote.results.emptyVotes += votes
+    }
+
+    lobbyInfo[lobbyCode].currentVote.results.votes[candidate] += votes
 }
 
+/**
+ * 
+ * @param lobbyCode The code of the lobby where the info that a user has voted should be saved.
+ * @param participantID The ID of the participant whose vote information should be saved
+ * @returns How many users have voted in total
+ */
 export const saveUserVoted = (lobbyCode : string, participantID : string) => {
-    lobbyInfo[lobbyCode].results.usersVoted.push(participantID)
+    lobbyInfo[lobbyCode].currentVote.results.usersVoted.push(participantID)
+    return lobbyInfo[lobbyCode].currentVote.results.usersVoted.length
 }
 
 export const hasUserVoted = (lobbyCode : string, participantID : string) : boolean => {
-    return lobbyInfo[lobbyCode].results.usersVoted.includes(participantID)
+    return lobbyInfo[lobbyCode].currentVote.results.usersVoted.includes(participantID)
 }

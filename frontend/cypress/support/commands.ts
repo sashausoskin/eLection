@@ -71,3 +71,35 @@ Cypress.Commands.add('createElection', (electionInfo) => {
 		})
 	})
 })
+
+Cypress.Commands.add('castVote', (voteContent) => {
+	cy.get('@lobbyCode').then((lobbyCode) => {
+		cy.get('@participantID').then((participantID) => {
+			cy.request({
+				method: 'post',
+				url: `${Cypress.env('BACKEND_URL')}/participant/castVote`,
+				headers: {Authorization: participantID},
+				body: {lobbyCode, voteContent}
+			})
+		})
+	})
+})
+
+Cypress.Commands.add('createUser', () => {
+	cy.get('@lobbyCode').then((lobbyCode) => {
+		cy.request('post', `${Cypress.env('BACKEND_URL')}/lobby/joinLobby`, {lobbyCode}).then((res) => {
+			const userCode = res.body.userCode
+
+			cy.get('@hostID').then((hostID) => {
+				return cy.request({
+					method: 'post',
+					url: `${Cypress.env('BACKEND_URL')}/lobby/authenticateUser`,
+					body: {lobbyCode, userCode},
+					headers: {
+						"Authorization": hostID
+					}
+				})
+			})
+		})
+	})
+})

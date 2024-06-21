@@ -6,6 +6,8 @@ import ElectionInfoView from './viewer/ElectionInfo'
 const Viewer = () => {
     const [errorText, setErrorText] = useState<string | null>(null)
     const [lobbyStatus, setLobbyStatus] = useState<LobbyStatusInfo>()
+    const [votesCasted, setVotesCasted] = useState<number>(0)
+    const [usersInLobby, setUsersInLobby] = useState<number>(0)
 
     const lobbyCode = window.localStorage.getItem('hostLobbyCode')
     const hostID = window.localStorage.getItem('hostID')
@@ -42,6 +44,14 @@ const Viewer = () => {
             setLobbyStatus(lobbyStatus)
         })
 
+        viewerSocket.on('user-joined', (userNumber : number) => {
+            setUsersInLobby(userNumber)
+        })
+
+        viewerSocket.on('vote-casted', (votesCasted : number) => {
+            setVotesCasted(votesCasted)
+        })
+
         viewerSocket.connect()
 
         //This is done to circumvent a TypeScript error as writing this directly to the return value causes an error
@@ -63,11 +73,12 @@ const Viewer = () => {
             <a>Go to {window.location.host}, select "Participate" and enter the lobby code</a>
             <h1 data-testid="lobbyCode">{lobbyCode}</h1>
             <a>on your device</a>
+            <p><a data-testid="users-joined">{usersInLobby}</a> participants in lobby</p>
             </>
     }
 
     else if (lobbyStatus.status === 'VOTING') {
-        return <ElectionInfoView electionInfo={lobbyStatus.currentVote} />
+        return <ElectionInfoView electionInfo={lobbyStatus.electionInfo} votesCasted={votesCasted} participantAmount={usersInLobby}/>
     }
 }
 
