@@ -1,6 +1,6 @@
 const VoteSubmitted = () : JSX.Element => {
     return <>
-        <a>Your vote has been succesfully submitted! Thank you for participating!</a>
+        <a data-testid="vote-submitted-header">Your vote has been succesfully submitted! Thank you for participating!</a>
     </>
 }
 

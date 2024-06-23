@@ -1,12 +1,16 @@
 import { AxiosError } from 'axios'
 import { ErrorMessage, Field, FieldArray, Form, Formik, FormikHelpers } from 'formik'
 import * as Yup from 'yup'
-import { createElection } from '../../services/lobbyHostService'
+import { createElection, endElection } from '../../services/lobbyHostService'
 import { useEffect, useState } from 'react'
-import { ElectionInfo, StatusMessage } from '../../types'
+import { ElectionInfo,  ErrorMessage as ResponseErrorMessage, StatusMessage } from '../../types'
 
-const CreateElectionForm = ({onSubmitForm} : {onSubmitForm?: ((values: ElectionInfo) => undefined)}) => {
+const CreateElectionForm = ({onSubmitForm, onEndElectionClick} : 
+    {onSubmitForm?: ((values: ElectionInfo) => undefined),
+    onEndElectionClick?: () => void}) => {
+
     const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
+    const [isElectionActive, setIsElectionActive] = useState<boolean>(false)
 
     useEffect(() => {
         if (!statusMessage) return
@@ -40,12 +44,31 @@ const CreateElectionForm = ({onSubmitForm} : {onSubmitForm?: ((values: ElectionI
                 await createElection(values)
                 formikHelpers.resetForm()
                 setStatusMessage({status: 'success', message: 'Succesfully created the election'})
+                setIsElectionActive(true)
             }
             catch(e) {
                 if (e instanceof AxiosError) {
                     window.alert(e.message)
                 }
             }
+    }
+
+    const defaultOnEndElectionClick = async () => {
+        try {
+            await endElection()
+            setIsElectionActive(false)
+            setStatusMessage({status: 'success', message: 'Ended the election'})
+        }
+        catch (e) {
+            if (e instanceof AxiosError) {
+                switch((e.response?.data as ResponseErrorMessage).type) {
+                    case 'NO_ACTIVE_ELECTION':
+                        window.alert('There is no election to end!')
+                        setIsElectionActive(false)
+
+                }
+            }
+        }
     }
 
     const initialValues : ElectionInfo = {
@@ -55,6 +78,7 @@ const CreateElectionForm = ({onSubmitForm} : {onSubmitForm?: ((values: ElectionI
     }
 
     return (
+        <>
         <Formik
             initialValues ={initialValues}
             onSubmit={(values : ElectionInfo, helpers : FormikHelpers<ElectionInfo>) => onSubmitForm !== undefined ? onSubmitForm(values) : defaultOnSubmit(values, helpers)}
@@ -62,8 +86,8 @@ const CreateElectionForm = ({onSubmitForm} : {onSubmitForm?: ((values: ElectionI
         >
             {({ values }) => (
                 <Form>
-                    <Field type="radio" name="type" value="FPTP" data-testid="fptp_radio"/>First-past-the-post election
-                    <Field type="radio" name="type" value="ranked" data-testid="ranked_radio"/>Ranked election
+                    <Field type="radio" name="type" disabled={isElectionActive} value="FPTP" data-testid="fptp_radio"/>First-past-the-post election
+                    <Field type="radio" name="type" disabled={isElectionActive} value="ranked" data-testid="ranked_radio"/>Ranked election
                     <ErrorMessage
                         name="type"
                         component="div"
@@ -76,6 +100,7 @@ const CreateElectionForm = ({onSubmitForm} : {onSubmitForm?: ((values: ElectionI
                         name="title"
                         data-testid="title-field"
                         placeholder="Speaker 2024"
+                        disabled={isElectionActive}
                         type="text"
                     />
                     <ErrorMessage
@@ -96,6 +121,7 @@ const CreateElectionForm = ({onSubmitForm} : {onSubmitForm?: ((values: ElectionI
                                         placeholder="Barack Obama"
                                         type="string"
                                         data-testid={'candidate-field'}
+                                        disabled={isElectionActive}
                                         />
                                     <ErrorMessage 
                                         name={`candidates.${index}`}
@@ -103,19 +129,21 @@ const CreateElectionForm = ({onSubmitForm} : {onSubmitForm?: ((values: ElectionI
                                         data-testid="candidate-error"
                                         className="field-error"
                                     />
-                                    <button type="button" disabled={values.candidates.length <= 2}onClick={() => remove(index)} data-testid="remove-candidate-button">X</button>
+                                    <button type="button" disabled={values.candidates.length <= 2 || isElectionActive}onClick={() => remove(index)} data-testid="remove-candidate-button">X</button>
                                     </div>
                             ))
                             }
-                            <button type="button" onClick={() => push('')} data-testid="add-candidate-button">+</button>
+                            <button disabled={isElectionActive}type="button" onClick={() => push('')} data-testid="add-candidate-button">+</button>
                             </>
                         )}
                     </FieldArray>
-                    <button data-testid="create-election-submit" type="submit">Create</button>
-                    {statusMessage && <a data-testid={`status-${statusMessage.status}`}style={{color: statusMessage.status === 'success' ? 'green' : 'red'}}>{statusMessage.message}</a>}
+                    <button disabled={isElectionActive} data-testid="create-election-submit" type="submit">Create</button>
                 </Form>
             )}
         </Formik>
+        <button type='button' data-testid="end-election-button" onClick={() => onEndElectionClick !== undefined ? onEndElectionClick() : defaultOnEndElectionClick()} disabled={!isElectionActive}>End election</button>
+        {statusMessage && <a data-testid={`status-${statusMessage.status}`}style={{color: statusMessage.status === 'success' ? 'green' : 'red'}}>{statusMessage.message}</a>}
+        </>
     )
 }
 

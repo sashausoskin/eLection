@@ -16,4 +16,6 @@
 | 19.6 | 6  | Added the ability for the viewer to show election information, added end-to-end tests for the new functionality, started working on casting votes|
 | 20.6 | 5  | Worked on the unit tests for backend, had trouble with socket connections in unit tests, minor refactoring, started setting up code coverage|
 | 21.6 | 5  | Worked on end-to-end tests, added more backend functionality for casting votes, added the ability for the viewer to show the amount of votes and participants, set up Codecov|
-| total   | 64.5  | | 
+| 22.6 | 2  | Added the results screen and ending elections|
+| 23.6 | 2  | Tests for the new functionality|
+| total   | 69.5  | | 

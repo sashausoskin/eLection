@@ -10,7 +10,7 @@ export interface LobbyInfo {
         results: ElectionResults
     } | null
 }
-type LobbyStatus = 'STANDBY' | 'VOTING' | 'VOTING_ENDED'
+type LobbyStatus = 'STANDBY' | 'VOTING' | 'ELECTION_ENDED'
 
 export type LobbyStatusInfo = {
     status: 'STANDBY'
@@ -18,9 +18,8 @@ export type LobbyStatusInfo = {
     status: 'VOTING',
     electionInfo: ElectionInfo
 } | {
-    status: 'VOTING_ENDED',
-    title: string,
-    results: ElectionResults
+    status: 'ELECTION_ENDED',
+    results?: ElectionResultsInfo
 }
 
 export type ErrorMessage = {
@@ -63,6 +62,8 @@ export interface ElectionResults {
     emptyVotes: number
     usersVoted: string[]
 }
+
+export type ElectionResultsInfo = Omit<ElectionResults, 'usersVoted'> & Pick<ElectionInfo, 'type' | 'title'>
 
 export interface VoteInfo {
     votes: number

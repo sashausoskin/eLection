@@ -30,6 +30,7 @@ export const Host = () => {
     <>
         <Authentication lobbyCode={lobbyCode} />
         <CreateElectionForm />
+		<br />
         <button onClick={() => window.open('/viewer', '_blank', 'popup=true')}>Open the viewer window</button>
     </>
     )

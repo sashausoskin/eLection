@@ -104,6 +104,13 @@ describe('With one lobby created and one user in queue', () => {
             .send({ userCode})
         
         expect(authRequest.status).toBe(401)
+
+        // No user code
+        await request(app).post('/lobby/authenticateUser')
+            .set('Authorization', hostID)
+            .send({ lobbyCode })
+        
+        expect(authRequest.status).toBe(401)
     })
 
     test('host cannot authenticate with invalid token', async () => {
@@ -176,6 +183,17 @@ describe('With one lobby created and one user in queue', () => {
                 .send({lobbyCode, userCode})
         })
     })
+
+    test('cannot connect twice to the queue socket', (done) => {
+        queueSocket = ioc('http://localhost:3000/queue', {auth: {lobbyCode, userCode}, multiplex: false})
+        queueSocket.on('connect', async () => {
+            const queueSocket2 = ioc('http://localhost:3000/queue', {auth: {lobbyCode, userCode}, multiplex: false})
+            queueSocket2.on('connect_error', () => {
+                queueSocket2.disconnect()
+                done()
+            })
+        })
+    })
     test('user validation works', async () => {
         const userID = lobbyService.createAuthenticatedUser(lobbyCode)
 
@@ -233,8 +251,8 @@ describe('With one lobby created and one user in queue', () => {
         test('cannot connect twice', (done) => {
             const queuedSocket2 = ioc('http://localhost:3000/queue', {auth: {lobbyCode, userCode}, multiplex: false})
             queuedSocket2.on('connect', () => {
-                queuedSocket2.disconnect()
                 testSocketConnection(done, lobbyCode, userCode, false)
+                queuedSocket2.disconnect()
             })
         })
     })

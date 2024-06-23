@@ -20,8 +20,8 @@ export type LobbyStatusInfo = {
     status: 'VOTING',
     electionInfo: ElectionInfo
 } | {
-    status: 'VOTING_ENDED',
-    title: string,
+    status: 'ELECTION_ENDED',
+    results: ElectionResultsInfo
 }
 
 
@@ -57,3 +57,16 @@ export type ErrorMessage = {
 }
 
 type ErrorType = 'MISSING_AUTH_TOKEN' | 'MISSING_LOBBY_CODE' | 'UNAUTHORIZED' | 'NO_ACTIVE_ELECTION' | 'MALFORMATTED_REQUEST' | 'ALREADY_VOTED'
+
+export interface ElectionResults {
+    votes: Record<string, number>
+    emptyVotes: number
+    usersVoted: string[]
+}
+
+export type ElectionResultsInfo = Omit<ElectionResults, 'usersVoted'> & Pick<ElectionInfo, 'type' | 'title'>
+
+export interface ResultCandidateInfo {
+    name: string
+    votes: number
+}

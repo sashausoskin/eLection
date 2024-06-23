@@ -103,3 +103,14 @@ Cypress.Commands.add('createUser', () => {
 		})
 	})
 })
+
+Cypress.Commands.add('endElection', function () {
+	cy.request({
+		method: 'post',
+		url: `${Cypress.env('BACKEND_URL')}/host/endElection`,
+		body: {lobbyCode: this.lobbyCode},
+		headers: {
+			'Authorization': this.hostID
+		}
+	})
+})

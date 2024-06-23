@@ -15,7 +15,7 @@ const FPTPVotingView = ({electionInfo, canSubmitVote, onSubmitVote} : {electionI
             <Form>
                 {electionInfo.candidates.map((candidate) => 
                     <div key={candidate} style={{backgroundColor: 'blue', display: 'flex', flexDirection: 'row', padding: '5%', margin: '10%', alignContent: 'center'}}>
-                        <Field type="radio" name="voteContent" value={candidate} />
+                        <Field data-testid="candidate-radio" type="radio" name="voteContent" value={candidate} />
                         <a>{candidate}</a>
                     </div>
                 )}

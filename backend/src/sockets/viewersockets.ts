@@ -6,7 +6,7 @@ import { io } from '../util/server'
 export const handleViewerSocketConnection = (viewerSocket : Socket) => {
     const lobbyCode = viewerSocket['lobbyCode']
 
-    viewerSocket.emit('status-change', lobbyService.getLobbyStatus(lobbyCode))
+    viewerSocket.emit('status-change', lobbyService.getLobbyStatus(lobbyCode, true))
     viewerSocket.emit('user-joined', lobbyService.getParticipants(lobbyCode).length)
     if (lobbyService.isElectionActive(lobbyCode)) viewerSocket.emit('vote-casted', lobbyService.getNumberOfVotes(lobbyCode))
 

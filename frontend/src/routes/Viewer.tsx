@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { createViewerSocket } from '../sockets'
 import { LobbyStatusInfo } from '../types'
 import ElectionInfoView from './viewer/ElectionInfo'
+import ElectionResults from './viewer/ElectionResults'
 
 const Viewer = () => {
     const [errorText, setErrorText] = useState<string | null>(null)
@@ -79,6 +80,11 @@ const Viewer = () => {
 
     else if (lobbyStatus.status === 'VOTING') {
         return <ElectionInfoView electionInfo={lobbyStatus.electionInfo} votesCasted={votesCasted} participantAmount={usersInLobby}/>
+    }
+
+    else if (lobbyStatus.status === 'ELECTION_ENDED') {
+        console.log('Ended election')
+        return <ElectionResults results={lobbyStatus.results} />
     }
 }
 

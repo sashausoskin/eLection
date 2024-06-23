@@ -1,12 +1,11 @@
-import { Socket, io } from 'socket.io-client'
+import { Socket } from 'socket.io-client'
 import * as lobbyService from '../services/lobbyservice'
 import request from 'supertest'
 import { app, server } from '../util/server'
 import { LobbyWithUserCreationResponse } from '../types/testTypes'
-import { ElectionInfo, LobbyStatusInfo } from '../types/types'
+import { ElectionInfo, ErrorMessage } from '../types/types'
 
 describe('With a lobby created and one authenticated user in lobby', () => {
-    let participantID : string
     let hostID : string
     let lobbyCode : string
     let lobbySocket : Socket
@@ -14,7 +13,6 @@ describe('With a lobby created and one authenticated user in lobby', () => {
     beforeEach(async () => {
         lobbyService.resetLobbies()
         const createLobbyResponse = (await request(app).post('/testing/createLobbyWithUser')).body as LobbyWithUserCreationResponse
-        participantID = createLobbyResponse.participantID
         hostID = createLobbyResponse.hostID
         lobbyCode = createLobbyResponse.lobbyCode
     })
@@ -84,18 +82,46 @@ describe('With a lobby created and one authenticated user in lobby', () => {
             const createElectionResponse = await requestElectionCreation(lobbyCode, hostID, exampleElectionInfo)
             expect(createElectionResponse.status).toBe(200)
         })
+    })
 
-        test('Participant sockets receive a message when an election is created', (done) => {
-            lobbySocket = io('http://localhost:3000/lobby', {auth: {lobbyCode, participantID}})
-            lobbySocket.on('status-change', async (newStatus : LobbyStatusInfo) => {
-                if (newStatus.status === 'STANDBY') {
-                    await requestElectionCreation(lobbyCode, hostID, exampleElectionInfo)
-                }
-                if (newStatus.status === 'VOTING') {
-                    expect(newStatus.electionInfo).toEqual(exampleElectionInfo)
-                    done()
-                }
+    describe('When ending an election', () => {
+        const requestElectionEnd = (lobbyCode? : string, hostID? : string) => (
+            request(app).post('/host/endElection')
+                .set('Authorization', hostID)
+                .send({lobbyCode})
+                .then()
+        )
+
+        describe('with an active election', () => {
+            beforeEach(() => {
+                request(app).post('/host/createElection')
+                    .set('Authorization', hostID)
+                    .send({lobbyCode, electionInfo: {type: 'FPTP', title: 'Test', candidates: ['Candidate 1', 'Candidate 2']} as ElectionInfo})
+                    .then()
             })
+
+            test('cannot end an election with invalid or missing info', async () => {
+                let endElectionResponse = await requestElectionEnd(lobbyCode === '1234' ? '4321' : '1234', hostID)
+                expect(endElectionResponse.status).toBe(404)
+                expect((endElectionResponse.body as ErrorMessage).type).toBe('UNAUTHORIZED')
+
+                endElectionResponse = await requestElectionEnd(lobbyCode, '11111111-1111-1111-1111-11111111111')
+                expect(endElectionResponse.status).toBe(403)
+                expect((endElectionResponse.body as ErrorMessage).type).toBe('UNAUTHORIZED') 
+            })
+
+            test('can end an election with valid info', async () => {
+                const endElectionResponse = await requestElectionEnd(lobbyCode, hostID)
+
+                expect(endElectionResponse.status).toBe(200)
+            })
+        })
+
+        test('cannot end an election when there is no election going on', async () => {
+            const endElectionResponse = await requestElectionEnd(lobbyCode, hostID)
+
+            expect(endElectionResponse.status).toBe(405)
+            expect((endElectionResponse.body as ErrorMessage).type).toBe('NO_ACTIVE_ELECTION')
         })
     })
 })

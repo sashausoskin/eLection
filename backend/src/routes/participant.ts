@@ -23,7 +23,7 @@ router.use((req, res, next) => {
 
 router.post('/castVote', (req, res) => {
     const lobbyCode = req.body.lobbyCode
-    const currentLobbyStatus = lobbyService.getLobbyStatus(lobbyCode)
+    const currentLobbyStatus = lobbyService.getLobbyStatus(lobbyCode, false)
 
     if (currentLobbyStatus.status !== 'VOTING') {
         return res.status(405).send({type: 'NO_ACTIVE_ELECTION', message: 'You casted a vote even though there isn\'t an election going on.'} as ErrorMessage)

@@ -1,6 +1,6 @@
 import express from 'express'
 import * as lobbyService from '../services/lobbyservice'
-import { ElectionInfo, ErrorMessage } from '../types/types'
+import { ElectionInfo, ErrorMessage, LobbyStatusInfo } from '../types/types'
 import Ajv from 'ajv'
 import * as electioninfo_schema from '../types/ElectionInfo_schema.json'
 import { io } from '../util/server'
@@ -35,15 +35,36 @@ router.post('/createElection', (req, res) => {
     lobbyService.createElection(lobbyCode, electionInfo as ElectionInfo)
 
     lobbyService.getAllParticipantSockets(lobbyCode).forEach(socket => {
-        if (socket) io.of('/lobby').to(socket).emit('status-change', lobbyService.getLobbyStatus(lobbyCode))
+        if (socket) io.of('/lobby').to(socket).emit('status-change', lobbyService.getLobbyStatus(lobbyCode, true))
     })
 
     const viewerSocket = lobbyService.getViewerSocket(lobbyCode)
 
-    io.of('/viewer').to(viewerSocket).emit('status-change', lobbyService.getLobbyStatus(lobbyCode))
+    io.of('/viewer').to(viewerSocket).emit('status-change', lobbyService.getLobbyStatus(lobbyCode, true))
     io.of('/viewer').to(viewerSocket).emit('vote-casted', 0)
 
     return res.status(200).send()
+})
+
+router.post('/endElection', (req,res) => {
+    const lobbyCode = req.body.lobbyCode
+
+    if (!lobbyService.isElectionActive(lobbyCode)) {
+        return res.status(405).json({type: 'NO_ACTIVE_ELECTION', message: 'There isn\'t currently an active election going on in this lobby!'} as ErrorMessage)
+    }
+
+    lobbyService.endElection(lobbyCode)
+
+    lobbyService.getAllParticipantSockets(lobbyCode).forEach((socket) => {
+        io.of('/lobby').to(socket).emit('status-change', {status:'ELECTION_ENDED' } as LobbyStatusInfo)
+    })
+
+    const lobbyStatus = lobbyService.getLobbyStatus(lobbyCode, true)
+    const viewerSocket = lobbyService.getViewerSocket(lobbyCode)
+
+    io.of('/viewer').to(viewerSocket).emit('status-change', lobbyStatus)
+
+    return res.send()
 })
 
 export default router

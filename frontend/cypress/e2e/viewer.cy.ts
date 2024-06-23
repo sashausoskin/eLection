@@ -54,5 +54,11 @@ describe ("In viewer", () => {
 
             cy.get("[data-testid='participant-amount']").contains('2')
         })
+
+        it('sees when the election ends', function() {
+            cy.endElection()
+
+            cy.get("[data-testid='results-header']")
+        })
     })
 })

@@ -14,6 +14,7 @@ declare global {
 			createElection(electionInfo: ElectionInfo): void
 			createUser(): Cypress.Chainable<Cypress.Response<any>>
 			castVote(voteContent: string | string[]): void
+			endElection(): void
 		}
 	}
 }

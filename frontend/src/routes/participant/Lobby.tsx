@@ -6,6 +6,7 @@ import { SetParticipantViewContext } from '../../Contexts'
 import FPTPVotingView from './voting_views/FPTPVotingView'
 import { AxiosError } from 'axios'
 import VoteSubmitted from './voting_views/VoteSubmitted'
+import ElectionEnded from './voting_views/ElectionEnded'
 
 const LobbyView = () : JSX.Element => {
     const [lobbyStatus, setLobbyStatus] = useState<LobbyStatusInfo | null>(null)
@@ -25,7 +26,7 @@ const LobbyView = () : JSX.Element => {
     
         const lobbySocket = createLobbySocket(lobbyCode, participantToken)
         lobbySocket.on('status-change', (newStatus : LobbyStatusInfo) => {
-            console.log('Got status', newStatus)
+            setHasVoted(false)
             setLobbyStatus(newStatus)
             })
         lobbySocket.on('connect_error', (err) => {
@@ -72,19 +73,26 @@ const LobbyView = () : JSX.Element => {
         return <a>Connecting...</a>
     }
 
-    if (lobbyStatus.status === 'STANDBY') {
-        return <a>Waiting for the next election...</a>
+    switch (lobbyStatus.status) {
+        case 'STANDBY' :
+            return <a>Waiting for the next election...</a>
+        
+    
+        case 'VOTING':
+            if (hasVoted) {
+                return <VoteSubmitted />
+            }
+    
+            if (lobbyStatus.electionInfo.type === 'FPTP') {
+                return <FPTPVotingView electionInfo={lobbyStatus.electionInfo} canSubmitVote={canSubmitVote} onSubmitVote={onSubmitVote}/>
+            }
+            break
+
+        case 'ELECTION_ENDED': 
+            return <ElectionEnded />
     }
 
-    if (lobbyStatus.status === 'VOTING') {
-        if (hasVoted) {
-            return <VoteSubmitted />
-        }
 
-        if (lobbyStatus.electionInfo.type === 'FPTP') {
-            return <FPTPVotingView electionInfo={lobbyStatus.electionInfo} canSubmitVote={canSubmitVote} onSubmitVote={onSubmitVote}/>
-        }
-    }
 
     return <></>
 }

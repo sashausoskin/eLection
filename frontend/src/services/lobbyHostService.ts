@@ -59,3 +59,9 @@ export const createElection = async (electionInfo : ElectionInfo) => {
 		}}
 	)
 }
+
+export const endElection = async () => {
+	await apiClient.post('/host/endElection', {lobbyCode}, {headers: {
+		Authorization: hostID
+	}})
+}

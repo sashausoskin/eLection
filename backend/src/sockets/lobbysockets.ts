@@ -1,13 +1,25 @@
 import { Socket } from 'socket.io'
 import { ExtendedError } from 'socket.io/dist/namespace'
 import * as lobbyService from '../services/lobbyservice'
+import { LobbyStatusInfo } from '../types/types'
 
 export const handleParticipantSocketConnection = (participantSocket : Socket) => {
-    participantSocket.emit('status-change', lobbyService.getLobbyStatus(participantSocket['lobbyCode']))
+    const lobbyCode = participantSocket['lobbyCode']
+    const participantID = participantSocket['participantID']
+
+    const lobbyStatus = lobbyService.getLobbyStatus(lobbyCode, false)
+
+
+    if (lobbyStatus.status === 'VOTING' && lobbyService.hasUserVoted(lobbyCode, participantID)) {
+        participantSocket.emit('status-change', {status: 'STANDBY'} as LobbyStatusInfo)
+    }
+    else {
+        participantSocket.emit('status-change', lobbyStatus)
+    }
 
     participantSocket.on('disconnect', () => {
         if (!lobbyService.isValidLobbyCode(participantSocket['lobbyCode'])) return
-        lobbyService.removeParticipantSocket(participantSocket['lobbyCode'], participantSocket['authToken'])
+        lobbyService.removeParticipantSocket(participantSocket['lobbyCode'], participantSocket['participantID'])
     })
 }
 
@@ -37,7 +49,7 @@ export const isParticipantMiddleware = async (socket : Socket, next: (err?: Exte
 
 
     socket['lobbyCode'] = lobbyCode
-    socket['authToken'] = authToken
+    socket['participantID'] = authToken
 
     lobbyService.assignSocketIDToParticipant(lobbyCode, authToken, socket.id)
 

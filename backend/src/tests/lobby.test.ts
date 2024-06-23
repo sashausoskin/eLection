@@ -3,9 +3,11 @@ import { agent as request } from 'supertest'
 import { app, server } from '../util/server'
 import { LobbyWithUserCreationResponse } from '../types/testTypes'
 import { io as ioc, Socket as ClientSocket } from 'socket.io-client'
+import { ElectionInfo, LobbyStatusInfo } from '../types/types'
 
 describe('With a lobby created and one authenticated user in lobby', () => {
     let participantID : string
+    let hostID : string
     let lobbyCode : string
     let lobbySocket : ClientSocket 
 
@@ -14,6 +16,7 @@ describe('With a lobby created and one authenticated user in lobby', () => {
         const createLobbyResponse = (await request(app).post('/testing/createLobbyWithUser')).body as LobbyWithUserCreationResponse
         participantID = createLobbyResponse.participantID
         lobbyCode = createLobbyResponse.lobbyCode
+        hostID = createLobbyResponse.hostID
     })
 
     beforeAll((done) => {
@@ -91,6 +94,31 @@ describe('With a lobby created and one authenticated user in lobby', () => {
                     lobbySocket2.disconnect()
                     done()
                 })
+            })
+        })
+
+        test('can reconnect after disconnection', (done) => {
+            testSocketConnection(lobbyCode, participantID, null, true)
+            lobbySocket.disconnect()
+            testSocketConnection(lobbyCode, participantID, done, true)
+        })
+
+        test('will receive the STANDBY status if has casted a vote', (done) => {
+            request(app).post('/host/createElection')
+                .set('Authorization', hostID)
+                .send({lobbyCode, electionInfo: {type: 'FPTP', title: 'Test', candidates: ['Candidate 1', 'Candidate 2']} as ElectionInfo})
+                //Without then() Jest gets stuck.
+                .then()
+            
+            request(app).post('/participant/castVote')
+                .set('Authorization', participantID)
+                .send({lobbyCode, voteContent: 'Candidate 1'})
+                .then()
+            
+            testSocketConnection(lobbyCode, participantID, null, true)
+            lobbySocket.on('status-change', (newStatus : LobbyStatusInfo) => {
+                expect(newStatus.status).toBe('STANDBY')
+                done()
             })
         })
     })

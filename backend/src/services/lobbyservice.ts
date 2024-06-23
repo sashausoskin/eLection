@@ -129,13 +129,20 @@ export const getLobby = (lobbyCode : string) => {
     return lobbyInfo[lobbyCode]
 }
 
-export const getLobbyStatus = (lobbyCode : string) : LobbyStatusInfo => {
+export const getLobbyStatus = (lobbyCode : string, isHost : boolean) : LobbyStatusInfo => {
     const status = lobbyInfo[lobbyCode].status
 
     switch (status) {
         case 'STANDBY': return { status }
         case 'VOTING': return {status, electionInfo: lobbyInfo[lobbyCode].currentVote.electionInfo}
-        case 'VOTING_ENDED': return {status, results: lobbyInfo[lobbyCode].currentVote.results, title: lobbyInfo[lobbyCode].currentVote.electionInfo.title}
+        case 'ELECTION_ENDED': 
+            if (isHost) return {status, results: 
+            {title: lobbyInfo[lobbyCode].currentVote.electionInfo.title,
+            votes: lobbyInfo[lobbyCode].currentVote.results.votes,
+            type: lobbyInfo[lobbyCode].currentVote.electionInfo.type,
+            emptyVotes: lobbyInfo[lobbyCode].currentVote.results.emptyVotes}, }
+
+            return {status}
     }
 
 
@@ -160,6 +167,10 @@ export const createElection = (lobbyCode : string, electionInfo : ElectionInfo) 
 
 export const isElectionActive = (lobbyCode : string) : boolean => {
     return lobbyInfo[lobbyCode].status === 'VOTING'
+}
+
+export const endElection = (lobbyCode : string) => {
+    lobbyInfo[lobbyCode].status = 'ELECTION_ENDED'
 }
 
 export const isParticipantConnected = (lobbyCode : string, participantID : string) => {
