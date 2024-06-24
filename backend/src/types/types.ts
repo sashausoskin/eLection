@@ -45,17 +45,23 @@ type ElectionInfoBase = {
      * @require(".")
      */
     candidates: string[]
-
-    /**
-     * The results of the election
-     */
 }
 
 interface FPRPElectionInfo extends ElectionInfoBase {
     type: 'FPTP'
 }
 
-export type ElectionInfo = FPRPElectionInfo
+interface RankedElectionInfo extends ElectionInfoBase {
+    type: 'ranked'
+    /**
+     * How many candidates should the participant rank?
+     * 
+     * @min 2
+     */
+    candidatesToRank: number
+}
+
+export type ElectionInfo = FPRPElectionInfo | RankedElectionInfo
 
 export interface ElectionResults {
     votes: Record<string | null, number>

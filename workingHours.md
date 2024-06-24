@@ -18,4 +18,5 @@
 | 21.6 | 5  | Worked on end-to-end tests, added more backend functionality for casting votes, added the ability for the viewer to show the amount of votes and participants, set up Codecov|
 | 22.6 | 2  | Added the results screen and ending elections|
 | 23.6 | 2  | Tests for the new functionality|
-| total   | 69.5  | | 
+| 24.6 | 5  | Added functionality to create ranked elections. Started learning React Spring and spent a lot of time trying to get the ranked election voting view to work|
+| total   | 78.5  | | 

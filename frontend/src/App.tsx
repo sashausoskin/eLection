@@ -5,6 +5,8 @@ import { Host } from './routes/Host'
 import { ParticipantView } from './routes/Participant'
 import { SetParticipantViewContextProvider } from './Contexts'
 import Viewer from './routes/Viewer'
+import RankedElectionView from './routes/participant/voting_views/RankedElectionView'
+import { RankedElectionInfo } from './types'
 
 function App() {
 	return (
@@ -21,6 +23,7 @@ function App() {
 						</SetParticipantViewContextProvider>
 					}
 				/>
+				<Route path='/testing' element={<RankedElectionView electionInfo={{type: 'ranked', title: 'Test', candidates: ['Candidate 1', 'Candidate 2', 'Candidate 3'], candidatesToRank: 2} as RankedElectionInfo } /> }  />
 			</Routes>
 		</>
 	)

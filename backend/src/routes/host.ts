@@ -25,14 +25,21 @@ router.use((req, res, next) => {
 })
 
 router.post('/createElection', (req, res) => {
-    const electionInfo = req.body.electionInfo
+    const electionInfo = req.body.electionInfo as ElectionInfo
     const lobbyCode = req.body.lobbyCode
 
     const valid = ajv.validate(electioninfo_schema, electionInfo)
 
     if (!valid) return res.status(400).send(ajv.errors)
 
-    lobbyService.createElection(lobbyCode, electionInfo as ElectionInfo)
+    if (electionInfo.type === 'ranked') {
+        // This cannot be validated with ajv, so validate manually that the candidatesToRank is not bigger than the amount of candidates.
+        if (electionInfo.candidates.length > electionInfo.candidatesToRank) {
+            return res.status(400).send({type: 'MALFORMATTED_REQUEST', message: 'You cannot rank more candidates than there are candidates.'} as ErrorMessage)
+        }
+    }
+
+    lobbyService.createElection(lobbyCode, electionInfo)
 
     lobbyService.getAllParticipantSockets(lobbyCode).forEach(socket => {
         if (socket) io.of('/lobby').to(socket).emit('status-change', lobbyService.getLobbyStatus(lobbyCode, true))

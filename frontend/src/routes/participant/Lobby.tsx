@@ -7,6 +7,7 @@ import FPTPVotingView from './voting_views/FPTPVotingView'
 import { AxiosError } from 'axios'
 import VoteSubmitted from './voting_views/VoteSubmitted'
 import ElectionEnded from './voting_views/ElectionEnded'
+import RankedElectionView from './voting_views/RankedElectionView'
 
 const LobbyView = () : JSX.Element => {
     const [lobbyStatus, setLobbyStatus] = useState<LobbyStatusInfo | null>(null)
@@ -85,6 +86,9 @@ const LobbyView = () : JSX.Element => {
     
             if (lobbyStatus.electionInfo.type === 'FPTP') {
                 return <FPTPVotingView electionInfo={lobbyStatus.electionInfo} canSubmitVote={canSubmitVote} onSubmitVote={onSubmitVote}/>
+            }
+            else if (lobbyStatus.electionInfo.type === 'ranked') {
+                return <RankedElectionView electionInfo={lobbyStatus.electionInfo} />
             }
             break
 

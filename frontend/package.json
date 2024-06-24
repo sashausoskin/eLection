@@ -14,9 +14,14 @@
 		"start:e2e": "npm run build && npm run preview"
 	},
 	"dependencies": {
+		"@react-spring/web": "^9.7.3",
+		"@types/lodash": "^4.17.5",
+		"@use-gesture/react": "^10.3.1",
 		"axios": "^1.7.2",
 		"dotenv": "^16.4.5",
 		"formik": "^2.4.6",
+		"lodash": "^4.17.21",
+		"lodash-move": "^1.1.1",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
 		"react-router": "^6.23.1",

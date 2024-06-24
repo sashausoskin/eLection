@@ -7,6 +7,8 @@ const ElectionInfoView = ({electionInfo, votesCasted, participantAmount} : {elec
         <h1>{electionInfo.title}</h1>
         {electionInfo.type === 'FPTP' 
             && <p>Vote for one of the following:</p>}
+        {electionInfo.type === 'ranked' &&
+            <p>Rank your top {electionInfo.candidatesToRank} candidates from the following:</p>}
         {electionInfo.candidates.map((candidate) => 
             <>
             <a>{candidate}</a>

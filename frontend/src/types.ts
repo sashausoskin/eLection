@@ -49,7 +49,12 @@ export interface FPTPElectionInfo extends ElectionInfoBase {
     type: 'FPTP'
 }
 
-export type ElectionInfo = FPTPElectionInfo
+export interface RankedElectionInfo extends ElectionInfoBase {
+    type: 'ranked'
+    candidatesToRank: number
+}
+
+export type ElectionInfo = FPTPElectionInfo | RankedElectionInfo
 
 export type ErrorMessage = {
     type: ErrorType,

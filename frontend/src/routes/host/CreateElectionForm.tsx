@@ -3,13 +3,14 @@ import { ErrorMessage, Field, FieldArray, Form, Formik, FormikHelpers } from 'fo
 import * as Yup from 'yup'
 import { createElection, endElection } from '../../services/lobbyHostService'
 import { useEffect, useState } from 'react'
-import { ElectionInfo,  ErrorMessage as ResponseErrorMessage, StatusMessage } from '../../types'
+import { ElectionInfo,  ElectionType,  ErrorMessage as ResponseErrorMessage, StatusMessage } from '../../types'
 
 const CreateElectionForm = ({onSubmitForm, onEndElectionClick} : 
     {onSubmitForm?: ((values: ElectionInfo) => undefined),
     onEndElectionClick?: () => void}) => {
 
     const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
+    const [electionType, setElectionType] = useState<ElectionType>('FPTP')
     const [isElectionActive, setIsElectionActive] = useState<boolean>(false)
 
     useEffect(() => {
@@ -34,7 +35,10 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
         candidates: Yup.array()
                 .of(Yup.string()
                     .required('Please enter a name for the candidate or remove the candidate')
-                ).min(1, 'Please enter at least one candidate')
+                ).min(1, 'Please enter at least one candidate'),
+        
+        candidatesToRank: Yup.number()
+                .min(2, 'You have to rank at least 2 candidates. Otherwise, select FPTP election.')
     })
 
     const defaultOnSubmit = 
@@ -71,23 +75,32 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
         }
     }
 
-    const initialValues : ElectionInfo = {
+    const initialFPTPValues : ElectionInfo = {
         type: 'FPTP',
         title: '',
         candidates: ['', ''],
     }
 
+    const initialRankedValues : ElectionInfo = {
+        type: 'ranked',
+        title: '',
+        candidates: ['', ''],
+        candidatesToRank: 2
+    }
+
     return (
         <>
         <Formik
-            initialValues ={initialValues}
+            // Creating different initial values is to avoid problems with TypeScript, since the Formik function inherit the types from the initial values object.
+            initialValues ={electionType === 'FPTP' ? initialFPTPValues : initialRankedValues}
             onSubmit={(values : ElectionInfo, helpers : FormikHelpers<ElectionInfo>) => onSubmitForm !== undefined ? onSubmitForm(values) : defaultOnSubmit(values, helpers)}
             validationSchema={ElectionCreationSchema}
+            enableReinitialize={true}
         >
-            {({ values }) => (
+            {({ values }) => (<>
+                <input type="radio" name="type" defaultChecked={electionType === 'FPTP'} onClick={() => setElectionType('FPTP')} value={'FPTP'} disabled={isElectionActive} data-testid="fptp_radio"/>First-past-the-post election
+                <input type="radio" name="type" defaultChecked={electionType === 'ranked'} onClick={() => setElectionType('ranked')} value={'ranked'} disabled={isElectionActive} data-testid="ranked_radio"/>Ranked election
                 <Form>
-                    <Field type="radio" name="type" disabled={isElectionActive} value="FPTP" data-testid="fptp_radio"/>First-past-the-post election
-                    <Field type="radio" name="type" disabled={isElectionActive} value="ranked" data-testid="ranked_radio"/>Ranked election
                     <ErrorMessage
                         name="type"
                         component="div"
@@ -109,6 +122,19 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
                         className="field-error"
                         data-testid="title-error"
                     />
+                    {values.type === 'ranked' && <>
+                        <br />
+                        Candidates to rank
+                        <Field
+                        name="candidatesToRank"
+                        data-testid="title-field"
+                        disabled={isElectionActive}
+                        type="number"
+                        min={2}
+                        max={values.candidates.length}
+                    />
+                    </> 
+                    }
                     <FieldArray name="candidates">
                         {({ remove, push}) => (
                             <>
@@ -139,7 +165,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
                     </FieldArray>
                     <button disabled={isElectionActive} data-testid="create-election-submit" type="submit">Create</button>
                 </Form>
-            )}
+                </>)}
         </Formik>
         <button type='button' data-testid="end-election-button" onClick={() => onEndElectionClick !== undefined ? onEndElectionClick() : defaultOnEndElectionClick()} disabled={!isElectionActive}>End election</button>
         {statusMessage && <a data-testid={`status-${statusMessage.status}`}style={{color: statusMessage.status === 'success' ? 'green' : 'red'}}>{statusMessage.message}</a>}
