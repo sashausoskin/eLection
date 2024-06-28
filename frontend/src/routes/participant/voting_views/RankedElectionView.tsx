@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { RankedElectionInfo } from "../../../types";
 import { useSprings, animated } from "@react-spring/web";
 import { useDrag } from "@use-gesture/react";
@@ -31,7 +31,7 @@ const swap = (array: number[], indexA : number, indexB : number) => {
     return arrayCopy
 }
 
-const RankedElectionView = ({electionInfo} : {electionInfo : RankedElectionInfo}) => {
+const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : RankedElectionInfo, onSubmitVote: (voteContent: string[]) => Promise<void>}) => {
     const [candidateOrder, setCandidateOrder] = useState(electionInfo.candidates.map((_,index) => index))
 
     const [springs, animationApi] = useSprings(candidateOrder.length, animateFn(candidateOrder))
@@ -44,18 +44,30 @@ const RankedElectionView = ({electionInfo} : {electionInfo : RankedElectionInfo}
         if (!active) setCandidateOrder(newOrder)
     })
 
+    const handleButtonClick = () => {
+        let orderedCandidates : string[] = []
+
+        candidateOrder.some((candidateOrderIndex, i) => {
+            orderedCandidates.push(electionInfo.candidates[candidateOrderIndex])
+            if (i >= electionInfo.candidatesToRank - 1) return true
+        })
+
+        onSubmitVote(orderedCandidates)
+    }
+
     return (
         <>
         <h2>{electionInfo.title}</h2>
         <p>Rank your top {electionInfo.candidatesToRank} candidates and press 'Submit'</p>
-        <div style={{position: 'relative', width: 500, height: candidateOrder.length * 100, justifyContent: 'center', display: 'flex'}}>
+        <div style={{position: 'relative', width: 500, height: candidateOrder.length * 100, marginBottom: '50px', justifyContent: 'center', display: 'flex'}}>
         {springs.map(({ zIndex, shadow, y, scale }, i) => {
             const orderPosition = candidateOrder.indexOf(i)
             const votes = electionInfo.candidatesToRank - orderPosition
-            return <>
+            return <Fragment key={`candidateFragment_${i}`}>
             <animated.div
                 {...bind(i)}
-                key={i}
+                key={`dragCandidate_${i}`}
+                data-testid='candidate-drag'
                 style={{
                     position: 'absolute',
                     zIndex,
@@ -68,13 +80,14 @@ const RankedElectionView = ({electionInfo} : {electionInfo : RankedElectionInfo}
                     width: '300px',
                 }}
             children={<>
-                <p key={electionInfo.candidates[i]}>{votes > 0 && `${orderPosition + 1}. `}{electionInfo.candidates[i]} {votes > 0 && `${votes} votes`}</p>
+                <p key={`candidateInfo_${i}`}>{votes > 0 && `${orderPosition + 1}. `}{electionInfo.candidates[i]} {votes > 0 && `${votes} votes`}</p>
             </>}
              />
-            </>
+            </Fragment>
 })}
-        <hr style={{position: 'absolute', top: electionInfo.candidatesToRank * 110, width: '100%'}} />
+        <hr key='separator' style={{position: 'absolute', top: electionInfo.candidatesToRank * 110, width: '100%'}} />
         </div>
+        <button type={'button'} data-testid='cast-vote' onClick={handleButtonClick}>Submit</button>
         </>
     )
 }

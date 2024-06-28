@@ -23,7 +23,7 @@ function App() {
 						</SetParticipantViewContextProvider>
 					}
 				/>
-				<Route path='/testing' element={<RankedElectionView electionInfo={{type: 'ranked', title: 'Test', candidates: ['Candidate 1', 'Candidate 2', 'Candidate 3'], candidatesToRank: 2} as RankedElectionInfo } /> }  />
+				<Route path='/testing' element={<RankedElectionView electionInfo={{type: 'ranked', title: 'Test', candidates: ['Candidate 1', 'Candidate 2', 'Candidate 3'], candidatesToRank: 2} as RankedElectionInfo } onSubmitVote={async (voteContent) => console.log('Got vote:', voteContent)} /> }  />
 			</Routes>
 		</>
 	)

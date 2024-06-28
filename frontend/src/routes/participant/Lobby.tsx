@@ -45,6 +45,7 @@ const LobbyView = () : JSX.Element => {
 }, [setLobbyStatus, setViewTab])
 
     const onSubmitVote = async (voteContent : string | string[]) => {
+        console.log('Submitting vote:', voteContent)
         setCanSubmitVote(false)
         try {
             await participantService.castVote(voteContent)
@@ -88,7 +89,7 @@ const LobbyView = () : JSX.Element => {
                 return <FPTPVotingView electionInfo={lobbyStatus.electionInfo} canSubmitVote={canSubmitVote} onSubmitVote={onSubmitVote}/>
             }
             else if (lobbyStatus.electionInfo.type === 'ranked') {
-                return <RankedElectionView electionInfo={lobbyStatus.electionInfo} />
+                return <RankedElectionView electionInfo={lobbyStatus.electionInfo} onSubmitVote={onSubmitVote}/>
             }
             break
 

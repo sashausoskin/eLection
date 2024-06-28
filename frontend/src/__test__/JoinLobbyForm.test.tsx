@@ -6,8 +6,8 @@ import { JoinLobbyForm } from '../routes/participant/JoinLobbyForm'
 
 describe('In join lobby view', () => {
 	const submitCallback: Mock<string[]> = vi.fn<string[]>()
-	let lobbyCodeField: HTMLElement = null as unknown as HTMLElement
-	let lobbyCodeSubmit: HTMLElement = null as unknown as HTMLElement
+	let lobbyCodeField: HTMLElement
+	let lobbyCodeSubmit: HTMLElement
 
 	beforeEach(() => {
 		submitCallback.mockReset()
