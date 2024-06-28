@@ -19,4 +19,5 @@
 | 22.6 | 2  | Added the results screen and ending elections|
 | 23.6 | 2  | Tests for the new functionality|
 | 24.6 | 5  | Added functionality to create ranked elections. Started learning React Spring and spent a lot of time trying to get the ranked election voting view to work|
-| total   | 78.5  | | 
+| 28.6 | 1  | Added casting votes in frontend, tried to create unit tests for this, but failed|
+| total   | 79.5  | | 
