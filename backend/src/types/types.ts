@@ -56,7 +56,9 @@ interface RankedElectionInfo extends ElectionInfoBase {
     /**
      * How many candidates should the participant rank?
      * 
-     * @min 2
+     * @minimum 2
+     * @TJS-type number
+     * @require
      */
     candidatesToRank: number
 }

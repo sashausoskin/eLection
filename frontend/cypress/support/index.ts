@@ -15,6 +15,7 @@ declare global {
 			createUser(): Cypress.Chainable<Cypress.Response<any>>
 			castVote(voteContent: string | string[]): void
 			endElection(): void
+			getElectionResults(): Cypress.Chainable<Cypress.Response<any>>
 		}
 	}
 }

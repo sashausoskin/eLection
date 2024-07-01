@@ -1,7 +1,7 @@
-import { Fragment, useState } from "react";
-import { RankedElectionInfo } from "../../../types";
-import { useSprings, animated } from "@react-spring/web";
-import { useDrag } from "@use-gesture/react";
+import { Fragment, useState } from 'react'
+import { RankedElectionInfo } from '../../../types'
+import { useSprings, animated } from '@react-spring/web'
+import { useDrag } from '@use-gesture/react'
 import { clamp } from 'lodash'
 
 // Used React Spring's Draggable List example as base: https://codesandbox.io/s/zfy9p
@@ -24,14 +24,14 @@ const animateFn = (order: number[], active = false, originalIndex = 0, curIndex 
         }
 
 const swap = (array: number[], indexA : number, indexB : number) => {
-    let arrayCopy = [...array] as any[]
+    const arrayCopy = array.slice() as number[]
 
     [arrayCopy[indexA], arrayCopy[indexB]] = [array[indexB], array[indexA]]
 
     return arrayCopy
 }
 
-const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : RankedElectionInfo, onSubmitVote: (voteContent: string[]) => Promise<void>}) => {
+const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : RankedElectionInfo, onSubmitVote: (voteContent: string[] | string) => Promise<void>}) => {
     const [candidateOrder, setCandidateOrder] = useState(electionInfo.candidates.map((_,index) => index))
 
     const [springs, animationApi] = useSprings(candidateOrder.length, animateFn(candidateOrder))
@@ -45,7 +45,7 @@ const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : Ranke
     })
 
     const handleButtonClick = () => {
-        let orderedCandidates : string[] = []
+        const orderedCandidates : string[] = []
 
         candidateOrder.some((candidateOrderIndex, i) => {
             orderedCandidates.push(electionInfo.candidates[candidateOrderIndex])
@@ -53,6 +53,13 @@ const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : Ranke
         })
 
         onSubmitVote(orderedCandidates)
+    }
+
+    const handleEmptyVote = () => {
+        const castEmptyVote = window.confirm('Are you sure you want to submit an empty vote?')
+        if (castEmptyVote) {
+            onSubmitVote('')
+        }
     }
 
     return (
@@ -67,14 +74,14 @@ const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : Ranke
             <animated.div
                 {...bind(i)}
                 key={`dragCandidate_${i}`}
-                data-testid='candidate-drag'
+                data-testid={`candidate-drag-${i}`}
                 style={{
                     position: 'absolute',
                     zIndex,
                     boxShadow: shadow.to(s => `rgba(0,0,0,0.15) 0px ${s}px ${2 * s} px 0px`),
                     y,
                     scale,
-                    backgroundColor: "lightblue",
+                    backgroundColor: 'lightblue',
                     touchAction: 'none',
                     height: '100px',
                     width: '300px',
@@ -88,6 +95,7 @@ const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : Ranke
         <hr key='separator' style={{position: 'absolute', top: electionInfo.candidatesToRank * 110, width: '100%'}} />
         </div>
         <button type={'button'} data-testid='cast-vote' onClick={handleButtonClick}>Submit</button>
+        <button type='button' data-testid='cast-empty-vote' onClick={handleEmptyVote} style={{backgroundColor: 'red'}}>Cast empty vote</button>
         </>
     )
 }

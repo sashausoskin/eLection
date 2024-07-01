@@ -82,6 +82,23 @@ describe('With a lobby created and one authenticated user in lobby', () => {
             const createElectionResponse = await requestElectionCreation(lobbyCode, hostID, exampleElectionInfo)
             expect(createElectionResponse.status).toBe(200)
         })
+
+        describe('ranked election', () => {
+            test('cannot have more candidates to rank than there are candidates', async () => {
+                const electionCreationResponse = await requestElectionCreation(lobbyCode, hostID, {type: 'ranked', title: 'Test 2024', candidates: ['Candidate 1', 'Candidate 2'], candidatesToRank: 3} as ElectionInfo)
+                expect (electionCreationResponse.status).toBe(400)
+            })
+
+            test('cannot have only one candidate to rank', async () => {
+                const electionCreationResponse = await requestElectionCreation(lobbyCode, hostID, {type: 'ranked', title: 'Test 2024', candidates: ['Candidate 1', 'Candidate 2', 'Candidate 3'], candidatesToRank: 1} as ElectionInfo)
+                expect (electionCreationResponse.status).toBe(400)
+            })
+
+            test('can create a valid ranked election', async () => {
+                const electionCreationResponse = await requestElectionCreation(lobbyCode, hostID, {type: 'ranked', title: 'Test 2024', candidates: ['Candidate 1', 'Candidate 2', 'Candidate 3'], candidatesToRank: 2} as ElectionInfo)
+                expect (electionCreationResponse.status).toBe(200)
+            })
+        })
     })
 
     describe('When ending an election', () => {

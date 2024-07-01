@@ -34,4 +34,12 @@ router.post('/createUser', (req, res) => {
     return res.json({participantID})
 })
 
+router.get('/getElectionResults', (req, res) => {
+    const lobbyCode = req.body.lobbyCode
+
+    if (!lobbyCode) return res.status(400).send
+
+    return res.json(lobbyService.getElectionVotes(lobbyCode))
+})
+
 export default router

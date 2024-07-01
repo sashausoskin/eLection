@@ -18,7 +18,7 @@ describe("In participant view", () => {
         })
     })
 
-    describe("with an active election going on", () => {
+    describe("with an active FPTP election going on", () => {
         beforeEach(() => {
             cy.createElection({type: "FPTP", title: "Representative 2024", candidates: ["Bob the Builder", "Thomas the Tank Engine"]})
         })
@@ -39,6 +39,42 @@ describe("In participant view", () => {
             cy.visit("/participant")
 
             cy.get("[data-testid='candidate-radio']").should('not.exist')
+        })
+    })
+
+    describe('with an active ranked election going on', () => {
+        const electionInfo : ElectionInfo = {type: 'ranked', title: 'Best testing framework?', candidates: ['Cypress', 'Playwright', 'Jest'], candidatesToRank: 2} 
+        beforeEach(() => {
+            cy.createElection(electionInfo)
+        })
+        it('can submit vote', () => {
+            cy.get("[data-testid='cast-vote']").click()
+            cy.get("[data-testid='vote-submitted-header']").should('exist')
+
+            cy.getElectionResults().then((res) => {
+                expect(res.body[electionInfo.candidates[0]]).equal(2)
+                expect(res.body[electionInfo.candidates[1]]).equal(1)
+                expect(res.body[electionInfo.candidates[2]]).equal(0)
+            })
+        })
+        it('can reorder candidates', () => {
+            cy.get("[data-testid='candidate-drag-0']").realMouseDown({position: 'center'}).realMouseMove(0, 100, {position: 'center'}).realMouseUp()
+            cy.get("[data-testid='cast-vote']").click()
+            cy.getElectionResults().then((res) => {
+                expect(res.body[electionInfo.candidates[0]]).equal(1)
+                expect(res.body[electionInfo.candidates[1]]).equal(2)
+                expect(res.body[electionInfo.candidates[2]]).equal(0)
+            })
+        })
+        it('can cast empty vote', () => {
+            cy.get("[data-testid='cast-empty-vote']").click()
+            cy.get("[data-testid='vote-submitted-header']").should('exist')
+
+            cy.getElectionResults().then((res) => {
+                expect(res.body[electionInfo.candidates[0]]).equal(0)
+                expect(res.body[electionInfo.candidates[1]]).equal(0)
+                expect(res.body[electionInfo.candidates[2]]).equal(0)
+            })
         })
     })
 })

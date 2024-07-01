@@ -193,21 +193,21 @@ export const getAllParticipantSockets = (lobbyCode : string) : string[] => {
     return Object.values(lobbyInfo[lobbyCode]['participants'])
 }
 
-export const isValidVote = (lobbyCode : string, candidate : string | string[]) : boolean => {
-    if (Array.isArray(candidate)) {
-        return false
-    }
-    else {
-        return lobbyInfo[lobbyCode].currentVote.electionInfo.candidates.includes(candidate)
-    }
+export const isValidCandidate = (lobbyCode : string, vote : string) : boolean => {
+        return lobbyInfo[lobbyCode].currentVote.electionInfo.candidates.includes(vote)
 }
 
 export const castVotes = (lobbyCode : string, candidate : string | null, votes : number) => {
     if (candidate === null) {
         lobbyInfo[lobbyCode].currentVote.results.emptyVotes += votes
+        return
     }
 
     lobbyInfo[lobbyCode].currentVote.results.votes[candidate] += votes
+}
+
+export const getElectionVotes = (lobbyCode : string) => {
+    return lobbyInfo[lobbyCode].currentVote.results.votes
 }
 
 /**

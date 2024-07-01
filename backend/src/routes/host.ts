@@ -34,7 +34,7 @@ router.post('/createElection', (req, res) => {
 
     if (electionInfo.type === 'ranked') {
         // This cannot be validated with ajv, so validate manually that the candidatesToRank is not bigger than the amount of candidates.
-        if (electionInfo.candidates.length > electionInfo.candidatesToRank) {
+        if (electionInfo.candidates.length < electionInfo.candidatesToRank) {
             return res.status(400).send({type: 'MALFORMATTED_REQUEST', message: 'You cannot rank more candidates than there are candidates.'} as ErrorMessage)
         }
     }

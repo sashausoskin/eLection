@@ -9,6 +9,9 @@ let participantID : string
 let lobbyCode : string
 let lobbySocket : Socket
 
+const exampleFPTPElection : ElectionInfo = {type: 'FPTP', title: 'Presidential election 2024', candidates: ['Donald Trump', 'Joe Biden']}
+const exampleRankedElection : ElectionInfo = {type: 'ranked', title: 'Where should the Finnish capital be moved?', candidates: ['Tampere', 'Turku', 'Oulu'], candidatesToRank: 2}
+
 beforeAll((done) => {
     server.listen(3000, () => {
         done()
@@ -23,12 +26,10 @@ afterAll(() => {
     server.close()
 })
 
-const createElection = () => {
-    const exampleElectionInfo : ElectionInfo = {type: 'FPTP', title: 'Test', candidates: ['Candidate 1', 'Candidate 2']}
-
-    request(app).post('/host/createElection')
+const createElection = async (electionInfo : ElectionInfo) => {
+    return await request(app).post('/host/createElection')
                 .set('Authorization', hostID)
-                .send({lobbyCode, electionInfo: exampleElectionInfo})
+                .send({lobbyCode, electionInfo})
                 // I don't know why, but removing then() breaks this test. I am incredibly confused...
                 .then()
 }
@@ -40,20 +41,18 @@ const endElection = () => {
                 .then()
 }
 
+beforeEach(async () => {
+    lobbyService.resetLobbies()
+
+    const lobbyCreationRequest = await request(app).post('/testing/createLobbyWithUser')
+    hostID = lobbyCreationRequest.body.hostID
+    participantID = lobbyCreationRequest.body.participantID
+    lobbyCode = lobbyCreationRequest.body.lobbyCode
+})
+
 describe('With an active FPTP election', () => {
     beforeEach(async () => {
-        lobbyService.resetLobbies()
-
-        const lobbyCreationRequest = await request(app).post('/testing/createLobbyWithUser')
-        hostID = lobbyCreationRequest.body.hostID
-        participantID = lobbyCreationRequest.body.participantID
-        lobbyCode = lobbyCreationRequest.body.lobbyCode
-
-        const exampleElection : ElectionInfo = {type: 'FPTP', title: 'Presidential election 2024', candidates: ['Donald Trump', 'Joe Biden']}
-
-        await request(app).post('/host/createElection')
-            .set('Authorization', hostID)
-            .send({lobbyCode, electionInfo: exampleElection})
+        await createElection(exampleFPTPElection)
     })
 
     test('cannot vote without an authorization token', async () => {
@@ -141,6 +140,50 @@ describe('With an active FPTP election', () => {
     })
 })
 
+describe('With an active ranked election', () => {
+    beforeEach(async () => {
+        await createElection(exampleRankedElection)
+    })
+
+    const castVote = async (voteContent) => {
+        return await request(app).post('/participant/castVote')
+        .set('Authorization', participantID)
+        .send({lobbyCode, voteContent})
+    }
+
+    test('Cannot cast a vote for a single candidate', async () => {
+        const voteCastRequest = await castVote('Tampere')
+        expect(voteCastRequest.statusCode).toBe(400)
+        expect(voteCastRequest.body.type).toBe('MALFORMATTED_REQUEST')
+    })
+
+    test('Cannot cast votes for an invalid number of candidates', async () => {
+        let voteCastRequest = await castVote(['Tampere'])
+        expect(voteCastRequest.statusCode).toBe(400)
+        expect(voteCastRequest.body.type).toBe('MALFORMATTED_REQUEST')
+
+        voteCastRequest = await castVote(['Tampere', 'Turku', 'Oulu'])
+        expect(voteCastRequest.statusCode).toBe(400)
+        expect(voteCastRequest.body.type).toBe('MALFORMATTED_REQUEST')
+    })
+
+    test('Cannot vote for someone that isn\'t on the ballot', async () => {
+        const voteCastRequest = await castVote(['Tampere', 'Rovaniemi'])
+        expect(voteCastRequest.statusCode).toBe(400)
+        expect(voteCastRequest.body.type).toBe('MALFORMATTED_REQUEST')
+    })
+
+    test('Can cast a valid vote', async () => {
+        const voteCastRequest = await castVote(['Turku', 'Oulu'])
+        expect(voteCastRequest.status).toBe(200)
+    })
+
+    test('Can cast an empty vote', async () => {
+        const voteCastRequest = await castVote(null)
+        expect(voteCastRequest.statusCode).toBe(200)
+    })
+})
+
 describe('Without an active election', () => {
     beforeEach(async () => {
         lobbyService.resetLobbies()
@@ -167,13 +210,13 @@ describe('Without an active election', () => {
                 done()
             }
             else if (newStatus.status === 'STANDBY') {
-                createElection()
+                createElection(exampleFPTPElection)
             }
         })
     })
 
     test('participant socket receives a message when an election is ended', (done) => {
-        createElection()
+        createElection(exampleFPTPElection)
         lobbySocket =  io('http://localhost:3000/lobby', {auth: {lobbyCode, participantID}})
         lobbySocket.on('status-change', (newStatus : LobbyStatusInfo) => {
             switch (newStatus.status) {

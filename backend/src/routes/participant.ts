@@ -9,7 +9,7 @@ router.use((req, res, next) => {
     const authToken = req.headers.authorization
 
     if (!authToken) {
-        return res.status(401).send({type: 'MISSING_AUTH_TOKEN', message: 'Did not receive an authorization token with the request'} as ErrorMessage)
+        return res.status(401).json({type: 'MISSING_AUTH_TOKEN', message: 'Did not receive an authorization token with the request'} as ErrorMessage)
     }
 
     const lobbyCode = req.body.lobbyCode
@@ -26,16 +26,16 @@ router.post('/castVote', (req, res) => {
     const currentLobbyStatus = lobbyService.getLobbyStatus(lobbyCode, false)
 
     if (currentLobbyStatus.status !== 'VOTING') {
-        return res.status(405).send({type: 'NO_ACTIVE_ELECTION', message: 'You casted a vote even though there isn\'t an election going on.'} as ErrorMessage)
+        return res.status(405).json({type: 'NO_ACTIVE_ELECTION', message: 'You casted a vote even though there isn\'t an election going on.'} as ErrorMessage)
     }
 
     if (lobbyService.hasUserVoted(lobbyCode, req.headers.authorization)) {
-        return res.status(403).send({type: 'ALREADY_VOTED', message: 'You have already casted a vote in this election'} as ErrorMessage)
+        return res.status(403).json({type: 'ALREADY_VOTED', message: 'You have already casted a vote in this election'} as ErrorMessage)
     }
 
     const voteContent : string | string[] = req.body.voteContent
 
-    if (voteContent === undefined) return res.status(400).send({type: 'MALFORMATTED_REQUEST', message: 'Did not receive voteContent with the request'} as ErrorMessage)
+    if (voteContent === undefined) return res.status(400).json({type: 'MALFORMATTED_REQUEST', message: 'Did not receive voteContent with the request'} as ErrorMessage)
 
     const currentElectionType = currentLobbyStatus.electionInfo.type
 
@@ -43,13 +43,31 @@ router.post('/castVote', (req, res) => {
         switch (currentElectionType) {
             case 'FPTP':
                 if (Array.isArray(voteContent)) {
-                    return res.status(400).send({type: 'MALFORMATTED_REQUEST', message: 'Received an array for a FPTP election, where you can only vote for a single candidate'} as ErrorMessage)
+                    return res.status(400).json({type: 'MALFORMATTED_REQUEST', message: 'Received an array for a FPTP election, where you can only vote for a single candidate'} as ErrorMessage)
                 }
-                else if (!lobbyService.isValidVote(lobbyCode, voteContent)) {
-                    return res.status(400).send({type: 'MALFORMATTED_REQUEST', message: 'Casted a vote for someone or something that isn\'t a candidate'} as ErrorMessage)
+                else if (!lobbyService.isValidCandidate(lobbyCode, voteContent)) {
+                    return res.status(400).json({type: 'MALFORMATTED_REQUEST', message: 'Casted a vote for someone or something that isn\'t a candidate'} as ErrorMessage)
                 }
 
                 lobbyService.castVotes(lobbyCode, voteContent, 1)
+                break
+            case 'ranked':
+                if (!Array.isArray(voteContent)) {
+                    return res.status(400).json({type: 'MALFORMATTED_REQUEST', message: 'You casted a vote for a single candidate while expecting an array of candidates.'} as ErrorMessage)
+                }
+                if (voteContent.length !== currentLobbyStatus.electionInfo.candidatesToRank) {
+                    return res.status(400).json({type: 'MALFORMATTED_REQUEST', message: `You casted votes for ${voteContent.length} candidates, while expecting ${currentLobbyStatus.electionInfo.candidatesToRank} candidates`} as ErrorMessage)
+                }
+                voteContent.forEach((candidate) => {
+                    if (!lobbyService.isValidCandidate(lobbyCode, candidate)) {
+                        return res.status(400).json({type: 'MALFORMATTED_REQUEST', message: `${candidate} is not a candidate in this election`} as ErrorMessage)
+                    }
+                })
+
+                voteContent.forEach((candidate, index) => {
+                    lobbyService.castVotes(lobbyCode, candidate, voteContent.length - index)
+                })
+
         }
     }
     else lobbyService.castVotes(lobbyCode, null, 1)

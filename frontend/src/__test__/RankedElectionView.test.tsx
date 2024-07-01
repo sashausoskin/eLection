@@ -1,7 +1,7 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react"
-import { ElectionInfo } from "../types"
-import RankedElectionView from "../routes/participant/voting_views/RankedElectionView"
-import userEvent from "@testing-library/user-event"
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { ElectionInfo } from '../types'
+import RankedElectionView from '../routes/participant/voting_views/RankedElectionView'
+import userEvent from '@testing-library/user-event'
 
 // Didn't manage to get this working, so dragging and dropping should be tested in Cypress.
 describe.skip('In ranked election view', () => {
