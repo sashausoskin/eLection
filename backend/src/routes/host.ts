@@ -1,9 +1,11 @@
 import express from 'express'
 import * as lobbyService from '../services/lobbyservice'
+import * as cleanupService from '../services/cleanupservice'
 import { ElectionInfo, ErrorMessage, LobbyStatusInfo } from '../types/types'
 import Ajv from 'ajv'
 import * as electioninfo_schema from '../types/ElectionInfo_schema.json'
 import { io } from '../util/server'
+import { closeLobby } from '../services/cleanupservice'
 
 const router = express.Router()
 
@@ -50,6 +52,8 @@ router.post('/createElection', (req, res) => {
     io.of('/viewer').to(viewerSocket).emit('status-change', lobbyService.getLobbyStatus(lobbyCode, true))
     io.of('/viewer').to(viewerSocket).emit('vote-casted', 0)
 
+    cleanupService.updateLobbyTimeout(lobbyCode)
+
     return res.status(200).send()
 })
 
@@ -70,6 +74,16 @@ router.post('/endElection', (req,res) => {
     const viewerSocket = lobbyService.getViewerSocket(lobbyCode)
 
     io.of('/viewer').to(viewerSocket).emit('status-change', lobbyStatus)
+
+    cleanupService.updateLobbyTimeout(lobbyCode)
+
+    return res.send()
+})
+
+router.post('/closeLobby', (req,res) => {
+    const lobbyCode = req.body.lobbyCode
+
+    closeLobby(lobbyCode, 'HOST_CLOSED')
 
     return res.send()
 })

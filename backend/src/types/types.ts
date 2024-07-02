@@ -1,5 +1,6 @@
 export interface LobbyInfo {
     hostID: string,
+    inactivityTimerID: NodeJS.Timeout  | null,
     viewerSocket: string | null,
     status: LobbyStatus,
     availableUserCodes: string[]
@@ -10,7 +11,7 @@ export interface LobbyInfo {
         results: ElectionResults
     } | null
 }
-type LobbyStatus = 'STANDBY' | 'VOTING' | 'ELECTION_ENDED'
+type LobbyStatus = 'STANDBY' | 'VOTING' | 'ELECTION_ENDED' | 'CLOSING'
 
 export type LobbyStatusInfo = {
     status: 'STANDBY'
@@ -20,7 +21,12 @@ export type LobbyStatusInfo = {
 } | {
     status: 'ELECTION_ENDED',
     results?: ElectionResultsInfo
+} | {
+    status: 'CLOSING',
+    reason: LobbyCloseReason
 }
+
+export type LobbyCloseReason = 'INACTIVITY' | 'HOST_CLOSED'
 
 export type ErrorMessage = {
     type: ErrorType,

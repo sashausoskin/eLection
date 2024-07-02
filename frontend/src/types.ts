@@ -22,6 +22,9 @@ export type LobbyStatusInfo = {
 } | {
     status: 'ELECTION_ENDED',
     results: ElectionResultsInfo
+} | {
+    status: 'CLOSING',
+    reason: 'INACTIVITY' | 'HOST_CLOSED'
 }
 
 

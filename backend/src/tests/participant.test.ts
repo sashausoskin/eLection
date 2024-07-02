@@ -34,8 +34,8 @@ const createElection = async (electionInfo : ElectionInfo) => {
                 .then()
 }
 
-const endElection = () => {
-    request(app).post('/host/endElection')
+const endElection = async () => {
+    return await request(app).post('/host/endElection')
                 .set('Authorization', hostID)
                 .send({lobbyCode})
                 .then()
@@ -103,6 +103,7 @@ describe('With an active FPTP election', () => {
         const voteCastRequest = await request(app).post('/participant/castVote')
             .set('Authorization', participantID)
             .send({lobbyCode, voteContent: 'Joe Biden'})
+            .then()
 
         expect(voteCastRequest.status).toBe(200)
     })
@@ -225,6 +226,9 @@ describe('Without an active election', () => {
                     break
                 case 'ELECTION_ENDED':
                     done()
+                    break
+                default: 
+                    true
             }
         })
     })

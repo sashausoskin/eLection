@@ -17,28 +17,25 @@ describe('With a lobby created and one authenticated user in lobby', () => {
         lobbyCode = createLobbyResponse.lobbyCode
     })
 
-    beforeAll((done) => {
+    beforeEach((done) => {
         server.listen(3000, () => {
             done()
         })
     })
 
     afterEach(() => {
-        if (lobbySocket) lobbySocket.disconnect()
-            
-    })
-
-    afterAll(() => {
         server.close()
+        if (lobbySocket) lobbySocket.disconnect()
     })
 
     describe('When creating an election', () => {
         const exampleElectionInfo : ElectionInfo = {type: 'FPTP', title: 'Which language should we use?', candidates: ['Python', 'JavaScript']}
 
-        const requestElectionCreation = (lobbyCode : string, authToken : string, electionInfo) => {
-            return request(app).post('/host/createElection')
+        const requestElectionCreation = async (lobbyCode : string, authToken : string, electionInfo) => {
+            return await request(app).post('/host/createElection')
             .set('Authorization', authToken)
             .send({lobbyCode, electionInfo})
+            .then()
         }
 
         test('Cannot create an election without a valid lobby code', async () => {
@@ -102,16 +99,16 @@ describe('With a lobby created and one authenticated user in lobby', () => {
     })
 
     describe('When ending an election', () => {
-        const requestElectionEnd = (lobbyCode? : string, hostID? : string) => (
-            request(app).post('/host/endElection')
+        const requestElectionEnd = async (lobbyCode? : string, hostID? : string) => (
+            await request(app).post('/host/endElection')
                 .set('Authorization', hostID)
                 .send({lobbyCode})
                 .then()
         )
 
         describe('with an active election', () => {
-            beforeEach(() => {
-                request(app).post('/host/createElection')
+            beforeEach(async () => {
+                await request(app).post('/host/createElection')
                     .set('Authorization', hostID)
                     .send({lobbyCode, electionInfo: {type: 'FPTP', title: 'Test', candidates: ['Candidate 1', 'Candidate 2']} as ElectionInfo})
                     .then()
@@ -139,6 +136,20 @@ describe('With a lobby created and one authenticated user in lobby', () => {
 
             expect(endElectionResponse.status).toBe(405)
             expect((endElectionResponse.body as ErrorMessage).type).toBe('NO_ACTIVE_ELECTION')
+        })
+    })
+
+    describe('when closing a lobby', () => {
+        const closeLobbyRequest = (hostID : string, lobbyCode : string) => {
+            return request(app).post('/host/closeLobby')
+                .set('Authorization', hostID)
+                .send({lobbyCode})
+                .then()
+        }
+
+        test('cannot close lobby with invalid auth token', async () => {
+            const closeLobbyResponse = await closeLobbyRequest('11111111-1111-1111-1111-111111111111', lobbyCode)
+            expect(closeLobbyResponse.status).toBe(403)
         })
     })
 })

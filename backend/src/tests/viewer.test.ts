@@ -8,8 +8,6 @@ let hostID : string
 let participantID : string
 let lobbySocket : Socket
 
-
-
 describe('With a created lobby and user', () => {
     beforeAll((done) => {
         server.listen(3000, () => {

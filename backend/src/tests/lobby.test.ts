@@ -1,5 +1,5 @@
 import * as lobbyService from '../services/lobbyservice'
-import { agent as request } from 'supertest'
+import request from 'supertest'
 import { app, server } from '../util/server'
 import { LobbyWithUserCreationResponse } from '../types/testTypes'
 import { io as ioc, Socket as ClientSocket } from 'socket.io-client'

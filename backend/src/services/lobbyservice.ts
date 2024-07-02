@@ -1,9 +1,9 @@
 import { v4 as uuidv4 } from 'uuid'
 import { ElectionInfo, LobbyInfo, LobbyStatusInfo } from '../types/types'
-import shuffleArray from '../util/shuffle'
+import { insertToRandomIndex, shuffleArray } from '../util/shuffle'
 
 let lobbyInfo : Record<string, LobbyInfo>  = {}
-let lobbyCodeArray: string[] = []
+let availableLobbyCodes: string[] = []
 
 export class UserNotFound extends Error {
 
@@ -18,19 +18,19 @@ const generateCodes = () : string[] => {
 
 // Generates an array of four-digit lobby codes, starting from 0000 to 9999
 const populateDatabaseWithLobbyCodes = () => {
-    lobbyCodeArray = generateCodes()
+    availableLobbyCodes = generateCodes()
 }
 
 populateDatabaseWithLobbyCodes()
 
 export const createNewLobby = (): {lobbyCode: string, hostID: string} => {
-    const lobbyCode = lobbyCodeArray.pop()
+    const lobbyCode = availableLobbyCodes.pop()
     const hostID = uuidv4()
 
     const userCodes = generateCodes()
 
 
-    lobbyInfo[lobbyCode] = {hostID: hostID, status: 'STANDBY', availableUserCodes: userCodes, queuedUsers: {}, participants: {}, currentVote: null, viewerSocket: null}
+    lobbyInfo[lobbyCode] = {hostID: hostID, inactivityTimerID: null, status: 'STANDBY', availableUserCodes: userCodes, queuedUsers: {}, participants: {}, currentVote: null, viewerSocket: null}
 
     return {lobbyCode, hostID}
 }
@@ -223,4 +223,17 @@ export const saveUserVoted = (lobbyCode : string, participantID : string) => {
 
 export const hasUserVoted = (lobbyCode : string, participantID : string) : boolean => {
     return lobbyInfo[lobbyCode].currentVote.results.usersVoted.includes(participantID)
+}
+
+export const saveInactivityTimerID = (lobbyCode : string, timerID : NodeJS.Timeout) => {
+    lobbyInfo[lobbyCode].inactivityTimerID = timerID
+}
+
+export const getInactivityTimerID = (lobbyCode : string) : NodeJS.Timeout => {
+    return lobbyInfo[lobbyCode].inactivityTimerID
+}
+
+export const deleteLobby = (lobbyCode : string) => {
+    delete lobbyInfo[lobbyCode]
+    insertToRandomIndex(availableLobbyCodes, lobbyCode)
 }

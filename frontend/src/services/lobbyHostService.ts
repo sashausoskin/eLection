@@ -65,3 +65,9 @@ export const endElection = async () => {
 		Authorization: hostID
 	}})
 }
+
+export const closeLobby = async () => {
+	await apiClient.post('/host/closeLobby', {lobbyCode}, {headers: {
+		Authorization: hostID
+	}})
+}

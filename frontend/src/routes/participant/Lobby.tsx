@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { ErrorMessage, LobbyStatusInfo } from '../../types'
 import { createLobbySocket } from '../../sockets'
 import * as participantService from '../../services/participantService'
@@ -8,6 +8,8 @@ import { AxiosError } from 'axios'
 import VoteSubmitted from './voting_views/VoteSubmitted'
 import ElectionEnded from './voting_views/ElectionEnded'
 import RankedElectionView from './voting_views/RankedElectionView'
+import LobbyClose from './voting_views/LobbyClose'
+import { Socket } from 'socket.io-client'
 
 const LobbyView = () : JSX.Element => {
     const [lobbyStatus, setLobbyStatus] = useState<LobbyStatusInfo | null>(null)
@@ -15,6 +17,7 @@ const LobbyView = () : JSX.Element => {
     const [hasVoted, setHasVoted] = useState<boolean>(false)
     const { setViewTab } = useContext(SetParticipantViewContext)
 
+    const lobbySocket = useRef<Socket>()
 
     useEffect(() => {
         const lobbyCode = participantService.getLobbyCode()
@@ -25,15 +28,16 @@ const LobbyView = () : JSX.Element => {
             return
         }
     
-        const lobbySocket = createLobbySocket(lobbyCode, participantToken)
-        lobbySocket.on('status-change', (newStatus : LobbyStatusInfo) => {
+        lobbySocket.current = createLobbySocket(lobbyCode, participantToken)
+        lobbySocket.current.on('status-change', (newStatus : LobbyStatusInfo) => {
             setHasVoted(false)
             setLobbyStatus(newStatus)
+            console.log('Got new status', newStatus)
             })
-        lobbySocket.on('connect_error', (err) => {
+        lobbySocket.current.on('connect_error', (err) => {
             console.error('A socket error occurred:', err.message)
         })
-        lobbySocket.on('disconnect', (reason) => {
+        lobbySocket.current.on('disconnect', (reason) => {
             if (reason === 'io server disconnect') {
                 window.alert('You were kicked out of the server. This is probably because you connected to the lobby from a different tab.')
             }
@@ -41,7 +45,13 @@ const LobbyView = () : JSX.Element => {
                 window.alert('You lost connection to the server. Please check your connection and reload the page')
             }
         })
-        lobbySocket.connect()
+        lobbySocket.current.connect()
+
+        const handleUnmount = () => {
+            if (lobbySocket.current) lobbySocket.current.disconnect()
+        }
+        
+        return handleUnmount
 }, [setLobbyStatus, setViewTab])
 
     const onSubmitVote = async (voteContent : string | string[]) => {
@@ -95,6 +105,11 @@ const LobbyView = () : JSX.Element => {
 
         case 'ELECTION_ENDED': 
             return <ElectionEnded />
+        case 'CLOSING':
+            if (lobbySocket.current) {
+                lobbySocket.current.disconnect()
+            }
+            return <LobbyClose lobbyInfo={lobbyStatus} />
     }
 
 

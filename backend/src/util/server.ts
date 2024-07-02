@@ -41,3 +41,4 @@ io.of('/viewer').on('connection', handleViewerSocketConnection)
 io.of('/lobby').use(isParticipantMiddleware)
 
 io.of('/lobby').on('connection', handleParticipantSocketConnection)
+
