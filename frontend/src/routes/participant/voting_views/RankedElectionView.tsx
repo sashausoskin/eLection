@@ -66,7 +66,7 @@ const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : Ranke
         <>
         <h2>{electionInfo.title}</h2>
         <p>Rank your top {electionInfo.candidatesToRank} candidates and press 'Submit'</p>
-        <div style={{position: 'relative', width: 500, height: candidateOrder.length * 100, marginBottom: '50px', justifyContent: 'center', display: 'flex'}}>
+        <div style={{position: 'relative', minHeight: candidateOrder.length * 100, marginBottom: '50px', justifyContent: 'center', display: 'flex', flexShrink: 0}}>
         {springs.map(({ zIndex, shadow, y, scale }, i) => {
             const orderPosition = candidateOrder.indexOf(i)
             const votes = electionInfo.candidatesToRank - orderPosition
@@ -92,7 +92,7 @@ const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : Ranke
              />
             </Fragment>
 })}
-        <hr key='separator' style={{position: 'absolute', top: electionInfo.candidatesToRank * 110, width: '100%'}} />
+        <hr key='separator' style={{position: 'absolute', top: electionInfo.candidatesToRank * 110, width: 400}} />
         </div>
         <button type={'button'} data-testid='cast-vote' onClick={handleButtonClick}>Submit</button>
         <button type='button' data-testid='cast-empty-vote' onClick={handleEmptyVote} style={{backgroundColor: 'red'}}>Cast empty vote</button>

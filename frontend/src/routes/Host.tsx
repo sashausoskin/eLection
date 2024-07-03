@@ -43,7 +43,7 @@ export const Host = () => {
         <CreateElectionForm />
 		<br />
         <button onClick={() => window.open('/viewer', '_blank', 'popup=true')}>Open the viewer window</button>
-		<button onClick={handleCloseLobbyClick} style={{backgroundColor: 'red'}}>Close lobby</button>
+		<button onClick={handleCloseLobbyClick} data-testid='close-lobby' style={{backgroundColor: 'red'}}>Close lobby</button>
     </>
     )
 }

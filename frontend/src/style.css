@@ -1,0 +1,40 @@
+:root {
+    background-image: url('./img/bg.png');
+    background-position: top center;
+    background-size: 25%;
+    background-repeat: repeat;
+}
+
+.icon {
+    padding: 15px;
+}
+
+.mainContainer {
+    margin: auto;
+    margin-top: 100px;
+    display: flex;
+    flex-direction: column;
+    vertical-align: middle;
+    justify-content: center;
+    justify-items: center;
+    height: 80vh;
+    width: 80vw;
+    border-radius: 25px;
+    border-width: 3px;
+    border-style: solid;
+    border-color: var(--secondary-color);
+    background-color: rgba(0,0,0,0.2);
+}
+
+.topbar {
+    background-color: var(--primary-color);
+    width: 100vw;
+    max-height: 100px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    float: left;
+    justify-content: space-between;
+    align-items: center;
+}

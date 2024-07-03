@@ -1,0 +1,7 @@
+:root {
+    --primary-color: purple;
+    --secondary-color: blueviolet;
+    --primary-text-color: blue;
+    --secondary-text-color: white;
+    --background: './img/bg.jpg'
+}

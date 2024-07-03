@@ -38,6 +38,7 @@
     "@typescript-eslint/parser": "^7.13.0",
     "cross-env": "^7.0.3",
     "globals": "^15.4.0",
+    "jest-date-mock": "^1.0.10",
     "shx": "^0.3.4",
     "socket.io-client": "^4.7.5",
     "supertest": "^7.0.0",

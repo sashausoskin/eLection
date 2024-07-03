@@ -52,7 +52,7 @@ router.post('/createElection', (req, res) => {
     io.of('/viewer').to(viewerSocket).emit('status-change', lobbyService.getLobbyStatus(lobbyCode, true))
     io.of('/viewer').to(viewerSocket).emit('vote-casted', 0)
 
-    cleanupService.updateLobbyTimeout(lobbyCode)
+    lobbyService.updateLastActivity(lobbyCode)
 
     return res.status(200).send()
 })
@@ -75,7 +75,7 @@ router.post('/endElection', (req,res) => {
 
     io.of('/viewer').to(viewerSocket).emit('status-change', lobbyStatus)
 
-    cleanupService.updateLobbyTimeout(lobbyCode)
+    lobbyService.updateLastActivity(lobbyCode)
 
     return res.send()
 })

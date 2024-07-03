@@ -4,7 +4,7 @@
 	"version": "0.0.0",
 	"type": "module",
 	"scripts": {
-		"dev": "vite",
+		"dev": "vite --host",
 		"build": "tsc && vite build",
 		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
 		"preview": "vite preview  --host",
@@ -43,7 +43,7 @@
 		"@typescript-eslint/eslint-plugin": "^7.13.0",
 		"@typescript-eslint/parser": "^7.13.0",
 		"@vitejs/plugin-react": "^4.2.1",
-		"cypress": "^13.12.0",
+		"cypress": "^13.13.0",
 		"cypress-real-events": "^1.13.0",
 		"eslint": "^8.57.0",
 		"eslint-plugin-react-hooks": "^4.6.0",

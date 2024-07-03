@@ -106,6 +106,24 @@ Cypress.Commands.add('createUser', () => {
 	})
 })
 
+Cypress.Commands.add('closeLobby', function () {
+	return cy.request({
+		method: 'post',
+		url: `${Cypress.env('BACKEND_URL')}/host/closeLobby`,
+		body: {lobbyCode: this.lobbyCode},
+		headers: {
+			'Authorization': this.hostID
+		}
+	})
+})
+
+Cypress.Commands.add('startCleanup', function () {
+	return cy.request({
+		method: 'post',
+		url: `${Cypress.env('BACKEND_URL')}/testing/forceServerCleanup`,
+	})
+})
+
 Cypress.Commands.add('endElection', function () {
 	cy.request({
 		method: 'post',
@@ -119,4 +137,12 @@ Cypress.Commands.add('endElection', function () {
 
 Cypress.Commands.add('getElectionResults', function () {
 	return cy.request(`${Cypress.env('BACKEND_URL')}/testing/getElectionResults`, {lobbyCode: this.lobbyCode})
+})
+
+Cypress.Commands.add('setLobbyLastActive', function (lastActiveTime : number) {
+	return cy.request('post',`${Cypress.env('BACKEND_URL')}/testing/setLobbyLastActive`, {lobbyCode: this.lobbyCode, lastActiveTime})
+})
+
+Cypress.Commands.add('getNumberOfLobbies', function () {
+	return cy.request('get', `${Cypress.env('BACKEND_URL')}/testing/getNumberOfLobbies`)
 })

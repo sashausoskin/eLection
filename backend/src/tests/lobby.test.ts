@@ -1,9 +1,11 @@
 import * as lobbyService from '../services/lobbyservice'
 import request from 'supertest'
+import * as dateMock from 'jest-date-mock'
 import { app, server } from '../util/server'
 import { LobbyWithUserCreationResponse } from '../types/testTypes'
 import { io as ioc, Socket as ClientSocket } from 'socket.io-client'
 import { ElectionInfo, LobbyStatusInfo } from '../types/types'
+import { cleanupRoutine } from '../services/cleanupservice'
 
 describe('With a lobby created and one authenticated user in lobby', () => {
     let participantID : string
@@ -13,6 +15,7 @@ describe('With a lobby created and one authenticated user in lobby', () => {
 
     beforeEach(async () => {
         lobbyService.resetLobbies()
+        dateMock.advanceTo(new Date(0, 0, 0, 0, 0, 0, 0))
         const createLobbyResponse = (await request(app).post('/testing/createLobbyWithUser')).body as LobbyWithUserCreationResponse
         participantID = createLobbyResponse.participantID
         lobbyCode = createLobbyResponse.lobbyCode
@@ -123,5 +126,19 @@ describe('With a lobby created and one authenticated user in lobby', () => {
         })
     })
 
-    
+    describe('when performing server cleanup', () => {
+        test('doesn\'t delete a lobby that has been an active', () => {
+            expect(lobbyService.getNumberOfLobbies()).toBe(1)
+            dateMock.advanceBy(1000*60*30)
+            cleanupRoutine()
+            expect(lobbyService.getNumberOfLobbies()).toBe(1)
+        })
+
+        test('deletes a lobby that has been inactive', () => {
+            expect(lobbyService.getNumberOfLobbies()).toBe(1)
+            dateMock.advanceBy(1000*60*60*3)
+            cleanupRoutine()
+            expect(lobbyService.getNumberOfLobbies()).toBe(0)
+        })
+    })
 })

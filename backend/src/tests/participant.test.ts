@@ -3,6 +3,8 @@ import { app, server } from '../util/server'
 import { ElectionInfo, LobbyStatusInfo } from '../types/types'
 import * as lobbyService from '../services/lobbyservice'
 import { Socket, io } from 'socket.io-client'
+import * as dateMock from 'jest-date-mock'
+import { cleanupRoutine } from '../services/cleanupservice'
 
 let hostID : string
 let participantID : string
@@ -11,6 +13,10 @@ let lobbySocket : Socket
 
 const exampleFPTPElection : ElectionInfo = {type: 'FPTP', title: 'Presidential election 2024', candidates: ['Donald Trump', 'Joe Biden']}
 const exampleRankedElection : ElectionInfo = {type: 'ranked', title: 'Where should the Finnish capital be moved?', candidates: ['Tampere', 'Turku', 'Oulu'], candidatesToRank: 2}
+
+beforeEach(() => {
+    dateMock.clear()
+})
 
 beforeAll((done) => {
     server.listen(3000, () => {
@@ -39,6 +45,10 @@ const endElection = async () => {
                 .set('Authorization', hostID)
                 .send({lobbyCode})
                 .then()
+}
+
+const connectToParticipantSocket = () : Socket => {
+    return io('http://localhost:3000/lobby', {auth: {lobbyCode, participantID}})
 }
 
 beforeEach(async () => {
@@ -205,7 +215,7 @@ describe('Without an active election', () => {
     })
 
     test('participant socket receives a message when an election is created', (done) => {
-        lobbySocket = io('http://localhost:3000/lobby', {auth: {lobbyCode, participantID}})
+        lobbySocket = connectToParticipantSocket()
         lobbySocket.on('status-change', (newStatus : LobbyStatusInfo) => {
             if (newStatus.status === 'VOTING') {
                 done()
@@ -218,7 +228,7 @@ describe('Without an active election', () => {
 
     test('participant socket receives a message when an election is ended', (done) => {
         createElection(exampleFPTPElection)
-        lobbySocket =  io('http://localhost:3000/lobby', {auth: {lobbyCode, participantID}})
+        lobbySocket =  connectToParticipantSocket()
         lobbySocket.on('status-change', (newStatus : LobbyStatusInfo) => {
             switch (newStatus.status) {
                 case 'VOTING':
@@ -229,6 +239,36 @@ describe('Without an active election', () => {
                     break
                 default: 
                     true
+            }
+        })
+    })
+
+    test('participant socket receives a message when the host closes the lobby', (done) => {
+        lobbySocket = connectToParticipantSocket()
+        lobbySocket.on('connect', () => {
+            request(app).post('/host/closeLobby')
+                .set('Authorization', hostID)
+                .send({lobbyCode})
+                .then()
+        })
+        lobbySocket.on('status-change', (newStatus : LobbyStatusInfo) => {
+            if (newStatus.status === 'CLOSING') {
+                expect(newStatus.reason === 'HOST_CLOSED').toBeTruthy()
+                done()
+            }
+        })
+    })
+
+    test('participant socket receives a message when the lobby is closed due to inactivity', (done) => {
+        lobbySocket = connectToParticipantSocket()
+        lobbySocket.on('connect', () => {
+            dateMock.advanceBy(1000*60*60*3)
+            cleanupRoutine()
+        })
+        lobbySocket.on('status-change', (newStatus : LobbyStatusInfo) => {
+            if (newStatus.status === 'CLOSING') {
+                expect(newStatus.reason === 'INACTIVITY').toBeTruthy()
+                done()
             }
         })
     })

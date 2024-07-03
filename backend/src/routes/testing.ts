@@ -1,6 +1,7 @@
 import express from 'express'
 import * as lobbyService from '../services/lobbyservice'
 import { LobbyWithUserCreationResponse } from '../types/testTypes'
+import { cleanupRoutine } from '../services/cleanupservice'
 
 const router = express.Router()
 
@@ -40,6 +41,27 @@ router.get('/getElectionResults', (req, res) => {
     if (!lobbyCode) return res.status(400).send
 
     return res.json(lobbyService.getElectionVotes(lobbyCode))
+})
+
+router.post('/forceServerCleanup', (req, res) => {
+    cleanupRoutine()
+
+    return res.send()
+})
+
+router.post('/setLobbyLastActive', (req, res) => {
+    const lobbyCode = req.body.lobbyCode
+    const lastActiveTime = req.body.lastActiveTime
+
+    if (!lobbyCode || !lastActiveTime) return res.status(400).send()
+
+    lobbyService.updateLastActivity(lobbyCode, lastActiveTime)
+
+    res.send()
+})
+
+router.get('/getNumberOfLobbies', (req, res) => {
+    return res.status(200).send({numberOfLobbies: lobbyService.getNumberOfLobbies()})
 })
 
 export default router

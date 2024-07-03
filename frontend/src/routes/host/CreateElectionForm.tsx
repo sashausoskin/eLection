@@ -92,14 +92,14 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
         <>
         <Formik
             // Creating different initial values is to avoid problems with TypeScript, since the Formik function inherit the types from the initial values object.
-            initialValues ={electionType === 'FPTP' ? initialFPTPValues : initialRankedValues}
+            initialValues ={electionType === 'FPTP' ? initialFPTPValues : electionType === 'ranked' ? initialRankedValues : initialFPTPValues}
             onSubmit={(values : ElectionInfo, helpers : FormikHelpers<ElectionInfo>) => onSubmitForm !== undefined ? onSubmitForm(values) : defaultOnSubmit(values, helpers)}
             validationSchema={ElectionCreationSchema}
             enableReinitialize={true}
         >
             {({ values }) => (<>
-                <input type="radio" name="type" defaultChecked={electionType === 'FPTP'} onClick={() => setElectionType('FPTP')} value={'FPTP'} disabled={isElectionActive} data-testid="fptp_radio"/>First-past-the-post election
-                <input type="radio" name="type" defaultChecked={electionType === 'ranked'} onClick={() => setElectionType('ranked')} value={'ranked'} disabled={isElectionActive} data-testid="ranked_radio"/>Ranked election
+                <input type="radio" name="type" defaultChecked={electionType === 'FPTP'} onClick={() => setElectionType('FPTP')} value={'FPTP'} disabled={isElectionActive} data-testid="fptp-radio"/>First-past-the-post election
+                <input type="radio" name="type" defaultChecked={electionType === 'ranked'} onClick={() => setElectionType('ranked')} value={'ranked'} disabled={isElectionActive} data-testid="ranked-radio"/>Ranked election
                 <Form>
                     <ErrorMessage
                         name="type"
@@ -127,7 +127,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
                         Candidates to rank
                         <Field
                         name="candidatesToRank"
-                        data-testid="title-field"
+                        data-testid="candidates-to-rank"
                         disabled={isElectionActive}
                         type="number"
                         min={2}

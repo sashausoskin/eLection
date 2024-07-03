@@ -16,6 +16,10 @@ declare global {
 			castVote(voteContent: string | string[]): void
 			endElection(): void
 			getElectionResults(): Cypress.Chainable<Cypress.Response<any>>
+			closeLobby(): Cypress.Chainable<Cypress.Response<any>>
+			startCleanup(): Cypress.Chainable<Cypress.Response<any>>
+			setLobbyLastActive(lastActiveTime : number) : Cypress.Chainable<Cypress.Response<any>>
+			getNumberOfLobbies(): Cypress.Chainable<Cypress.Response<any>>
 		}
 	}
 }

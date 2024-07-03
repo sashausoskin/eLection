@@ -1,0 +1,1 @@
+process.env.LOBBY_TIMEOUT_LENGTH='3600000'

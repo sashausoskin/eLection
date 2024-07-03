@@ -22,4 +22,5 @@
 | 28.6 | 1  | Added casting votes in frontend, tried to create unit tests for this, but failed|
 | 1.7 | 3  | Finished casting votes for a ranked election. Created end-to-end tests for ranked elections|
 | 2.7 | 3  | Started working on server cleanup functionality, worked on unit tests|
+| 3.7 | 8.5  | Refactored the server cleanup functionality, wrote unit tests for closing the lobby, started working on the visual layout|
 | total   | 79.5  | | 

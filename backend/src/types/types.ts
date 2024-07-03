@@ -1,6 +1,6 @@
 export interface LobbyInfo {
     hostID: string,
-    inactivityTimerID: NodeJS.Timeout  | null,
+    lastActivity: number,
     viewerSocket: string | null,
     status: LobbyStatus,
     availableUserCodes: string[]

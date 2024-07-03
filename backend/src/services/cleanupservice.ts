@@ -2,7 +2,7 @@ import { LobbyCloseReason, LobbyStatusInfo } from '../types/types'
 import { io } from '../util/server'
 import * as lobbyService from './lobbyservice'
 
-const defaultTimeoutDuration = Number(process.env.LOBBY_TIMEOUT_LENGTH) | 3600000
+const defaultTimeoutDuration = (process.env.LOBBY_TIMEOUT_LENGTH && Number(process.env.LOBBY_TIMEOUT_LENGTH)) | 7200000
 
 export const closeLobby = (lobbyCode : string, reason: LobbyCloseReason) => {
     const viewerSocket = lobbyService.getViewerSocket(lobbyCode)
@@ -17,16 +17,18 @@ export const closeLobby = (lobbyCode : string, reason: LobbyCloseReason) => {
         io.of('/lobby').in(socket).disconnectSockets()
     })
 
-    const lobbyTimeout = lobbyService.getInactivityTimerID(lobbyCode)
-    if (lobbyTimeout) clearTimeout(lobbyTimeout)
-
     lobbyService.deleteLobby(lobbyCode)
 }
 
-export const updateLobbyTimeout = (lobbyCode : string, timeoutDuration? : number) => {
-    const existingTimeout = lobbyService.getInactivityTimerID(lobbyCode)
-    if (existingTimeout) clearTimeout(existingTimeout)
+export const cleanupRoutine = () => {
+    console.log('Running cleanup service!')
+    const activityArray = lobbyService.getAllLobbyActivity()
 
-    const newTimeout = setTimeout(() => closeLobby(lobbyCode, 'INACTIVITY'), timeoutDuration ? timeoutDuration : defaultTimeoutDuration)
-    lobbyService.saveInactivityTimerID(lobbyCode, newTimeout)
+    activityArray.forEach((lobby) => {
+        if (Date.now() - lobby.lastActivity >= defaultTimeoutDuration) {
+            console.log('Now is', Date.now())
+            console.log('Closing lobby', lobby.lobbyCode, 'that has been active for', new Date(Date.now()-lobby.lastActivity).toTimeString())
+            closeLobby(lobby.lobbyCode, 'INACTIVITY')
+        }
+    })
 }

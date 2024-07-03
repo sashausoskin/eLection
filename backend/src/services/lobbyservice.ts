@@ -30,7 +30,7 @@ export const createNewLobby = (): {lobbyCode: string, hostID: string} => {
     const userCodes = generateCodes()
 
 
-    lobbyInfo[lobbyCode] = {hostID: hostID, inactivityTimerID: null, status: 'STANDBY', availableUserCodes: userCodes, queuedUsers: {}, participants: {}, currentVote: null, viewerSocket: null}
+    lobbyInfo[lobbyCode] = {hostID: hostID, lastActivity: Date.now(), status: 'STANDBY', availableUserCodes: userCodes, queuedUsers: {}, participants: {}, currentVote: null, viewerSocket: null}
 
     return {lobbyCode, hostID}
 }
@@ -225,12 +225,21 @@ export const hasUserVoted = (lobbyCode : string, participantID : string) : boole
     return lobbyInfo[lobbyCode].currentVote.results.usersVoted.includes(participantID)
 }
 
-export const saveInactivityTimerID = (lobbyCode : string, timerID : NodeJS.Timeout) => {
-    lobbyInfo[lobbyCode].inactivityTimerID = timerID
+export const getLastActivity = (lobbyCode : string) : number => {
+    return lobbyInfo[lobbyCode].lastActivity
 }
 
-export const getInactivityTimerID = (lobbyCode : string) : NodeJS.Timeout => {
-    return lobbyInfo[lobbyCode].inactivityTimerID
+export const updateLastActivity = (lobbyCode : string, lastActivityTime?: number) => {
+    lobbyInfo[lobbyCode].lastActivity = lastActivityTime ? lastActivityTime : Date.now()
+}
+
+export const getAllLobbyActivity = () : {lobbyCode : string, lastActivity: number}[] => {
+    let activityArray = []
+    Object.keys(lobbyInfo).forEach((lobbyCode) => {
+        activityArray.push({lobbyCode, lastActivity: getLastActivity(lobbyCode)})
+    })
+
+    return activityArray
 }
 
 export const deleteLobby = (lobbyCode : string) => {

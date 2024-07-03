@@ -1,6 +1,13 @@
 import { ElectionInfo } from "../../src/types"
+import {Globals} from '@react-spring/web'
 
 describe("In participant view", () => {
+    before(() => {
+        Globals.assign({
+            skipAnimation: true
+        })
+    })
+
     beforeEach(() => {
         cy.resetServer()
         cy.createLobbyAndUser()
@@ -58,7 +65,9 @@ describe("In participant view", () => {
             })
         })
         it('can reorder candidates', () => {
-            cy.get("[data-testid='candidate-drag-0']").realMouseDown({position: 'center'}).realMouseMove(0, 100, {position: 'center'}).realMouseUp()
+            cy.get("[data-testid='candidate-drag-0']").first().realMouseDown({position: 'center'})
+                .realMouseMove(0, 150, {position: 'center'})
+                .realMouseUp()
             cy.get("[data-testid='cast-vote']").click()
             cy.getElectionResults().then((res) => {
                 expect(res.body[electionInfo.candidates[0]]).equal(1)
@@ -76,5 +85,19 @@ describe("In participant view", () => {
                 expect(res.body[electionInfo.candidates[2]]).equal(0)
             })
         })
+    })
+
+    it('can see when the host closes the lobby', () => {
+        //This is to make sure that the test doesn't close the lobby before the user has connected
+        cy.get("[data-testid='lobby-standby-header']")
+        cy.closeLobby()
+        cy.get("[data-testid='lobby-close-header']")
+    })
+
+    it('can see when the lobby is closed due to inactivity', () => {
+        cy.get("[data-testid='lobby-standby-header']")
+        cy.setLobbyLastActive(Date.now() - 1000*60*60*3)
+        cy.startCleanup()
+        cy.get("[data-testid='lobby-close-header']")
     })
 })

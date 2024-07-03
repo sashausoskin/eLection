@@ -6,4 +6,5 @@ module.exports = {
   coverageDirectory: "./coverage",
   preset: 'ts-jest',
   testEnvironment: 'node',
+  setupFiles: ['./src/tests/testSetup.ts']
 };
