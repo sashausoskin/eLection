@@ -67,6 +67,8 @@ describe("In participant view", () => {
         it('can reorder candidates', () => {
             cy.get("[data-testid='candidate-drag-0']").first().realMouseDown({position: 'center'})
                 .realMouseMove(0, 150, {position: 'center'})
+                // This isn't good, but the animations make the tests very unpredictable, so we have to wait a bit until the animations finish
+                .wait(100)
                 .realMouseUp()
             cy.get("[data-testid='cast-vote']").click()
             cy.getElectionResults().then((res) => {
