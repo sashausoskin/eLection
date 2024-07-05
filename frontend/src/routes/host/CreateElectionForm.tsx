@@ -203,7 +203,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
                                     </Fragment>
                             ))
                             }
-                            <button className={`addCandidateButton `} disabled={isElectionActive}type="button" onClick={() => push('')} data-testid="add-candidate-button">
+                            <button className={'addCandidateButton '} disabled={isElectionActive}type="button" onClick={() => push('')} data-testid="add-candidate-button">
                                 <img className={`icon ${isElectionActive && 'disabledIcon'}`} src={addIcon} height={30} />
                             </button>
                             </>

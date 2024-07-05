@@ -64,7 +64,8 @@ describe("In participant view", () => {
                 expect(res.body[electionInfo.candidates[2]]).equal(0)
             })
         })
-        it('can reorder candidates', () => {
+        it.skip('can reorder candidates', () => {
+            // Moving the candidates is very inconsistent, and it's up to chance when this test passes. For now, skip this test.
             cy.get("[data-testid='candidate-drag-0']").first().realMouseDown({position: 'center'})
                 .realMouseMove(0, 150, {position: 'center'})
                 // This isn't good, but the animations make the tests very unpredictable, so we have to wait a bit until the animations finish

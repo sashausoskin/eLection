@@ -1,6 +1,5 @@
 import express from 'express'
 import * as lobbyService from '../services/lobbyservice'
-import * as cleanupService from '../services/cleanupservice'
 import { ElectionInfo, ErrorMessage, LobbyStatusInfo } from '../types/types'
 import Ajv from 'ajv'
 import * as electioninfo_schema from '../types/ElectionInfo_schema.json'

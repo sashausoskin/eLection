@@ -23,5 +23,5 @@
 | 1.7 | 3  | Finished casting votes for a ranked election. Created end-to-end tests for ranked elections|
 | 2.7 | 3  | Started working on server cleanup functionality, worked on unit tests|
 | 3.7 | 9  | Refactored the server cleanup functionality, wrote unit tests for closing the lobby, started working on the visual layout|
-| 5.7 | 6  | Worked on the host view's UI|
-| total   | 100.5  | | 
+| 5.7 | 6.5  | Worked on the host view's UI, debugged end-to-end tests|
+| total   | 101.5  | | 

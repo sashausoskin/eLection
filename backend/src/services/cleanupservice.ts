@@ -21,13 +21,11 @@ export const closeLobby = (lobbyCode : string, reason: LobbyCloseReason) => {
 }
 
 export const cleanupRoutine = () => {
-    console.log('Running cleanup service!')
+    console.log('Performing cleanup')
     const activityArray = lobbyService.getAllLobbyActivity()
 
     activityArray.forEach((lobby) => {
         if (Date.now() - lobby.lastActivity >= defaultTimeoutDuration) {
-            console.log('Now is', Date.now())
-            console.log('Closing lobby', lobby.lobbyCode, 'that has been active for', new Date(Date.now()-lobby.lastActivity).toTimeString())
             closeLobby(lobby.lobbyCode, 'INACTIVITY')
         }
     })

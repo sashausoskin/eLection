@@ -234,7 +234,7 @@ export const updateLastActivity = (lobbyCode : string, lastActivityTime?: number
 }
 
 export const getAllLobbyActivity = () : {lobbyCode : string, lastActivity: number}[] => {
-    let activityArray = []
+    const activityArray = []
     Object.keys(lobbyInfo).forEach((lobbyCode) => {
         activityArray.push({lobbyCode, lastActivity: getLastActivity(lobbyCode)})
     })
