@@ -13,7 +13,7 @@ function App() {
 		<>
 			<div className='topbar'>
 				<div>
-					<img className='icon' width={50} height={50} src={icon} />
+					<img className='mainIcon' width={50} height={50} src={icon} />
 				</div>
 				
 			</div>

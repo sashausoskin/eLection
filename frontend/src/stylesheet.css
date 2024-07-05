@@ -1,7 +1,6 @@
 :root {
-    --primary-color: purple;
-    --secondary-color: blueviolet;
+    --primary-color: rgb(103, 28, 103);
+    --secondary-color: rgb(79, 24, 72);
     --primary-text-color: blue;
     --secondary-text-color: white;
-    --background: './img/bg.jpg'
 }

@@ -5,20 +5,32 @@
     background-repeat: repeat;
 }
 
-.icon {
+.mainIcon {
     padding: 15px;
 }
+
+.icon {
+    filter: invert(100%);
+}
+
+.disabledIcon {
+    filter: invert(50%);
+}
+
 
 .mainContainer {
     margin: auto;
     margin-top: 100px;
     display: flex;
+    flex-shrink: 0;
     flex-direction: column;
-    vertical-align: middle;
-    justify-content: center;
-    justify-items: center;
+    justify-content: safe center;
+    justify-items: safe center;
     height: 80vh;
     width: 80vw;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    overflow-anchor: none;
     border-radius: 25px;
     border-width: 3px;
     border-style: solid;
@@ -37,4 +49,9 @@
     float: left;
     justify-content: space-between;
     align-items: center;
+    z-index: 20;
+}
+
+.tooltip {
+    max-width: 200px;
 }

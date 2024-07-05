@@ -3,6 +3,8 @@ import * as lobbyService from '../services/lobbyHostService'
 import { Authentication } from './host/Authentication'
 import CreateElectionForm from './host/CreateElectionForm'
 import { useNavigate } from 'react-router'
+import linkIcon from '../img/icons/link.svg'
+import './Host.css'
 
 export const Host = () => {
 	const [lobbyCode, setLobbyCode] = useState<string | null>(null)
@@ -40,10 +42,14 @@ export const Host = () => {
 	return ( 
     <>
         <Authentication lobbyCode={lobbyCode} />
+		<button className='viewerOpen'onClick={() => window.open('/viewer', '_blank', 'popup=true')}>
+			<img src={linkIcon} className='icon' height={20}></img><p>Open the viewer window</p>
+		</button>
+		<hr style={{width: '100%'}}/>
         <CreateElectionForm />
 		<br />
-        <button onClick={() => window.open('/viewer', '_blank', 'popup=true')}>Open the viewer window</button>
-		<button onClick={handleCloseLobbyClick} data-testid='close-lobby' style={{backgroundColor: 'red'}}>Close lobby</button>
+		<hr style={{width: '100%'}}/>
+		<button className='closeLobby' onClick={handleCloseLobbyClick} data-testid='close-lobby'>Close lobby</button>
     </>
     )
 }

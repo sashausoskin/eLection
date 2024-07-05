@@ -1,0 +1,27 @@
+.lobbyCodeDisplay{
+    text-align: center;
+    display: flex;
+    flex: 1;
+    background-color: white;
+    justify-content: center;
+    align-items: center;
+    color: black;
+    max-width: 100px;
+    border-radius: 10px;
+    align-self: center;
+    width: 200px;
+    height: 100px;
+}
+
+.userCodeField{
+    display: flex;
+    align-self: center;
+    gap: 20px;
+    height: 40px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+.userCodeField input{
+    font-size: 20px;
+    width: 100px;
+}

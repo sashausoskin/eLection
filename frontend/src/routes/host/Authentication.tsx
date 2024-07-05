@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { StatusMessage } from '../../types'
 import { AxiosError } from 'axios'
 import { Mock } from 'vitest'
+import './Authentication.css'
 
 export const Authentication = ({
 	lobbyCode,
@@ -63,9 +64,9 @@ export const Authentication = ({
 
 	return (
 		<>
-			<a>Lobby code:</a>
-			<a data-testid="lobbycode">{lobbyCode}</a>
-			<p>Let someone in to the lobby by entering their user code below</p>
+			<h2>Lobby code:</h2>
+			<h2 className='lobbyCodeDisplay' data-testid="lobbycode">{lobbyCode}</h2>
+			<p>Let someone into the lobby by entering their user code below</p>
 			<Formik
 				initialValues={{ userCode: '' }}
 				validationSchema={userCodeSchema}
@@ -76,23 +77,28 @@ export const Authentication = ({
 				}}
 			>
 				{({ errors, touched, isValid }) => (
-					<Form>
-						<Field name="userCode" placeholder="User code" data-testid="usercode-field" />
-						{statusMessage && (
-							<a
-								data-testid={`status-message-${statusMessage.status}`}
-								style={{ color: statusMessageColor }}
-							>
-								{statusMessage.message}
-							</a>
-						)}
-						{errors.userCode && touched.userCode ? (
-							<a data-testid="usercode-field-error">{errors.userCode}</a>
-						) : null}
-						<button type="submit" disabled={!isValid} data-testid="submit-authentication">
-							Submit
-						</button>
-					</Form>
+					<>
+					<div className='userCodeField'>
+						<Form className='userCodeField'>
+							<Field name="userCode" placeholder="User code" data-testid="usercode-field" />
+							
+							<button type="submit" disabled={!isValid} data-testid="submit-authentication">
+								Submit
+							</button>
+						</Form>
+					</div>
+					{errors.userCode && touched.userCode ? (
+								<a data-testid="usercode-field-error">{errors.userCode}</a>
+							) : null}
+					{statusMessage && (
+						<a
+							data-testid={`status-message-${statusMessage.status}`}
+							style={{ color: statusMessageColor }}
+						>
+							{statusMessage.message}
+						</a>
+					)}
+					</>
 				)}
 			</Formik>
 		</>

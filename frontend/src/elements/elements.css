@@ -1,0 +1,8 @@
+.tooltip {
+    max-width: 150px;
+    z-index: 10;
+}
+
+.tooltipIcon {
+    margin: 0 5px;
+}
