@@ -36,6 +36,12 @@ export const UserCode = ({ onAuthenticated }: { onAuthenticated?: (userID: strin
 			(onAuthenticated === null ? onAuthenticated : defaultOnAuthenticated)(userID)
 		})
 		lobbySocket.connect()
+
+		const handleDisconnect = () => {
+			lobbySocket.disconnect()
+		}
+
+		return handleDisconnect
 	}, [lobbyCode, userCode, setViewTab, onAuthenticated])
 
 	if (isConnecting) return <a>Connecting...</a>

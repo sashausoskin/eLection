@@ -32,7 +32,6 @@ const LobbyView = () : JSX.Element => {
         lobbySocket.current.on('status-change', (newStatus : LobbyStatusInfo) => {
             setHasVoted(false)
             setLobbyStatus(newStatus)
-            console.log('Got new status', newStatus)
             })
         lobbySocket.current.on('connect_error', (err) => {
             console.error('A socket error occurred:', err.message)
@@ -49,13 +48,13 @@ const LobbyView = () : JSX.Element => {
 
         const handleUnmount = () => {
             if (lobbySocket.current) lobbySocket.current.disconnect()
+
         }
         
         return handleUnmount
-}, [setLobbyStatus, setViewTab])
+}, [setViewTab])
 
     const onSubmitVote = async (voteContent : string | string[]) => {
-        console.log('Submitting vote:', voteContent)
         setCanSubmitVote(false)
         try {
             await participantService.castVote(voteContent)
