@@ -5,7 +5,7 @@ import { SetParticipantViewContext } from '../Contexts'
 import * as participantService from '../services/participantService'
 import LobbyView from './participant/Lobby'
 
-export const ParticipantView: () => JSX.Element = () => {
+const ParticipantView: () => JSX.Element = () => {
 	const { viewTab, setViewTab } = useContext(SetParticipantViewContext)
 	const [isLoading, setIsLoading] = useState<boolean>(true)
 
@@ -37,3 +37,5 @@ export const ParticipantView: () => JSX.Element = () => {
 		</>
 	)
 }
+
+export default ParticipantView

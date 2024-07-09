@@ -1,30 +1,28 @@
-import { Field, Form, Formik } from 'formik'
 import { FPTPElectionInfo } from '../../../types'
+import './VotingViews.css'
+import { useState } from 'react'
 
-const FPTPVotingView = ({electionInfo, canSubmitVote, onSubmitVote} : {electionInfo : FPTPElectionInfo, canSubmitVote : boolean, onSubmitVote : (voteContent: string) => Promise<void>}) => {
-    const initialValues = {voteContent : ''}
+const FPTPVotingView = ({electionInfo, canSubmitVote, onSubmitVote} : {electionInfo : FPTPElectionInfo, canSubmitVote : boolean, onSubmitVote : (voteContent: string | null) => Promise<void>}) => {
+    const [selectedCandidate, setSelectedCandidate] = useState<string | null>(null)
+
+    const handleSubmit = () => {
+        console.log('submitting')
+        onSubmitVote(selectedCandidate)
+    }
 
     return<>
         <h2>{electionInfo.title}</h2>
-        <Formik
-        initialValues={initialValues}
-        onSubmit={async (values) => {
-            onSubmitVote(values.voteContent)
-        }}
-        >
-            <Form>
-                {electionInfo.candidates.map((candidate) => 
-                    <div key={candidate} style={{backgroundColor: 'blue', display: 'flex', flexDirection: 'row', padding: '5%', margin: '10%', alignContent: 'center'}}>
-                        <Field data-testid="candidate-radio" type="radio" name="voteContent" value={candidate} />
-                        <a>{candidate}</a>
-                    </div>
-                )}
-                <div style={{backgroundColor: 'blue', display: 'flex', flexDirection: 'row', alignContent: 'center'}}>
-                    <Field type="radio" name="voteContent" value={''} /> Vote empty
-                </div>
-                <button type="submit" disabled={!canSubmitVote} data-testid="vote-submit">Send vote</button>
-            </Form>
-        </Formik>
+        <div className='FPTPCandidateContainer'>
+        {electionInfo.candidates.map((candidate) => 
+            <div key={candidate} className={`FPTPCandidate ${selectedCandidate === candidate && 'selectedCandidate'}`} data-testid='candidate-radio' onClick={() => setSelectedCandidate(candidate)}>
+                <a className='candidateName'>{candidate}</a>
+            </div>
+        )}
+        <div className={`FPTPCandidate emptyCandidate ${selectedCandidate === null && 'selectedCandidate'}`} onClick={() => setSelectedCandidate(null)}>
+            <a className='candidateName'>Vote empty </a>
+        </div>
+        </div>
+        <button type="button" disabled={!canSubmitVote} data-testid="vote-submit" onClick={() => handleSubmit()}>Send vote</button>
     </>
 }
 

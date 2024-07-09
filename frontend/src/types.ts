@@ -75,6 +75,7 @@ export interface ElectionResults {
 export type ElectionResultsInfo = Omit<ElectionResults, 'usersVoted'> & Pick<ElectionInfo, 'type' | 'title'>
 
 export interface ResultCandidateInfo {
+    position: number
     name: string
     votes: number
 }

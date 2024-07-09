@@ -114,7 +114,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
                         <a>Participants have to rank a number of candidates. The higher the rank, the more votes the candidate receives.</a>
                     </InfoTooltip>
                 </div>
-                <Form>
+                <Form autoComplete='off'>
                     <ErrorMessage
                         name="type"
                         component="div"

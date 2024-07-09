@@ -3,6 +3,7 @@ import { Socket } from 'socket.io-client'
 import { createQueueSocket } from '../../sockets'
 import { SetParticipantViewContext } from '../../Contexts'
 import { getLobbyCode, getUserCode, setAuthToken } from '../../services/participantService'
+import './UserCode.css'
 
 export const UserCode = ({ onAuthenticated }: { onAuthenticated?: (userID: string) => void }) => {
 	const [isConnecting, setIsConnecting] = useState<boolean>(true)
@@ -48,11 +49,14 @@ export const UserCode = ({ onAuthenticated }: { onAuthenticated?: (userID: strin
 
 	return (
 		<>
-			<a>Here is your code</a>
-			<a style={{ fontSize: 20 }} data-testid={'usercode'}>
-				{userCode}
-			</a>
-			<a>Show this code to the secretary</a>
+			<h3>Here is your user code</h3>
+			<div className='codeDisplay'>
+				<a data-testid={'usercode'}>
+					{userCode}
+				</a>
+			</div>
+			<h3>Show this code to the secretary</h3>
+			<a>Waiting for access into the lobby...</a>
 		</>
 	)
 }

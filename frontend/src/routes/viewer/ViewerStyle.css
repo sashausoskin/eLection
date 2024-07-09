@@ -1,0 +1,50 @@
+.candidatesContainer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+}
+.candidatesContainer a {
+    margin: 25px;
+    color: var(--secondary-text-color);
+    font-weight: 750;
+}
+
+.candidateResultContainer {
+    width: 500px;
+    background-color: var(--primary-color);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    margin: 10px;
+    padding: 10px;
+    justify-content: space-between;
+}
+
+.candidateResultContainer .candidatePosition {
+    font-size: 30px;
+    position: relative;
+    float: left;
+    width: 50px;
+    min-width: 50px;
+    max-width: 50px;
+}
+
+.candidateResultContainer .candidateName {
+    flex-grow: 1;
+    flex-basis: 0;
+    font-size: 20px;
+    color: var(--secondary-text-color);
+}
+
+.candidateResultContainer .candidateVotes {
+    flex-grow: 0;
+    flex-basis: 0;
+    width: 50px;
+    min-width: 50px;
+    max-width: 50px;
+}
+
+h1 {
+    margin-top: 0;
+}

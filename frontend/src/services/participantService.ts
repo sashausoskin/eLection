@@ -66,9 +66,9 @@ export const validateStoredUserValues = async () => {
 	})
 }
 
-export const castVote = async (voteContent: string | string[]) => {
+export const castVote = async (voteContent: string | string[] | null) => {
 	await apiClient.post('/participant/castVote', {
-		lobbyCode, voteContent: voteContent || null
+		lobbyCode, voteContent
 	}, {
 		headers: {
 			Authorization: participantID

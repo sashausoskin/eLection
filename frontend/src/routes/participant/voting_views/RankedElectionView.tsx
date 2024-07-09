@@ -31,7 +31,7 @@ const swap = (array: number[], indexA : number, indexB : number) => {
     return arrayCopy
 }
 
-const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : RankedElectionInfo, onSubmitVote: (voteContent: string[] | string) => Promise<void>}) => {
+const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : RankedElectionInfo, onSubmitVote: (voteContent: string[] | string | null) => Promise<void>}) => {
     const [candidateOrder, setCandidateOrder] = useState(electionInfo.candidates.map((_,index) => index))
 
     const [springs, animationApi] = useSprings(candidateOrder.length, animateFn(candidateOrder))
@@ -51,14 +51,13 @@ const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : Ranke
             orderedCandidates.push(electionInfo.candidates[candidateOrderIndex])
             if (i >= electionInfo.candidatesToRank - 1) return true
         })
-
         onSubmitVote(orderedCandidates)
     }
 
     const handleEmptyVote = () => {
         const castEmptyVote = window.confirm('Are you sure you want to submit an empty vote?')
         if (castEmptyVote) {
-            onSubmitVote('')
+            onSubmitVote(null)
         }
     }
 

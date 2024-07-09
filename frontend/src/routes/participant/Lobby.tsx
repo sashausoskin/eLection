@@ -54,7 +54,7 @@ const LobbyView = () : JSX.Element => {
         return handleUnmount
 }, [setViewTab])
 
-    const onSubmitVote = async (voteContent : string | string[]) => {
+    const onSubmitVote = async (voteContent : string | string[] | null) => {
         setCanSubmitVote(false)
         try {
             await participantService.castVote(voteContent)

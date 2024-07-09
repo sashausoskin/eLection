@@ -24,4 +24,5 @@
 | 2.7 | 3  | Started working on server cleanup functionality, worked on unit tests|
 | 3.7 | 9  | Refactored the server cleanup functionality, wrote unit tests for closing the lobby, started working on the visual layout|
 | 5.7 | 6.5  | Worked on the host view's UI, debugged end-to-end tests|
+| 9.7 | 8.5  | Fixed some bugs, further worked on the visual overhaul|
 | total   | 101.5  | | 

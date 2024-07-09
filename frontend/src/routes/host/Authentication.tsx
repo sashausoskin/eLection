@@ -80,7 +80,7 @@ export const Authentication = ({
 					<>
 					<div className='userCodeField'>
 						<Form className='userCodeField'>
-							<Field name="userCode" placeholder="User code" data-testid="usercode-field" />
+							<Field name="userCode" autoComplete='off' size={4} data-testid="usercode-field" />
 							
 							<button type="submit" disabled={!isValid} data-testid="submit-authentication">
 								Submit

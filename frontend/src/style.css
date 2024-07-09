@@ -26,7 +26,8 @@
     flex-direction: column;
     justify-content: safe center;
     justify-items: safe center;
-    height: 80vh;
+    align-items: center;
+    height: 70vh;
     width: 80vw;
     overflow-x: hidden;
     overflow-y: scroll;
@@ -35,13 +36,14 @@
     border-width: 3px;
     border-style: solid;
     border-color: var(--secondary-color);
-    background-color: rgba(0,0,0,0.2);
+    background-color: var(--background-color);
+    padding: 5vh;
 }
 
 .topbar {
     background-color: var(--primary-color);
     width: 100vw;
-    max-height: 100px;
+    max-height: 20%;
     position: absolute;
     top: 0;
     left: 0;
@@ -52,6 +54,28 @@
     z-index: 20;
 }
 
+.codeDisplay {
+    background-color: var(--code-background-color);
+    padding: 3%;
+    color: var(--code-text-color);
+    display: flex;
+    justify-self: center;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    margin: 20px;
+}
+
+.codeDisplay a {
+    color: var(--code-text-color);
+    font-weight: 700;
+    line-height: 1;
+}
+
 .tooltip {
     max-width: 200px;
+}
+
+.viewerContainer {
+    font-size: 1.0rem;
 }

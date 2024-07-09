@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router'
 import linkIcon from '../img/icons/link.svg'
 import './Host.css'
 
-export const Host = () => {
+const Host = () => {
 	const [lobbyCode, setLobbyCode] = useState<string | null>(null)
 	const navigate = useNavigate()
 
@@ -53,3 +53,5 @@ export const Host = () => {
     </>
     )
 }
+
+export default Host

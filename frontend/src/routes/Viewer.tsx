@@ -3,6 +3,7 @@ import { createViewerSocket } from '../sockets'
 import { LobbyStatusInfo } from '../types'
 import ElectionInfoView from './viewer/ElectionInfo'
 import ElectionResults from './viewer/ElectionResults'
+import LobbyInfo from './viewer/LobbyInfo'
 
 const Viewer = () => {
     const [errorText, setErrorText] = useState<string | null>(null)
@@ -70,12 +71,7 @@ const Viewer = () => {
     if (!lobbyStatus) return <a>Loading...</a>
 
     if (lobbyStatus.status === 'STANDBY') {
-        return <>
-            <a>Go to {window.location.host}, select "Participate" and enter the lobby code</a>
-            <h1 data-testid="lobbyCode">{lobbyCode}</h1>
-            <a>on your device</a>
-            <p><a data-testid="users-joined">{usersInLobby}</a> participants in lobby</p>
-            </>
+        return <LobbyInfo lobbyCode={lobbyCode} usersInLobby={usersInLobby} />
     }
 
     else if (lobbyStatus.status === 'VOTING') {
@@ -83,7 +79,6 @@ const Viewer = () => {
     }
 
     else if (lobbyStatus.status === 'ELECTION_ENDED') {
-        console.log('Ended election')
         return <ElectionResults results={lobbyStatus.results} />
     }
 }

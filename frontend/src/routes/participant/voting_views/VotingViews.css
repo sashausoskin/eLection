@@ -1,0 +1,42 @@
+.FPTPCandidateContainer {
+    display: flex;
+    flex-direction: column;
+    width: 500px;
+    align-items: center;
+    min-height: 80%;
+    justify-content: center;
+    margin: auto;
+    border-radius: 20px;
+    flex-grow: 1;
+}
+
+.FPTPCandidate {
+    background-color: var(--secondary-color);
+    display: flex;
+    flex-direction: row;
+    height: 100px;
+    max-height: 100px;
+    margin: 1%;
+    width: 250px;
+    align-content: center;
+    justify-content: flex-start;
+    border-radius: 15px;
+    transition: 1000ms;
+    border-color: var(--secondary-color);
+    border-style: solid;
+}
+
+.FPTPCandidate .candidateName {
+    margin: auto
+}
+
+.selectedCandidate {
+    background-color: var(--primary-color);
+    border-width: 5px;
+}
+
+.emptyCandidate {
+    width: 150px;
+    height: 50px;
+    border-radius: 10px;
+}

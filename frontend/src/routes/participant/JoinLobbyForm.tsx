@@ -5,6 +5,7 @@ import * as participantService from '../../services/participantService'
 import { useContext } from 'react'
 import { SetParticipantViewContext } from '../../Contexts'
 import { Mock } from 'vitest'
+import './JoinLobbyForm.css'
 
 export const JoinLobbyForm = ({
 	handleSubmitLobbyCode,
@@ -48,7 +49,7 @@ export const JoinLobbyForm = ({
 
 	const lobbyFormSchema = Yup.object({
 		lobbyCode: Yup.string()
-			.required()
+			.required('Please enter a valid lobby code')
 			.matches(/^[0-9]+$/, 'Please enter only digits')
 			.min(4, 'Please enter a valid lobby code')
 			.max(4, 'Please enter a valid lobby code'),
@@ -56,7 +57,6 @@ export const JoinLobbyForm = ({
 
 	return (
 		<>
-			<a data-testid="lobby-form-header">Welcome! Enter the lobby code below</a>
 			<Formik
 				initialValues={{ lobbyCode: '' }}
 				validationSchema={lobbyFormSchema}
@@ -67,17 +67,24 @@ export const JoinLobbyForm = ({
 				}}
 			>
 				{({ errors, touched, isValid }) => (
-					<Form>
-						<Field name="lobbyCode" data-testid="lobbycode-field" />
-						{errors.lobbyCode && touched.lobbyCode ? (
+					<>
+						<Form autoComplete='off'>
+							<h2 data-testid="lobby-form-header">Welcome!</h2>
+							<a>Please enter a lobby code below</a>
+							<br/>
+							<Field name="lobbyCode" data-testid="lobbycode-field" size={4} maxLength={4} inputMode='numeric' className='lobbyCodeInput'/>
+							<br/>
+							{errors.lobbyCode && touched.lobbyCode ? (
 							<a data-testid="lobbycode-field-error" style={{ color: 'red' }}>
 								{errors.lobbyCode}
 							</a>
 						) : null}
-						<button type="submit" disabled={!isValid}>
-							Submit
-						</button>
-					</Form>
+						<br />
+							<button type="submit" className='submitLobbyCode' disabled={!isValid}>
+								Submit
+							</button>
+						</Form>
+					</>
 				)}
 			</Formik>
 		</>
