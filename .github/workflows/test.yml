@@ -37,6 +37,12 @@ jobs:
         - name: Cypress run
           run: npm run test:e2e
           working-directory: ./frontend
+        - name: Upload Cypress screenshots
+        - uses: actions/upload-artifact@v
+          with:
+            name: cypress-screenshots
+            path: cypress/screenshots
+            if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
         - name: Upload backend coverage reports to Codecov
           uses: codecov/codecov-action@v4.0.1
           with:
