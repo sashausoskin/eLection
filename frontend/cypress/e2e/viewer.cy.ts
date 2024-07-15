@@ -60,5 +60,22 @@ describe ("In viewer", () => {
 
             cy.get("[data-testid='results-header']")
         })
+
+        it('sorts the results by number of votes', function () {
+            const exampleElection : ElectionInfo = {type: 'FPTP', title: 'President 2024', candidates: ['Joe Biden', 'Donald Trump', 'Barack Obama']}
+
+            cy.createElection(exampleElection)
+            cy.castVote('Joe Biden')
+            cy.endElection()
+
+            cy.get('[data-testid="result"]').eq(0).should('contain', 'Joe Biden')
+
+            cy.createElection(exampleElection)
+            cy.castVote('Barack Obama')
+            cy.endElection()
+
+            cy.get('[data-testid="result"]').eq(0).should('contain', 'Barack Obama')
+
+        })
     })
 })

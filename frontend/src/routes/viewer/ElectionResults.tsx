@@ -12,7 +12,7 @@ const ElectionResults = ({results} : {results: ElectionResultsInfo}) => {
     console.log(orderedResults)
     console.log(results.votes)
 
-    orderedResults.sort((a,b) => a.votes + b.votes)
+    orderedResults.sort((a,b) => b.votes - a.votes)
 
     // This is for shared positions.
     orderedResults.forEach((result, index) => {
@@ -28,7 +28,7 @@ const ElectionResults = ({results} : {results: ElectionResultsInfo}) => {
 
         
         {orderedResults.map((result) => {
-            return <div className='candidateResultContainer' key={result.name} id={`${result.name}_div`}>
+            return <div className='candidateResultContainer' key={result.name} data-testid='result' id={`${result.name}_div`}>
                 <a className='candidatePosition'>{result.position}.</a>
                 <a className='candidateName'>{result.name}</a>
                 <a className='candidateVotes'>{result.votes} votes</a>
