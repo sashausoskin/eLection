@@ -189,7 +189,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
                                                 />
                                         </div>
                                         <div className='rightAlign'>
-                                            <button type="button" className='deleteCandidateButton' disabled={canDeleteCandidate} onClick={() => remove(index)} data-testid="remove-candidate-button">
+                                            <button tabIndex={-1} type="button" className='deleteCandidateButton' disabled={canDeleteCandidate} onClick={() => remove(index)} data-testid="remove-candidate-button">
                                                 <img src={trashIcon} width={20} className={`icon ${canDeleteCandidate && 'disabledIcon'}`} />
                                             </button>
                                         </div>
