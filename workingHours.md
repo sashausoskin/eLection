@@ -25,5 +25,5 @@
 | 3.7 | 9  | Refactored the server cleanup functionality, wrote unit tests for closing the lobby, started working on the visual layout|
 | 5.7 | 6.5  | Worked on the host view's UI, debugged end-to-end tests|
 | 9.7 | 8.5  | Fixed some bugs, further worked on the visual overhaul|
-| 15.7 | 6  | Polished the voting experience, fixed some bugs, added a loading icon|
-| total   | 107.5  | | 
+| 15.7 | 6.5  | Polished the voting experience, fixed some bugs, added a loading icon|
+| total   | 108  | | 
