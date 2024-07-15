@@ -1,2 +1,4 @@
 
 *.afphoto~lock~
+
+frontend/.env
