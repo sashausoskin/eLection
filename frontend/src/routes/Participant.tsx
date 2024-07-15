@@ -4,6 +4,7 @@ import { UserCode } from './participant/UserCode'
 import { SetParticipantViewContext } from '../Contexts'
 import * as participantService from '../services/participantService'
 import LobbyView from './participant/Lobby'
+import Loading from '../elements/Loading'
 
 const ParticipantView: () => JSX.Element = () => {
 	const { viewTab, setViewTab } = useContext(SetParticipantViewContext)
@@ -24,7 +25,7 @@ const ParticipantView: () => JSX.Element = () => {
 		validateStoredValues()
 	}, [setViewTab])
 
-	if (isLoading) return <a>Loading....</a>
+	if (isLoading) return <Loading><a>Loading....</a></Loading>
 
 	return (
 		<>

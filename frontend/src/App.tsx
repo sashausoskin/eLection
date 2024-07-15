@@ -5,6 +5,7 @@ import { Home } from './routes/Home'
 import { SetParticipantViewContextProvider } from './Contexts'
 import icon from '../src/img/icon.svg'
 import { lazy, Suspense } from 'react'
+import Loading from './elements/Loading'
 
 const Host = lazy(() => import('./routes/Host'))
 const ParticipantView = lazy(() => import('./routes/Participant')) 
@@ -20,7 +21,10 @@ function App() {
 				
 			</div>
 			<div className='mainContainer'>
-				<Suspense fallback={<a>Loading files...</a>}>
+				<Suspense fallback={<Loading>
+						<a>Loading files...</a>
+					</Loading>
+					}>
 					<Routes>
 						<Route path="/" element={<Home />} />
 						<Route path="/host" element={
@@ -35,6 +39,12 @@ function App() {
 								<SetParticipantViewContextProvider>
 									<ParticipantView />
 								</SetParticipantViewContextProvider>
+							}
+						/>
+						<Route
+							path='/testing'
+							element={
+								<Loading><a>Thinking real hard...</a></Loading>
 							}
 						/>
 					</Routes>

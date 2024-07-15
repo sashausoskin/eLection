@@ -5,6 +5,7 @@ import CreateElectionForm from './host/CreateElectionForm'
 import { useNavigate } from 'react-router'
 import linkIcon from '../img/icons/link.svg'
 import './Host.css'
+import Loading from '../elements/Loading'
 
 const Host = () => {
 	const [lobbyCode, setLobbyCode] = useState<string | null>(null)
@@ -37,7 +38,7 @@ const Host = () => {
 		initLobby()
 	}, [])
 
-	if (lobbyCode === null) return <a>Loading...</a>
+	if (lobbyCode === null) return <Loading><a>Loading...</a></Loading>
 
 	return ( 
     <>

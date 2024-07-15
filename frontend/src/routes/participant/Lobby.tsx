@@ -10,6 +10,7 @@ import ElectionEnded from './voting_views/ElectionEnded'
 import RankedElectionView from './voting_views/RankedElectionView'
 import LobbyClose from './voting_views/LobbyClose'
 import { Socket } from 'socket.io-client'
+import Loading from '../../elements/Loading'
 
 const LobbyView = () : JSX.Element => {
     const [lobbyStatus, setLobbyStatus] = useState<LobbyStatusInfo | null>(null)
@@ -81,7 +82,7 @@ const LobbyView = () : JSX.Element => {
     
 
     if (lobbyStatus === null) {
-        return <a>Connecting...</a>
+        return <Loading><a>Connecting...</a></Loading>
     }
 
     switch (lobbyStatus.status) {

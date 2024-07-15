@@ -4,6 +4,7 @@ import { createQueueSocket } from '../../sockets'
 import { SetParticipantViewContext } from '../../Contexts'
 import { getLobbyCode, getUserCode, setAuthToken } from '../../services/participantService'
 import './UserCode.css'
+import Loading from '../../elements/Loading'
 
 export const UserCode = ({ onAuthenticated }: { onAuthenticated?: (userID: string) => void }) => {
 	const [isConnecting, setIsConnecting] = useState<boolean>(true)
@@ -45,7 +46,7 @@ export const UserCode = ({ onAuthenticated }: { onAuthenticated?: (userID: strin
 		return handleDisconnect
 	}, [lobbyCode, userCode, setViewTab, onAuthenticated])
 
-	if (isConnecting) return <a>Connecting...</a>
+	if (isConnecting) return <Loading><a>Connecting...</a></Loading>
 
 	return (
 		<>

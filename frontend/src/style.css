@@ -37,7 +37,7 @@
     border-style: solid;
     border-color: var(--secondary-color);
     background-color: var(--background-color);
-    padding: 5vh;
+    padding: 5vh 5vw;
 }
 
 .topbar {
@@ -58,12 +58,12 @@
     background-color: var(--code-background-color);
     padding: 3%;
     color: var(--code-text-color);
-    display: flex;
+    margin: 5% auto;
+    flex-shrink: 1;
     justify-self: center;
     justify-content: center;
     align-items: center;
     border-radius: 5px;
-    margin: 20px;
 }
 
 .codeDisplay a {
@@ -77,5 +77,5 @@
 }
 
 .viewerContainer {
-    font-size: 1.0rem;
+    font-size: 1.2rem;
 }

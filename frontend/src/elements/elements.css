@@ -6,3 +6,24 @@
 .tooltipIcon {
     margin: 0 5px;
 }
+
+@keyframes loadingAnimation {
+    from {transform: rotate(0);}
+    to {transform: rotate(360deg);}
+}
+
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.loadingIcon {
+    margin: 10%;
+    animation-name: loadingAnimation;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+}

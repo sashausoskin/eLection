@@ -4,6 +4,7 @@ import { LobbyStatusInfo } from '../types'
 import ElectionInfoView from './viewer/ElectionInfo'
 import ElectionResults from './viewer/ElectionResults'
 import LobbyInfo from './viewer/LobbyInfo'
+import Loading from '../elements/Loading'
 
 const Viewer = () => {
     const [errorText, setErrorText] = useState<string | null>(null)
@@ -16,7 +17,7 @@ const Viewer = () => {
 
     useEffect(() => {
         if (!lobbyCode || !hostID) {
-            setErrorText('Could not load the viewercorrectly. Please first create a lobby and only then open this window')
+            setErrorText('Could not load the viewer correctly. Please first create a lobby and only then open this window')
             return
         }
 
@@ -68,7 +69,7 @@ const Viewer = () => {
 
     if (errorText) return <a>{errorText}</a>
 
-    if (!lobbyStatus) return <a>Loading...</a>
+    if (!lobbyStatus) return <Loading><a>Loading...</a></Loading>
 
     if (lobbyStatus.status === 'STANDBY') {
         return <LobbyInfo lobbyCode={lobbyCode} usersInLobby={usersInLobby} />

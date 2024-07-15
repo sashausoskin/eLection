@@ -10,6 +10,11 @@
     font-weight: 750;
 }
 
+.lobbyInfoContainer {
+    display: flex;
+    flex-direction: column;
+}
+
 .candidateResultContainer {
     width: 500px;
     background-color: var(--primary-color);
@@ -43,6 +48,10 @@
     width: 50px;
     min-width: 50px;
     max-width: 50px;
+}
+
+.codeDisplay {
+    font-size: 75px;
 }
 
 h1 {
