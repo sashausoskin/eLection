@@ -5,6 +5,7 @@ import './index.css'
 import './stylesheet.css'
 import { BrowserRouter } from 'react-router-dom'
 import { Globals } from '@react-spring/web'
+import { PopupContextProvider } from './Contexts.tsx'
 
 if (process.env.NODE_ENV === 'test') {
 	console.log('Noticed test environment, skipping animations...')
@@ -14,7 +15,9 @@ if (process.env.NODE_ENV === 'test') {
 ReactDOM.createRoot(document.getElementById('root')!).render(
 	<React.StrictMode>
 		<BrowserRouter>
-			<App />
+			<PopupContextProvider>
+				<App />
+			</PopupContextProvider>
 		</BrowserRouter>
 	</React.StrictMode>
 )

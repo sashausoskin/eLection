@@ -79,3 +79,19 @@ export interface ResultCandidateInfo {
     name: string
     votes: number
 }
+
+interface PopupInfoBase {
+    content: string
+    onConfirm?: () => void
+}
+
+interface AlertPopupInfo extends PopupInfoBase {
+    type: 'alert'
+}
+
+interface ConfirmPopupInfo extends PopupInfoBase {
+    type: 'confirm'
+    onCancel?: () => void
+}
+
+export type PopupInfo = AlertPopupInfo | ConfirmPopupInfo
