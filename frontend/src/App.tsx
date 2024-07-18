@@ -17,7 +17,7 @@ const Viewer = lazy(() => import('./routes/Viewer'))
 
 
 function App() {
-	const {popupInfo, createPopup, clearPopup} = useContext(PopupContext)
+	const {popupInfo, clearPopup} = useContext(PopupContext)
 
 	return (
 		<>
@@ -67,7 +67,6 @@ function App() {
 						/>
 					</Routes>
 				</Suspense>
-				<button onClick={() => createPopup({type: 'confirm', content: 'Testing an alert', onConfirm: () => console.log('Confirmed the alert')})}>Test alert</button>
 			</div>
 		</>
 	)

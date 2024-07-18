@@ -26,4 +26,5 @@
 | 5.7 | 6.5  | Worked on the host view's UI, debugged end-to-end tests|
 | 9.7 | 8.5  | Fixed some bugs, further worked on the visual overhaul|
 | 15.7 | 6.5  | Polished the voting experience, fixed some bugs, added a loading icon|
+| 18.7 | 2  | Created a popup interface |
 | total   | 108  | | 
