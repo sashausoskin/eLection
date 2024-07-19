@@ -7,17 +7,20 @@ import linkIcon from '/img/icons/link.svg'
 import './Host.css'
 import Loading from '../elements/Loading'
 import { PopupContext } from '../Contexts'
+import { useTranslation } from 'react-i18next'
 
 const Host = () => {
 	const [lobbyCode, setLobbyCode] = useState<string | null>(null)
 	const navigate = useNavigate()
 	const {createPopup} = useContext(PopupContext)
 
+	const {t} = useTranslation()
+
 	const handleCloseLobbyClick = async () => {
-		createPopup({type: 'confirm', message: 'Are you sure you want to close this lobby?', onConfirm: async () => {
+		createPopup({type: 'confirm', message: t('hostInstructions.closeLobbyConfirm'), onConfirm: async () => {
 			await lobbyService.closeLobby()
 
-			createPopup({type: 'alert', message: 'The lobby has been succesfully closed', onConfirm: () => {
+			createPopup({type: 'alert', message: t('hostInstructions.closeLobbyConfirmation'), onConfirm: () => {
 				navigate('/')
 			}})
 		}})		
@@ -41,19 +44,19 @@ const Host = () => {
 		initLobby()
 	}, [])
 
-	if (lobbyCode === null) return <Loading><a>Loading...</a></Loading>
+	if (lobbyCode === null) return <Loading><a>{t('loading')}</a></Loading>
 
 	return ( 
     <>
         <Authentication lobbyCode={lobbyCode} />
 		<button className='viewerOpen'onClick={() => window.open('/viewer', '_blank', 'popup=true')}>
-			<img src={linkIcon} className='icon' height={20}></img><p>Open the viewer window</p>
+			<img src={linkIcon} className='icon' height={20} /><p>{t('hostInstructions.openViewerWindow')}</p>
 		</button>
 		<hr style={{width: '100%'}}/>
         <CreateElectionForm />
 		<br />
 		<hr style={{width: '100%'}}/>
-		<button className='closeLobby' onClick={handleCloseLobbyClick} data-testid='close-lobby'>Close lobby</button>
+		<button className='closeLobby' onClick={handleCloseLobbyClick} data-testid='close-lobby'>{t('hostInstructions.closeLobby')}</button>
     </>
     )
 }

@@ -145,3 +145,7 @@
 .popupContainer .cancelButton:hover {
     border-color: darkred;
 }
+
+/* This disabled LastPass on the website, since it is not needed*/
+div[data-lastpass-icon-root] { display: none; }
+div[data-lastpass-root] { display: none; }

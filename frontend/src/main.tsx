@@ -7,6 +7,8 @@ import { BrowserRouter } from 'react-router-dom'
 import { Globals } from '@react-spring/web'
 import { PopupContextProvider } from './Contexts.tsx'
 
+import './i18n.ts'
+
 if (process.env.NODE_ENV === 'test') {
 	console.log('Noticed test environment, skipping animations...')
 	Globals.assign({skipAnimation: true})

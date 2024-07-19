@@ -1,0 +1,52 @@
+{
+  "welcomeMessage": "",
+  "host": "",
+  "participate": "",
+  "hostInstructions": {
+    "closeLobbyConfirm": "",
+    "closeLobbyConfirmation": "",
+    "openViewerWindow": "",
+    "closeLobby": "",
+    "userAuthentication": ""
+  },
+  "loading": "",
+  "fieldError": {
+    "missingUserCode": "",
+    "onlyDigits": "",
+    "notValidCode": "",
+    "missingTitle": "",
+    "emptyCandidate": "",
+    "noCandidates": "",
+    "fewCandidatesToRank": ""
+  },
+  "status": {
+    "userAuthenticated": "",
+    "userNotFound": "",
+    "electionCreateSuccess": "",
+    "electionEndSuccess": "",
+    "noActiveElection": ""
+  },
+  "unexpectedError": "",
+  "lobbyCode": "",
+  "submit": "",
+  "fieldInfo": {
+    "createElectionHeader": "",
+    "title": "",
+    "titlePlaceholder": "",
+    "candidatesToRank": "",
+    "candidatesToRankTooltip": "",
+    "candidates": "",
+    "namePlaceholder": "",
+    "createElection": "",
+    "endElection": ""
+  },
+  "electionType": {
+    "fptp": "",
+    "info": {
+      "fptp": "",
+      "ranked": ""
+    },
+    "ranked": ""
+  },
+  "name": ""
+}

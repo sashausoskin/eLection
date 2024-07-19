@@ -1,0 +1,52 @@
+{
+  "welcomeMessage": "Welcome to eLection!",
+  "host": "Host",
+  "participate": "Participate",
+  "hostInstructions": {
+    "closeLobbyConfirm": "Are you sure you want to close this lobby?",
+    "closeLobbyConfirmation": "The lobby has been succesfully closed.",
+    "openViewerWindow": "Open the viewer window",
+    "closeLobby": "Close lobby",
+    "userAuthentication": "Let someone into the lobby by entering their user code below"
+  },
+  "loading": "Loading...",
+  "fieldError": {
+    "missingUserCode": "Please enter the user code",
+    "onlyDigits": "Please enter only digits",
+    "notValidCode": "Please enter a valid user code",
+    "missingTitle": "Please enter a title for your election",
+    "emptyCandidate": "Please enter a name for the candidate or remove the candidate",
+    "noCandidates": "Please enter at least two candidates",
+    "fewCandidatesToRank": "You have to rank at least 2 candidates. Otherwise, select FPTP election."
+  },
+  "status": {
+    "userAuthenticated": "User is now authenticated!",
+    "userNotFound": "Could not find a user with the given code",
+    "electionCreateSuccess": "Succesfully created the election",
+    "electionEndSuccess": "Succesfully ended the election",
+    "noActiveElection": "There is currently no ongoing election!"
+  },
+  "unexpectedError": "An unexpected error occurred: {{errorMessage}}",
+  "lobbyCode": "Lobby code",
+  "submit": "Submit",
+  "fieldInfo": {
+    "createElectionHeader": "Create an election",
+    "title": "Title",
+    "titlePlaceholder": "Speaker 2024",
+    "candidatesToRank": "Candidates to rank",
+    "candidatesToRankTooltip": "This determines how many candidates the participant should put in their top order. For example, if there are 3 candidates and the user has to rank 2 candidates, one candidate will receive 2 votes and another candidate 1 vote. The value has to be at least 2 and cannot be more than the number of candidates.",
+    "candidates": "Candidates",
+    "namePlaceholder": "Barack Obama",
+    "createElection": "Create election",
+    "endElection": "End election"
+  },
+  "electionType": {
+    "fptp": "First-past-the-post election",
+    "info": {
+      "fptp": "Participants can only cast a single vote.",
+      "ranked": "Participants have to rank a number of candidates. The higher the rank, the more votes the candidate receives."
+    },
+    "ranked": "Ranked election"
+  },
+  "name": "Name"
+}

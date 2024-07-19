@@ -11,7 +11,8 @@
 		"test": "vitest run",
 		"test:e2e-ui": "cypress open",
 		"test:e2e": "cypress run",
-		"start:e2e": "npm run build && cross-env NODE_ENV=test npm run preview"
+		"start:e2e": "npm run build && cross-env NODE_ENV=test npm run preview",
+		"sync-translation": "i18next 'src/**/*.{ts,tsx}' [-oc]"
 	},
 	"dependencies": {
 		"@react-spring/web": "^9.7.3",
@@ -20,14 +21,17 @@
 		"axios": "^1.7.2",
 		"dotenv": "^16.4.5",
 		"formik": "^2.4.6",
+		"i18next": "^23.12.2",
+		"i18next-browser-languagedetector": "^8.0.0",
+		"i18next-http-backend": "^2.5.2",
 		"lodash": "^4.17.21",
 		"lodash-move": "^1.1.1",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
+		"react-i18next": "^15.0.0",
 		"react-router": "^6.23.1",
 		"react-router-dom": "^6.23.1",
 		"react-tooltip": "^5.27.1",
-		"remove": "^0.1.5",
 		"socket.io-client": "^4.7.5",
 		"yup": "^1.4.0"
 	},
@@ -52,6 +56,7 @@
 		"eslint": "^8.57.0",
 		"eslint-plugin-react-hooks": "^4.6.0",
 		"eslint-plugin-react-refresh": "^0.4.6",
+		"i18next-parser": "^9.0.0",
 		"identity-obj-proxy": "^3.0.0",
 		"jest-environment-jsdom": "^29.7.0",
 		"jsdom": "^24.1.0",

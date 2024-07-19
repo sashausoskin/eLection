@@ -6,6 +6,7 @@ import { StatusMessage } from '../../types'
 import { AxiosError } from 'axios'
 import { Mock } from 'vitest'
 import './Authentication.css'
+import { useTranslation } from 'react-i18next'
 
 export const Authentication = ({
 	lobbyCode,
@@ -16,6 +17,8 @@ export const Authentication = ({
 }): React.ReactElement => {
 	const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
 	const statusMessageColor = statusMessage?.status === 'success' ? 'green' : 'red'
+
+	const {t} = useTranslation()
 
     useEffect(() => {
         if (!statusMessage) return
@@ -31,10 +34,10 @@ export const Authentication = ({
 
 	const userCodeSchema = Yup.object({
 		userCode: Yup.string()
-			.required('Please enter the user code')
-			.matches(/^[0-9]+$/, 'Please enter only digits')
-			.min(4, 'Please enter a valid user code')
-			.max(4, 'Please enter a valid user code'),
+			.required(t('fieldError.missingUserCode'))
+			.matches(/^[0-9]+$/, t('fieldError.onlyDigits'))
+			.min(4, t('fieldError.notValidCode'))
+			.max(4, t('fieldError.notValidCode')),
 	})
 
 	const defaultOnSubmitUserCode = async (
@@ -45,7 +48,7 @@ export const Authentication = ({
 			await auhtenticateUserWithCode(userCode)
 			setStatusMessage({
 				status: 'success',
-				message: 'User is now authenticated!',
+				message: t('status.userAuthenticated'),
 			})
 			actions.resetForm()
 		} catch (e) {
@@ -53,10 +56,10 @@ export const Authentication = ({
 				if (e.response?.status === 404) {
 					setStatusMessage({
 						status: 'error',
-						message: 'Could not find a user with the given code',
+						message: t('status.userNotFound'),
 					})
 				} else {
-					console.error('An error occurred: ', e.response)
+					console.error(t('unexpectedError'), e.response)
 				}
 			}
 		}
@@ -64,9 +67,9 @@ export const Authentication = ({
 
 	return (
 		<>
-			<h2>Lobby code:</h2>
+			<h2>{t('lobbyCode')}:</h2>
 			<h2 className='lobbyCodeDisplay' data-testid="lobbycode">{lobbyCode}</h2>
-			<p>Let someone into the lobby by entering their user code below</p>
+			<p>{t('hostInstructions.userAuthentication')}</p>
 			<Formik
 				initialValues={{ userCode: '' }}
 				validationSchema={userCodeSchema}
@@ -83,7 +86,7 @@ export const Authentication = ({
 							<Field name="userCode" autoComplete='off' size={4} data-testid="usercode-field" />
 							
 							<button type="submit" disabled={!isValid} data-testid="submit-authentication">
-								Submit
+								{t('submit')}
 							</button>
 						</Form>
 					</div>

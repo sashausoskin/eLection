@@ -9,14 +9,18 @@ import InfoTooltip from '../../elements/Tooltip'
 import trashIcon from '/img/icons/trash.svg'
 import addIcon from '/img/icons/add.svg'
 import { PopupContext } from '../../Contexts'
+import { useTranslation } from 'react-i18next'
 
 const CreateElectionForm = ({onSubmitForm, onEndElectionClick} : 
     {onSubmitForm?: ((values: ElectionInfo) => undefined),
     onEndElectionClick?: () => void}) => {
 
+    const {t} = useTranslation()
+
     const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
     const [electionType, setElectionType] = useState<ElectionType>('FPTP')
     const [isElectionActive, setIsElectionActive] = useState<boolean>(false)
+    const [isRequestPending, setIsRequestPending] = useState<boolean>(false)
     const {createPopup} = useContext(PopupContext)
 
     useEffect(() => {
@@ -36,47 +40,53 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
         .required(),
 
         title: Yup.string()
-        .required('Please enter a title for your election'),
+        .required(t('fieldError.missingTitle')),
 
         candidates: Yup.array()
                 .of(Yup.string()
-                    .required('Please enter a name for the candidate or remove the candidate')
-                ).min(1, 'Please enter at least one candidate'),
+                    .required(t('fieldError.emptyCandidate'))
+                ).min(2, t('fieldError.noCandidates')),
         
         candidatesToRank: Yup.number()
-                .min(2, 'You have to rank at least 2 candidates. Otherwise, select FPTP election.')
+                .min(2, t('fieldError.fewCandidatesToRank'))
     })
 
     const defaultOnSubmit = 
         async (values: ElectionInfo, 
         formikHelpers: FormikHelpers<ElectionInfo>) => {
             try {
+                setIsRequestPending(true)
                 await createElection(values)
                 formikHelpers.resetForm()
-                setStatusMessage({status: 'success', message: 'Succesfully created the election'})
+                setStatusMessage({status: 'success', message: t('status.electionCreateSuccess')})
                 setIsElectionActive(true)
+                setIsRequestPending(false)
             }
             catch(e) {
                 if (e instanceof AxiosError) {
-                    createPopup({type: 'alert', message: `An unexpected error occurred: ${e.message}`})
+                    createPopup({type: 'alert', message: t('unexpectedError', {errorMessage: e.response?.data.message})})
+                    setIsRequestPending(false)
                 }
             }
     }
 
     const defaultOnEndElectionClick = async () => {
         try {
+            setIsRequestPending(true)
             await endElection()
             setIsElectionActive(false)
-            setStatusMessage({status: 'success', message: 'Ended the election'})
+            setStatusMessage({status: 'success', message: t('status.electionEndSuccess')})
+            setIsRequestPending(false)
         }
         catch (e) {
             if (e instanceof AxiosError) {
                 switch((e.response?.data as ResponseErrorMessage).type) {
                     case 'NO_ACTIVE_ELECTION':
-                        createPopup({type: 'alert', message: 'There is currently no ongoing election!', onConfirm: () => {
+                        createPopup({type: 'alert', message: t('status.noActiveElection'), onConfirm: () => {
                             setIsElectionActive(false)
                         }})
                 }
+                setIsRequestPending(false)
             }
         }
     }
@@ -96,7 +106,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
 
     return (
         <>
-        <h3>Create an election</h3>
+        <h3>{t('fieldInfo.createElectionHeader')}</h3>
         <Formik
             // Creating different initial values is to avoid problems with TypeScript, since the Formik function inherit the types from the initial values object.
             initialValues ={electionType === 'FPTP' ? initialFPTPValues : electionType === 'ranked' ? initialRankedValues : initialFPTPValues}
@@ -107,13 +117,14 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
             {({ values }) => (<>
                 <div className='electionTypeSelector'>
                     <input type="radio" name="type" defaultChecked={electionType === 'FPTP'} onClick={() => setElectionType('FPTP')} value={'FPTP'} disabled={isElectionActive} data-testid="fptp-radio"/>
-                    First-past-the-post election
+                    <a className='secondaryColor'>{t('electionType.fptp')}</a>
                     <InfoTooltip>
-                        <a>Participants can only cast a single vote.</a>
+                        <a className='secondaryColor'>{t('electionType.info.fptp')}</a>
                     </InfoTooltip>
-                    <input type="radio" name="type" defaultChecked={electionType === 'ranked'} onClick={() => setElectionType('ranked')} value={'ranked'} disabled={isElectionActive} data-testid="ranked-radio"/>Ranked election
+                    <input type="radio" name="type" defaultChecked={electionType === 'ranked'} onClick={() => setElectionType('ranked')} value={'ranked'} disabled={isElectionActive} data-testid="ranked-radio"/>
+                    <a className='secondaryColor'>{t('electionType.ranked')}</a>
                     <InfoTooltip>
-                        <a>Participants have to rank a number of candidates. The higher the rank, the more votes the candidate receives.</a>
+                        <a className='secondaryColor'>{t('electionType.info.ranked')}</a>
                     </InfoTooltip>
                 </div>
                 <Form autoComplete='off'>
@@ -126,14 +137,15 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
                     <br />
                     <div className='inputRow'>
                         <div className='leftAlign'>
-                            <label htmlFor={'title'}>Title</label>
+                            <label htmlFor={'title'}>{t('fieldInfo.title')}</label>
                         </div>
                         <div className='centerFill' >
                             <Field
                                 name="title"
                                 data-testid="title-field"
-                                placeholder="Speaker 2024"
+                                placeholder={t('fieldInfo.titlePlaceholder')}
                                 disabled={isElectionActive}
+                                data-lpignore="true"
                                 type="text"
                             />
                         </div>
@@ -148,7 +160,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
                     {values.type === 'ranked' && <>
                         <div className='inputRow'>
                             <div className='leftAlign'>
-                                <label htmlFor='candidatesToRank'>Candidates to rank</label>
+                                <label htmlFor='candidatesToRank'>{t('fieldInfo.candidatesToRank')}</label>
                             </div>
                             <div className='centerFill'>
                                 <Field
@@ -162,13 +174,13 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
                             </div>
                             <div className='rightAlign'>
                                 <InfoTooltip>
-                                    <a>This determines how many candidates the participant should put in their top order. For example, if there are 3 candidates and the user has to rank 2 candidates, one candidate will receive 2 votes and another candidate 1 vote. The value has to be at least 2 and cannot be more than the number of candidates.</a>
+                                    <a className='secondaryColor'>{t('fieldInfo.candidatesToRankTooltip')}</a>
                                 </InfoTooltip>
                             </div>
                         </div>
                     </> 
                     }
-                    <h3>Candidates</h3>
+                    <h3>{t('fieldInfo.candidates')}</h3>
                     <FieldArray name="candidates">
                         {({ remove, push}) => {
                             const canDeleteCandidate = values.candidates.length <= 2 || isElectionActive
@@ -179,12 +191,12 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
                                     <Fragment key={`candidate_${index}`}>
                                     <div className='inputRow' key={index}>
                                         <div className='leftAlign'>
-                                            <label htmlFor={`candidates.${index}`}>Name</label>
+                                            <label htmlFor={`candidates.${index}`}>{t('name')}</label>
                                         </div>
                                         <div className='centerFill'>
                                             <Field
                                                 name={`candidates.${index}`} 
-                                                placeholder="Barack Obama"
+                                                placeholder={t('fieldInfo.namePlaceholder')}
                                                 type="string"
                                                 data-testid={'candidate-field'}
                                                 disabled={isElectionActive}
@@ -212,8 +224,8 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
                         }}
                     </FieldArray>
                     <div className='electionControl'>
-                        <button disabled={isElectionActive} data-testid="create-election-submit" type="submit">Create election</button>
-                        <button type='button' data-testid="end-election-button" onClick={() => onEndElectionClick !== undefined ? onEndElectionClick() : defaultOnEndElectionClick()} disabled={!isElectionActive}>End election</button>
+                        <button disabled={isElectionActive || isRequestPending} data-testid="create-election-submit" type="submit">{t('fieldInfo.createElection')}</button>
+                        <button type='button' data-testid="end-election-button" onClick={() => onEndElectionClick !== undefined ? onEndElectionClick() : defaultOnEndElectionClick()} disabled={!isElectionActive}>{t('fieldInfo.endElection')}</button>
                     </div>
                 </Form>
                 </>)}

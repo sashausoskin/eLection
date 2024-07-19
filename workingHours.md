@@ -27,4 +27,5 @@
 | 9.7 | 8.5  | Fixed some bugs, further worked on the visual overhaul|
 | 15.7 | 6.5  | Polished the voting experience, fixed some bugs, added a loading icon|
 | 18.7 | 2  | Created a popup interface |
-| total   | 108  | | 
+| 19.7 | 7  | Started working on a system for translations, small bug fixes and polishing |
+| total   | 117  | | 

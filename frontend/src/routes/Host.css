@@ -10,3 +10,7 @@
     background-color: red;
     margin: 25px 0px;
 }
+
+.closeLobby:hover {
+    border-color: darkred;
+}
