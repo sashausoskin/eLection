@@ -73,7 +73,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
             if (e instanceof AxiosError) {
                 switch((e.response?.data as ResponseErrorMessage).type) {
                     case 'NO_ACTIVE_ELECTION':
-                        createPopup({type: 'alert', message: 'There is no election to end!', onConfirm: () => {
+                        createPopup({type: 'alert', message: 'There is currently no ongoing election!', onConfirm: () => {
                             setIsElectionActive(false)
                         }})
                 }

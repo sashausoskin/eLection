@@ -44,6 +44,7 @@ const Viewer = () => {
         })
 
         viewerSocket.on('status-change', (lobbyStatus : LobbyStatusInfo) => {
+            if (lobbyStatus.status === 'ELECTION_ENDED') setVotesCasted(0)
             setLobbyStatus(lobbyStatus)
         })
 
