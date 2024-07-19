@@ -5,9 +5,9 @@ import { Home } from './routes/Home'
 import { PopupContext, SetParticipantViewContextProvider } from './Contexts'
 import { lazy, Suspense, useContext } from 'react'
 import Loading from './elements/Loading'
-import icon from '../src/img/icon.svg'
-import confirmIcon from './img/icons/confirm.svg'
-import cancelIcon from './img/icons/cancel.svg'
+import icon from '/img/icon.svg'
+import confirmIcon from '/img/icons/confirm.svg'
+import cancelIcon from '/img/icons/cancel.svg'
 
 
 const Host = lazy(() => import('./routes/Host'))

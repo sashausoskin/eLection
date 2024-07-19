@@ -1,5 +1,5 @@
 import { Tooltip } from 'react-tooltip'
-import infoIcon from '../img/icons/info.svg'
+import infoIcon from '/img/icons/info.svg'
 import './elements.css'
 import { renderToStaticMarkup } from 'react-dom/server'
 

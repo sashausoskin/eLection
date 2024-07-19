@@ -2,7 +2,7 @@ import { FPTPElectionInfo } from '../../../types'
 import './VotingViews.css'
 import { useState } from 'react'
 
-import voteIcon from '../../../img/icons/vote.svg'
+import voteIcon from '/img/icons/vote.svg'
 
 const FPTPVotingView = ({electionInfo, canSubmitVote, onSubmitVote} : {electionInfo : FPTPElectionInfo, canSubmitVote : boolean, onSubmitVote : (voteContent: string | null) => Promise<void>}) => {
     const [selectedCandidate, setSelectedCandidate] = useState<string | null>(null)

@@ -6,8 +6,8 @@ import { Fragment, useContext, useEffect, useState } from 'react'
 import { ElectionInfo,  ElectionType,  ErrorMessage as ResponseErrorMessage, StatusMessage } from '../../types'
 import './CreateElectionForm.css'
 import InfoTooltip from '../../elements/Tooltip'
-import trashIcon from '../../img/icons/trash.svg'
-import addIcon from '../../img/icons/add.svg'
+import trashIcon from '/img/icons/trash.svg'
+import addIcon from '/img/icons/add.svg'
 import { PopupContext } from '../../Contexts'
 
 const CreateElectionForm = ({onSubmitForm, onEndElectionClick} : 

@@ -1,4 +1,4 @@
-import loadingIcon from '../img/icons/loading.svg'
+import loadingIcon from '/img/icons/loading.svg'
 import './elements.css'
 
 const Loading = (props : React.PropsWithChildren) => {
