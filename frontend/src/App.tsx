@@ -24,7 +24,7 @@ function App() {
 			{popupInfo && 
 				<div className='popupBackground'>
 					<div className='popupContainer'>
-						<a className='popupText'>{popupInfo.content}</a>
+						<a className='popupText'>{popupInfo.message}</a>
 						<div className='buttonsContainer'>
 							<button className='confirmButton' data-testid='confirmButton' onClick={() => {popupInfo.onConfirm?.(); clearPopup()}}>
 								<img src={confirmIcon} />

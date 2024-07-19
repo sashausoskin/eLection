@@ -45,6 +45,8 @@ describe("In host view", () => {
             expect(res.body.numberOfLobbies).eq(1)
         })
         cy.get("[data-testid='close-lobby']").click()
+        cy.get("[data-testid='confirmButton']").click()
+        cy.get("[data-testid='confirmButton']").click()
         cy.get("[data-testid='welcome-message']")
         cy.getNumberOfLobbies().then((res) => {
             expect(res.body.numberOfLobbies).eq(0)

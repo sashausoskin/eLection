@@ -2,12 +2,13 @@ import { AxiosError } from 'axios'
 import { ErrorMessage, Field, FieldArray, Form, Formik, FormikHelpers } from 'formik'
 import * as Yup from 'yup'
 import { createElection, endElection } from '../../services/lobbyHostService'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useContext, useEffect, useState } from 'react'
 import { ElectionInfo,  ElectionType,  ErrorMessage as ResponseErrorMessage, StatusMessage } from '../../types'
 import './CreateElectionForm.css'
 import InfoTooltip from '../../elements/Tooltip'
 import trashIcon from '../../img/icons/trash.svg'
 import addIcon from '../../img/icons/add.svg'
+import { PopupContext } from '../../Contexts'
 
 const CreateElectionForm = ({onSubmitForm, onEndElectionClick} : 
     {onSubmitForm?: ((values: ElectionInfo) => undefined),
@@ -16,6 +17,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
     const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
     const [electionType, setElectionType] = useState<ElectionType>('FPTP')
     const [isElectionActive, setIsElectionActive] = useState<boolean>(false)
+    const {createPopup} = useContext(PopupContext)
 
     useEffect(() => {
         if (!statusMessage) return
@@ -56,7 +58,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
             }
             catch(e) {
                 if (e instanceof AxiosError) {
-                    window.alert(e.message)
+                    createPopup({type: 'alert', message: `An unexpected error occurred: ${e.message}`})
                 }
             }
     }
@@ -71,9 +73,9 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
             if (e instanceof AxiosError) {
                 switch((e.response?.data as ResponseErrorMessage).type) {
                     case 'NO_ACTIVE_ELECTION':
-                        window.alert('There is no election to end!')
-                        setIsElectionActive(false)
-
+                        createPopup({type: 'alert', message: 'There is no election to end!', onConfirm: () => {
+                            setIsElectionActive(false)
+                        }})
                 }
             }
         }

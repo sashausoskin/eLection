@@ -81,8 +81,8 @@ export interface ResultCandidateInfo {
 }
 
 interface PopupInfoBase {
-    content: string
-    onConfirm?: () => void
+    message: string
+    onConfirm?: () => void | Promise<void>
 }
 
 interface AlertPopupInfo extends PopupInfoBase {
@@ -91,7 +91,7 @@ interface AlertPopupInfo extends PopupInfoBase {
 
 interface ConfirmPopupInfo extends PopupInfoBase {
     type: 'confirm'
-    onCancel?: () => void
+    onCancel?: () => void | Promise<void>
 }
 
 export type PopupInfo = AlertPopupInfo | ConfirmPopupInfo

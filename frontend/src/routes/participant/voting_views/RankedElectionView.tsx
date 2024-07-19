@@ -1,8 +1,9 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useContext, useState } from 'react'
 import { RankedElectionInfo } from '../../../types'
 import { useSprings, animated } from '@react-spring/web'
 import { useDrag } from '@use-gesture/react'
 import { clamp } from 'lodash'
+import { PopupContext } from '../../../Contexts'
 
 // Used React Spring's Draggable List example as base: https://codesandbox.io/s/zfy9p
 
@@ -36,6 +37,8 @@ const swap = (array: number[], indexA : number, indexB : number) => {
 }
 
 const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : RankedElectionInfo, onSubmitVote: (voteContent: string[] | string | null) => Promise<void> | void}) => {
+    const {createPopup} = useContext(PopupContext)
+
     const [candidateOrder, setCandidateOrder] = useState(electionInfo.candidates.map((_,index) => index))
 
     const [springs, animationApi] = useSprings(candidateOrder.length, animateFn(candidateOrder))
@@ -59,10 +62,9 @@ const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : Ranke
     }
 
     const handleEmptyVote = () => {
-        const castEmptyVote = window.confirm('Are you sure you want to submit an empty vote?')
-        if (castEmptyVote) {
+        createPopup({type: 'confirm', message: 'Are you sure you want to submit an empty vote?', onConfirm: () => {
             onSubmitVote(null)
-        }
+        }})
     }
 
     return (

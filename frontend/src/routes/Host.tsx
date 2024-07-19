@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import * as lobbyService from '../services/lobbyHostService'
 import { Authentication } from './host/Authentication'
 import CreateElectionForm from './host/CreateElectionForm'
@@ -6,18 +6,21 @@ import { useNavigate } from 'react-router'
 import linkIcon from '../img/icons/link.svg'
 import './Host.css'
 import Loading from '../elements/Loading'
+import { PopupContext } from '../Contexts'
 
 const Host = () => {
 	const [lobbyCode, setLobbyCode] = useState<string | null>(null)
 	const navigate = useNavigate()
+	const {createPopup} = useContext(PopupContext)
 
 	const handleCloseLobbyClick = async () => {
-		const confirmLobbyClose = window.confirm('Are you sure you want to close this lobby?')
-		if (!confirmLobbyClose) return
-	
-		await lobbyService.closeLobby()
-		window.alert('The lobby has been succesfully closed')
-		navigate('/')
+		createPopup({type: 'confirm', message: 'Are you sure you want to close this lobby?', onConfirm: async () => {
+			await lobbyService.closeLobby()
+
+			createPopup({type: 'alert', message: 'The lobby has been succesfully closed', onConfirm: () => {
+				navigate('/')
+			}})
+		}})		
 	}
 
 	// Note that the effect below is run twice in React's StrictMode. This shouldn't be a problem in production.
