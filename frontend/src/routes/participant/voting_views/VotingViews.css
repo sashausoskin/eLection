@@ -3,11 +3,11 @@
     flex-direction: column;
     width: 75%;
     align-items: center;
-    min-height: 80%;
     justify-content: center;
     margin: auto;
     border-radius: 20px;
     flex-grow: 1;
+    padding: 25px;
 }
 
 .FPTPCandidate {
@@ -21,19 +21,30 @@
     align-content: center;
     justify-content: flex-start;
     border-radius: 15px;
+    border-width: 5px;
     transition: 500ms;
     border-color: var(--secondary-color);
     border-style: solid;
-    padding: 2%;
+    padding: 1%;
 }
 
 .FPTPCandidate .candidateName {
     margin: auto;
+    margin-left: 10%;
 }
 
 .selectedCandidate {
     background-color: var(--primary-color);
-    border-width: 5px;
+}
+
+.emptyCandidate {
+    width: 150px;
+    height: 50px;
+    border-radius: 10px;
+}
+
+.emptyCandidate .candidateName {
+    margin: auto
 }
 
 .FPTPCandidate .voteIcon {
@@ -96,12 +107,6 @@
     font-size: small;
     width: 25%;
     margin-right: 5%;
-}
-
-.emptyCandidate {
-    width: 150px;
-    height: 50px;
-    border-radius: 10px;
 }
 
 .submitContainer {

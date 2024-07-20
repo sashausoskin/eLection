@@ -44,7 +44,7 @@ const Host = () => {
 		initLobby()
 	}, [])
 
-	if (lobbyCode === null) return <Loading><a>{t('loading')}</a></Loading>
+	if (lobbyCode === null) return <Loading><a>{t('status.loading')}</a></Loading>
 
 	return ( 
     <>

@@ -12,7 +12,7 @@
 		"test:e2e-ui": "cypress open",
 		"test:e2e": "cypress run",
 		"start:e2e": "npm run build && cross-env NODE_ENV=test npm run preview",
-		"sync-translation": "i18next 'src/**/*.{ts,tsx}' [-oc]"
+		"sync-translations": "i18next 'src/**/*.{ts,tsx}' [-oc]"
 	},
 	"dependencies": {
 		"@react-spring/web": "^9.7.3",

@@ -4,6 +4,7 @@ import { useSprings, animated } from '@react-spring/web'
 import { useDrag } from '@use-gesture/react'
 import { clamp } from 'lodash'
 import { PopupContext } from '../../../Contexts'
+import { useTranslation } from 'react-i18next'
 
 // Used React Spring's Draggable List example as base: https://codesandbox.io/s/zfy9p
 
@@ -38,6 +39,7 @@ const swap = (array: number[], indexA : number, indexB : number) => {
 
 const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : RankedElectionInfo, onSubmitVote: (voteContent: string[] | string | null) => Promise<void> | void}) => {
     const {createPopup} = useContext(PopupContext)
+    const {t} = useTranslation()
 
     const [candidateOrder, setCandidateOrder] = useState(electionInfo.candidates.map((_,index) => index))
 
@@ -62,7 +64,7 @@ const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : Ranke
     }
 
     const handleEmptyVote = () => {
-        createPopup({type: 'confirm', message: 'Are you sure you want to submit an empty vote?', onConfirm: () => {
+        createPopup({type: 'confirm', message: t('rankedElection.emptyVoteConfirm'), onConfirm: () => {
             onSubmitVote(null)
         }})
     }
@@ -70,7 +72,7 @@ const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : Ranke
     return (
         <>
         <h2>{electionInfo.title}</h2>
-        <p>Rank your top {electionInfo.candidatesToRank} candidates by dragging and press 'Submit'</p>
+        <p>{t('rankedElection.voteInstructions', {candidatesToRank: electionInfo.candidatesToRank})}</p>
         <div className='rankedCandidatesContainer' style={{minHeight: candidateOrder.length * candidateContainerSpace}}>
             {springs.map(({ zIndex, shadow, y, scale }, i) => {
                 const orderPosition = candidateOrder.indexOf(i)
@@ -96,7 +98,7 @@ const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : Ranke
                     </div>
                     <a className='candidateName'>{electionInfo.candidates[i]}</a>
                     <div className='candidateVotes'>
-                        {votes > 0 && <a>{votes} votes</a>}
+                        {votes > 0 && <a>{t('votes', {count: votes})}</a>}
                     </div>
                 </>}
                 />
@@ -107,8 +109,8 @@ const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : Ranke
             }
         </div>
         <div className='submitContainer' >
-            <button type='button' data-testid='cast-vote' onClick={handleButtonClick}>Submit</button>
-            <button type='button' data-testid='cast-empty-vote' onClick={handleEmptyVote} style={{backgroundColor: 'red'}}>Cast empty vote</button>
+            <button type='button' data-testid='cast-vote' onClick={handleButtonClick}>{t('button.submit')}</button>
+            <button type='button' data-testid='cast-empty-vote' onClick={handleEmptyVote} style={{backgroundColor: 'red'}}>{t('button.voteEmpty')}</button>
         </div>
         </>
     )

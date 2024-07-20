@@ -5,10 +5,6 @@
     background-repeat: repeat;
 }
 
-.mainIcon {
-    padding: 15px;
-}
-
 .icon {
     filter: invert(100%);
 }
@@ -42,7 +38,7 @@
 
 .topbar {
     background-color: var(--primary-color);
-    width: 100vw;
+    width: 96vw;
     max-height: 20%;
     position: absolute;
     top: 0;
@@ -51,7 +47,9 @@
     float: left;
     justify-content: space-between;
     align-items: center;
+    align-content: center;
     z-index: 20;
+    padding: 3vh 2vw;
 }
 
 .codeDisplay {
@@ -64,6 +62,9 @@
     justify-content: center;
     align-items: center;
     border-radius: 5px;
+    color: var(--code-text-color);
+    font-weight: 700;
+    line-height: 1.5;
 }
 
 .codeDisplay a {
@@ -145,6 +146,29 @@
 .popupContainer .cancelButton:hover {
     border-color: darkred;
 }
+
+.mainMenuButtonsContainer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 20px;
+}
+
+.mainMenuButtonsContainer button {
+    width: 50vw;
+}
+
+.languageSelectionContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.5vw;
+}
+
+.languageSelectionContainer select {
+    flex-shrink: 1;
+}
+
+
 
 /* This disabled LastPass on the website, since it is not needed*/
 div[data-lastpass-icon-root] { display: none; }

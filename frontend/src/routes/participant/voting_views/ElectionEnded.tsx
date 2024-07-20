@@ -1,7 +1,11 @@
+import { useTranslation } from 'react-i18next'
+
 const ElectionEnded = () => {
+    const {t} = useTranslation()
+
     return <>
-        <h2 data-testid="election-end-header">Election has ended!</h2>
-        <a>Please look at the results screen!</a>
+        <h2 data-testid="election-end-header">{t('electionEnd')}</h2>
+        <a>{t('lookAtResults')}</a>
     </>
 }
 

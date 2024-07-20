@@ -1,4 +1,16 @@
 {
+  "status": {
+    "loadingFiles": "",
+    "loading": "",
+    "userAuthenticated": "",
+    "userNotFound": "",
+    "electionCreateSuccess": "",
+    "electionEndSuccess": "",
+    "noActiveElection": "",
+    "voteAlreadySubmitted": "",
+    "connecting": "",
+    "waitingForElection": ""
+  },
   "welcomeMessage": "",
   "host": "",
   "participate": "",
@@ -9,26 +21,26 @@
     "closeLobby": "",
     "userAuthentication": ""
   },
-  "loading": "",
   "fieldError": {
     "missingUserCode": "",
     "onlyDigits": "",
-    "notValidCode": "",
+    "notValidUserCode": "",
     "missingTitle": "",
     "emptyCandidate": "",
     "noCandidates": "",
-    "fewCandidatesToRank": ""
-  },
-  "status": {
-    "userAuthenticated": "",
-    "userNotFound": "",
-    "electionCreateSuccess": "",
-    "electionEndSuccess": "",
-    "noActiveElection": ""
+    "fewCandidatesToRank": "",
+    "lobbyNotFound": "",
+    "notValidLobbyCode": ""
   },
   "unexpectedError": "",
   "lobbyCode": "",
-  "submit": "",
+  "button": {
+    "submit": "",
+    "empty": "",
+    "sendVote": "",
+    "returnToMainMenu": "",
+    "voteEmpty": ""
+  },
   "fieldInfo": {
     "createElectionHeader": "",
     "title": "",
@@ -48,5 +60,43 @@
     },
     "ranked": ""
   },
-  "name": ""
+  "name": "",
+  "welcome": "",
+  "joinLobby": {
+    "lobbyCodeInstructions": "",
+    "userCodeHeader": "",
+    "userCodeInstructions": "",
+    "awaitingAccess": ""
+  },
+  "disconnectReason": {
+    "kicked": "",
+    "lostConnection": ""
+  },
+  "electionEnd": "",
+  "lookAtResults": "",
+  "lobbyClose": {
+    "header": "",
+    "hostClosed": "",
+    "inactivity": ""
+  },
+  "rankedElection": {
+    "emptyVoteConfirm": "",
+    "voteInstructions": ""
+  },
+  "votes_one": "",
+  "votes_other": "",
+  "voteSubmitMessage": "",
+  "viewer": {
+    "FPTPVotingInstructions": "",
+    "rankedVotingInstructions": "",
+    "votingInstructions": "",
+    "votingStats": "<0>{{votesCasted}}</0> <1>/</1> <2>{{participantAmount}}</2> <1> votes casted</1>",
+    "results": "",
+    "welcomeMessage": "",
+    "joiningInformation": "<0>Go to {{domain}}, select \"Participate\" and enter the lobby code</0><1>{{lobbyCode}}</1><0>on your device</0>",
+    "lobbyStats_one": "<0>{{count}}<0/> <1>participants in lobby<1/>",
+    "lobbyStats_other": "<0>{{count}}<0/> <1>participants in lobby<1/>"
+  },
+  "emptyVotes_one": "",
+  "emptyVotes_other": ""
 }

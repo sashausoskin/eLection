@@ -8,6 +8,8 @@ import Loading from './elements/Loading'
 import icon from '/img/icon.svg'
 import confirmIcon from '/img/icons/confirm.svg'
 import cancelIcon from '/img/icons/cancel.svg'
+import languageIcon from '/img/icons/language.svg'
+import { useTranslation } from 'react-i18next'
 
 
 const Host = lazy(() => import('./routes/Host'))
@@ -18,6 +20,9 @@ const Viewer = lazy(() => import('./routes/Viewer'))
 
 function App() {
 	const {popupInfo, clearPopup} = useContext(PopupContext)
+	const {t, i18n} = useTranslation()
+
+	if (i18n.language !== i18n.resolvedLanguage) i18n.changeLanguage(i18n.resolvedLanguage)
 
 	return (
 		<>
@@ -40,13 +45,19 @@ function App() {
 			}
 
 			<div className='topbar'>
-				<div>
-					<img className='mainIcon' width={50} height={50} src={icon} />
+				<img className='mainIcon' width={50} height={50} src={icon} />
+				<div className='languageSelectionContainer'>
+					<img width={50} src={languageIcon} />
+					<select onChange={(e) => i18n.changeLanguage(e.target.value)} defaultValue={i18n.resolvedLanguage} name='language' id='language'>
+						{i18n.languages.concat().sort().map((language) => (
+							<option key={language} value={language} onSelect={() => i18n.changeLanguage(language)}>{language.toUpperCase()}</option>
+						))}
+					</select>
 				</div>
 			</div>
 			<div className='mainContainer'>
 				<Suspense fallback={<Loading>
-						<a>Loading files...</a>
+						<a>{t('status.loadingFiles')}</a>
 					</Loading>
 					}>
 					<Routes>

@@ -36,8 +36,8 @@ export const Authentication = ({
 		userCode: Yup.string()
 			.required(t('fieldError.missingUserCode'))
 			.matches(/^[0-9]+$/, t('fieldError.onlyDigits'))
-			.min(4, t('fieldError.notValidCode'))
-			.max(4, t('fieldError.notValidCode')),
+			.min(4, t('fieldError.notValidUserCode'))
+			.max(4, t('fieldError.notValidUserCode')),
 	})
 
 	const defaultOnSubmitUserCode = async (
@@ -86,7 +86,7 @@ export const Authentication = ({
 							<Field name="userCode" autoComplete='off' size={4} data-testid="usercode-field" />
 							
 							<button type="submit" disabled={!isValid} data-testid="submit-authentication">
-								{t('submit')}
+								{t('button.submit')}
 							</button>
 						</Form>
 					</div>

@@ -3,9 +3,11 @@ import './VotingViews.css'
 import { useState } from 'react'
 
 import voteIcon from '/img/icons/vote.svg'
+import { useTranslation } from 'react-i18next'
 
 const FPTPVotingView = ({electionInfo, canSubmitVote, onSubmitVote} : {electionInfo : FPTPElectionInfo, canSubmitVote : boolean, onSubmitVote : (voteContent: string | null) => Promise<void>}) => {
     const [selectedCandidate, setSelectedCandidate] = useState<string | null>(null)
+    const {t} = useTranslation()
 
     const handleSubmit = () => {
         console.log('submitting')
@@ -22,10 +24,10 @@ const FPTPVotingView = ({electionInfo, canSubmitVote, onSubmitVote} : {electionI
                 </div>
             )}
             <div className={`FPTPCandidate emptyCandidate ${selectedCandidate === null && 'selectedCandidate'}`} onClick={() => setSelectedCandidate(null)}>
-                <a className='candidateName'>Vote empty </a>
+                <a className='candidateName'>{t('button.empty')}</a>
             </div>
         </div>
-        <button type="button" disabled={!canSubmitVote} data-testid="vote-submit" onClick={() => handleSubmit()}>Send vote</button>
+        <button type="button" disabled={!canSubmitVote} data-testid="vote-submit" onClick={() => handleSubmit()}>{t('button.sendVote')}</button>
     </>
 }
 

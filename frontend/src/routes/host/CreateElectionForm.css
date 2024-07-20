@@ -49,7 +49,7 @@
 }
 
 .deleteCandidateButton {
-    background-color: var(--secondary-color);
+    background-color: var(--primary-color);
     width: 60px;
     height: 30px;
     padding: 0.2em 0.1em;

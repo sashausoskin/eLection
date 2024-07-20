@@ -5,6 +5,7 @@ import { SetParticipantViewContext } from '../../Contexts'
 import { getLobbyCode, getUserCode, setAuthToken } from '../../services/participantService'
 import './UserCode.css'
 import Loading from '../../elements/Loading'
+import { useTranslation } from 'react-i18next'
 
 export const UserCode = ({ onAuthenticated }: { onAuthenticated?: (userID: string) => void }) => {
 	const [isConnecting, setIsConnecting] = useState<boolean>(true)
@@ -13,6 +14,8 @@ export const UserCode = ({ onAuthenticated }: { onAuthenticated?: (userID: strin
 
 	const lobbyCode = getLobbyCode()
 	const userCode = getUserCode()
+
+	const {t} = useTranslation()
 
 	useEffect(() => {
 		const defaultOnAuthenticated = (userID: string) => {
@@ -46,18 +49,18 @@ export const UserCode = ({ onAuthenticated }: { onAuthenticated?: (userID: strin
 		return handleDisconnect
 	}, [lobbyCode, userCode, setViewTab, onAuthenticated])
 
-	if (isConnecting) return <Loading><a>Connecting...</a></Loading>
+	if (isConnecting) return <Loading><a>{t('status.connecting')}</a></Loading>
 
 	return (
 		<>
-			<h3>Here is your user code</h3>
+			<h3>{t('joinLobby.userCodeHeader')}</h3>
 			<div className='codeDisplay'>
 				<a data-testid={'usercode'}>
 					{userCode}
 				</a>
 			</div>
-			<h3>Show this code to the secretary</h3>
-			<a>Waiting for access into the lobby...</a>
+			<h3>{t('joinLobby.userCodeInstructions')}</h3>
+			<a>{t('joinLobby.awaitingAccess')}</a>
 		</>
 	)
 }

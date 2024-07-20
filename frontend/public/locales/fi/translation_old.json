@@ -1,0 +1,9 @@
+{
+  "loading": "",
+  "fieldError": {
+    "notValidCode": ""
+  },
+  "viewer": {
+    "lobbyStats": "<0>{usersInLobby}</0><1> participants in lobby</1>"
+  }
+}

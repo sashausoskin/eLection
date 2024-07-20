@@ -6,6 +6,7 @@ import { useContext } from 'react'
 import { SetParticipantViewContext } from '../../Contexts'
 import { Mock } from 'vitest'
 import './JoinLobbyForm.css'
+import { useTranslation } from 'react-i18next'
 
 export const JoinLobbyForm = ({
 	handleSubmitLobbyCode,
@@ -13,6 +14,7 @@ export const JoinLobbyForm = ({
 	handleSubmitLobbyCode?: (lobbyCode: string) => never | Mock<string[]>;
 }): React.ReactElement => {
 	const { setViewTab } = useContext(SetParticipantViewContext)
+	const {t} = useTranslation()
 
 	const defaultHandleSubmitLobbyCode = async (
 		values: { lobbyCode: string },
@@ -38,7 +40,7 @@ export const JoinLobbyForm = ({
 				console.log(e.code)
 				if (e.response?.status === 404) {
 					setErrors({
-						lobbyCode: 'Could not find a lobby with the given code. Please try again!',
+						lobbyCode: t('fieldError.lobbyNotFound'),
 					})
 				} else {
 					console.error(e.response?.data)
@@ -49,10 +51,10 @@ export const JoinLobbyForm = ({
 
 	const lobbyFormSchema = Yup.object({
 		lobbyCode: Yup.string()
-			.required('Please enter a valid lobby code')
-			.matches(/^[0-9]+$/, 'Please enter only digits')
-			.min(4, 'Please enter a valid lobby code')
-			.max(4, 'Please enter a valid lobby code'),
+			.required(t('fieldError.notValidLobbyCode'))
+			.matches(/^[0-9]+$/, t('fieldError.onlyDigits'))
+			.min(4, t('fieldError.notValidLobbyCode'))
+			.max(4, t('fieldError.notValidLobbyCode')),
 	})
 
 	return (
@@ -69,8 +71,8 @@ export const JoinLobbyForm = ({
 				{({ errors, touched, isValid }) => (
 					<>
 						<Form autoComplete='off'>
-							<h2 data-testid="lobby-form-header">Welcome!</h2>
-							<a>Please enter a lobby code below</a>
+							<h2 data-testid="lobby-form-header">{t('welcome')}</h2>
+							<a>{t('joinLobby.lobbyCodeInstructions')}</a>
 							<br/>
 							<Field name="lobbyCode" data-testid="lobbycode-field" size={4} maxLength={4} inputMode='numeric' className='lobbyCodeInput'/>
 							<br/>
@@ -81,7 +83,7 @@ export const JoinLobbyForm = ({
 						) : null}
 						<br />
 							<button type="submit" className='submitLobbyCode' disabled={!isValid}>
-								Submit
+								{t('button.submit')}
 							</button>
 						</Form>
 					</>

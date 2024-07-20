@@ -52,7 +52,7 @@ button:disabled {
 	background-color: var(--secondary-color);
 }
 button:hover {
-	border-color: var(--primary-color);
+	border-color: var(--secondary-color);
 }
 button:focus,
 button:focus-visible {
