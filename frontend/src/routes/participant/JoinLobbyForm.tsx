@@ -82,7 +82,7 @@ export const JoinLobbyForm = ({
 							</a>
 						) : null}
 						<br />
-							<button type="submit" className='submitLobbyCode' disabled={!isValid}>
+							<button type="submit" data-testid='submit' className='submitLobbyCode' disabled={!isValid}>
 								{t('button.submit')}
 							</button>
 						</Form>

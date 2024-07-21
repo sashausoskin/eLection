@@ -14,7 +14,7 @@ describe('In join lobby view', () => {
 		render(<JoinLobbyForm handleSubmitLobbyCode={submitCallback} />)
 
 		lobbyCodeField = screen.getByTestId('lobbycode-field')
-		lobbyCodeSubmit = screen.getByText('Submit')
+		lobbyCodeSubmit = screen.getByTestId('submit')
 	})
 
 	afterEach(() => {

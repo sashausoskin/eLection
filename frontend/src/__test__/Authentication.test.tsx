@@ -14,7 +14,7 @@ describe('In authentication view', () => {
 		render(<Authentication lobbyCode={'1234'} onSubmitUserCode={submitCallback} />)
 
 		userCodeField = screen.getByTestId('usercode-field')
-		userCodeSubmit = screen.getByText('Submit')
+		userCodeSubmit = screen.getByTestId('submit-authentication')
 	})
 
 	afterEach(async () => {
