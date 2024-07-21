@@ -9,7 +9,7 @@ describe ("In viewer", () => {
 
     it("can see lobby code when on standby", () => {
         cy.get('@lobbyCode').then((lobbyCode) => {
-            cy.get("[data-testid='lobbyCode']").should('contain', lobbyCode)
+            cy.get("[data-testid='lobbycode']").should('contain', lobbyCode)
         })
     })
     it("Can see election information when an election is created", () => {
