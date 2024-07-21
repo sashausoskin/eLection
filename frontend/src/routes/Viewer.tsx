@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createViewerSocket } from '../sockets'
 import { LobbyStatusInfo } from '../types'
 import ElectionInfoView from './viewer/ElectionInfo'
 import ElectionResults from './viewer/ElectionResults'
 import LobbyInfo from './viewer/LobbyInfo'
 import Loading from '../elements/Loading'
+import { useTranslation } from 'react-i18next'
+import { Socket } from 'socket.io-client'
+import LobbyCloseViewer from './viewer/LobbyCloseViewer'
 
 const Viewer = () => {
     const [errorText, setErrorText] = useState<string | null>(null)
@@ -12,65 +15,78 @@ const Viewer = () => {
     const [votesCasted, setVotesCasted] = useState<number>(0)
     const [usersInLobby, setUsersInLobby] = useState<number>(0)
 
+    const {t} = useTranslation()
+
     const lobbyCode = window.localStorage.getItem('hostLobbyCode')
     const hostID = window.localStorage.getItem('hostID')
+    const viewerSocket = useRef<Socket>()
 
     useEffect(() => {
-        if (!lobbyCode || !hostID) {
-            setErrorText('Could not load the viewer correctly. Please first create a lobby and only then open this window')
-            return
+        if (!lobbyCode || !hostID) return
+
+        viewerSocket.current = createViewerSocket(lobbyCode, hostID)
+
+        viewerSocket.current.connect()
+
+        return (() => {
+            if (viewerSocket.current) viewerSocket.current.disconnect()
+        })
+    }, [hostID, lobbyCode])
+
+    useEffect(() => {
+        if (!viewerSocket.current) return
+
+        const handleConnect = () => {
+            setErrorText(null)
         }
 
-        const viewerSocket = createViewerSocket(lobbyCode, hostID)
+        const handleConnectError = (errorMsg : Error) => {
+            console.error('An unexpected error occurred:', errorMsg)
+            setErrorText(t('status.viewerLoadError'))
+            if (viewerSocket.current) viewerSocket.current.disconnect()
+        }
 
-        viewerSocket.on('connect', () => {
-            setErrorText(null)
-        })
-
-        viewerSocket.on('connect_error', (errorMsg) => {
-            setErrorText(`An error occurred: ${errorMsg}`)
-            viewerSocket.disconnect()
-        })
-
-        viewerSocket.on('disconnect', (reason) => {
+        const handleDisconnect = (reason : Socket.DisconnectReason) => {
             switch(reason) {
                 case 'ping timeout':
-                    setErrorText('Cannot connect to the server. Please check your connection and reload the page!')
+                    setErrorText(t('status.serverConnectionError'))
                     break
                 case 'io server disconnect':
-                    setErrorText('You were disconnected from the server. This is probably because you opened the viewer in another tab!')
+                    console.log('Current status:', lobbyStatus?.status)
+                    if (lobbyStatus?.status !== 'CLOSING') setErrorText(t('status.viewerKick'))
             }
-
-        })
-
-        viewerSocket.on('status-change', (lobbyStatus : LobbyStatusInfo) => {
-            if (lobbyStatus.status === 'ELECTION_ENDED') setVotesCasted(0)
-            setLobbyStatus(lobbyStatus)
-        })
-
-        viewerSocket.on('user-joined', (userNumber : number) => {
-            setUsersInLobby(userNumber)
-        })
-
-        viewerSocket.on('vote-casted', (votesCasted : number) => {
-            setVotesCasted(votesCasted)
-        })
-
-        viewerSocket.connect()
-
-        //This is done to circumvent a TypeScript error as writing this directly to the return value causes an error
-        const disconnectFromSocket = () => {
-            viewerSocket.disconnect()
         }
 
-        return (() => disconnectFromSocket())
-    }, [setErrorText, hostID, lobbyCode])
+        const handleStatusChange = (lobbyStatus : LobbyStatusInfo) => {
+            if (lobbyStatus.status === 'ELECTION_ENDED') setVotesCasted(0)
+            setLobbyStatus(lobbyStatus)
+        }
 
-    if (!lobbyCode || !hostID) return <a>Could not load the viewer. Please make sure you are the host of an active lobby and only then open this window</a>
+        const handleUserJoin = (userNumber : number) => {
+            setUsersInLobby(userNumber)
+        }
 
+        const handleVoteCast = (votesCasted : number) => {
+            setVotesCasted(votesCasted)
+        }
+
+        viewerSocket.current.on('connect', handleConnect)
+        viewerSocket.current.on('connect_error', handleConnectError)
+        viewerSocket.current.on('status-change', handleStatusChange)
+        viewerSocket.current.on('disconnect', handleDisconnect)
+        viewerSocket.current.on('user-joined', handleUserJoin)
+        viewerSocket.current.on('vote-casted', handleVoteCast)
+
+        return (() => {
+            if (!viewerSocket.current) return
+            viewerSocket.current.removeAllListeners()
+        })
+
+    }, [setErrorText, hostID, lobbyCode, t, lobbyStatus?.status])
+
+    if (!lobbyCode || !hostID) return <a>{t('status.viewerLoadError')}</a>
     if (errorText) return <a>{errorText}</a>
-
-    if (!lobbyStatus) return <Loading><a>Loading...</a></Loading>
+    if (!lobbyStatus) return <Loading><a>{t('status.loading')}</a></Loading>
 
     if (lobbyStatus.status === 'STANDBY') {
         return <LobbyInfo lobbyCode={lobbyCode} usersInLobby={usersInLobby} />
@@ -82,6 +98,10 @@ const Viewer = () => {
 
     else if (lobbyStatus.status === 'ELECTION_ENDED') {
         return <ElectionResults results={lobbyStatus.results} />
+    }
+
+    else if (lobbyStatus.status === 'CLOSING') {
+        return <LobbyCloseViewer lobbyStatus={lobbyStatus} />
     }
 }
 

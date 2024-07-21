@@ -15,8 +15,15 @@
     flex-direction: column;
 }
 
+.resultsContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .candidateResultContainer {
-    width: 500px;
+    width: 750px;
+    height: 50px;
     background-color: var(--primary-color);
     border-radius: 20px;
     display: flex;
@@ -31,8 +38,8 @@
     position: relative;
     float: left;
     width: 50px;
-    min-width: 50px;
-    max-width: 50px;
+    min-width: 20%;
+    max-width: 20%;
 }
 
 .candidateResultContainer .candidateName {
@@ -46,8 +53,8 @@
     flex-grow: 0;
     flex-basis: 0;
     width: 50px;
-    min-width: 50px;
-    max-width: 50px;
+    min-width: 20%;
+    max-width: 20%;
 }
 
 .codeDisplay {

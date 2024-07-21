@@ -26,7 +26,7 @@ const ElectionResults = ({results} : {results: ElectionResultsInfo}) => {
         <h1>{results.title}</h1>
         <h2 data-testid="results-header">{t('viewer.results')}</h2>
 
-        
+        <div className='resultsContainer'>
         {orderedResults.map((result) => {
             return <div className='candidateResultContainer' key={result.name} data-testid='result' id={`${result.name}_div`}>
                 <a className='candidatePosition'>{result.position}.</a>
@@ -34,6 +34,7 @@ const ElectionResults = ({results} : {results: ElectionResultsInfo}) => {
                 <a className='candidateVotes'>{t('votes', {count: result.votes})}</a>
             </div>
         })}
+        </div>
         <br />
         <a>{t('emptyVotes', {count: results.emptyVotes})}</a>
     </>

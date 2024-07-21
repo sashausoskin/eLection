@@ -1,5 +1,5 @@
 :root {
-    background-image: url('./img/bg.png');
+    background-image: url('/img/bg.png');
     background-position: top center;
     background-size: 25%;
     background-repeat: repeat;
@@ -78,7 +78,9 @@
 }
 
 .viewerContainer {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
+    align-items: center;
+    justify-content: center;
 }
 
 .popupBackground {
@@ -110,6 +112,7 @@
 
 .popupContainer .popupText {
     color: var(--secondary-text-color);
+    font-size: 1.5rem;
     margin: auto;
 }
 
@@ -161,7 +164,7 @@
 .languageSelectionContainer {
     display: flex;
     align-items: center;
-    gap: 0.5vw;
+    gap: 5px;
 }
 
 .languageSelectionContainer select {
