@@ -3,7 +3,7 @@ import './style.css'
 import { Route, Routes } from 'react-router'
 import { Home } from './routes/Home' 
 import { PopupContext, SetParticipantViewContextProvider } from './Contexts'
-import { lazy, Suspense, useContext } from 'react'
+import { lazy, Suspense, useContext, useEffect } from 'react'
 import Loading from './elements/Loading'
 import icon from '/img/icon.svg'
 import confirmIcon from '/img/icons/confirm.svg'
@@ -21,6 +21,10 @@ const Viewer = lazy(() => import('./routes/Viewer'))
 function App() {
 	const {popupInfo, clearPopup} = useContext(PopupContext)
 	const {t, i18n} = useTranslation()
+
+	useEffect(() => {
+		document.title = t('pageTitle')
+	})
 
 	if (i18n.language !== i18n.resolvedLanguage) i18n.changeLanguage(i18n.resolvedLanguage)
 
@@ -47,8 +51,8 @@ function App() {
 			<div className='topbar'>
 				<img className='mainIcon' width={50} height={50} src={icon} />
 				<div className='languageSelectionContainer'>
-					<img width={50} src={languageIcon} />
-					<select onChange={(e) => i18n.changeLanguage(e.target.value)} defaultValue={i18n.resolvedLanguage} name='language' id='language'>
+					<img width={30} src={languageIcon} />
+					<select onChange={(e) => i18n.changeLanguage(e.target.value)} defaultValue={i18n.resolvedLanguage} data-testid={'language-selector'} name='language' id='language'>
 						{i18n.languages.concat().sort().map((language) => (
 							<option key={language} value={language} onSelect={() => i18n.changeLanguage(language)}>{language.toUpperCase()}</option>
 						))}

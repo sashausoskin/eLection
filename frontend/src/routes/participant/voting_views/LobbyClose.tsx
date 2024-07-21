@@ -14,6 +14,7 @@ const LobbyClose = ({lobbyInfo} : {lobbyInfo : LobbyStatusInfo}) => {
 
         {lobbyInfo.reason === 'HOST_CLOSED' && <a>{t('lobbyClose.hostClosed')}</a>}
         {lobbyInfo.reason === 'INACTIVITY' && <a>{t('lobbyClose.inactivity')}</a>}
+        <a>{t('lobbyClose.footer')}</a>
 
         <button onClick={() => navigate('/')}>{t('button.returnToMainMenu')}</button>
     </>

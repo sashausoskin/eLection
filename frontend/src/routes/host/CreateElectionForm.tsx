@@ -117,14 +117,14 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
             {({ values }) => (<>
                 <div className='electionTypeSelector'>
                     <input type="radio" name="type" defaultChecked={electionType === 'FPTP'} onClick={() => setElectionType('FPTP')} value={'FPTP'} disabled={isElectionActive} data-testid="fptp-radio"/>
-                    <a className='secondaryColor'>{t('electionType.fptp')}</a>
+                    <a className='secondaryColor'>{t('electionType.fptp.name')}</a>
                     <InfoTooltip>
-                        <a className='secondaryColor'>{t('electionType.info.fptp')}</a>
+                        <a className='secondaryColor'>{t('electionType.fptp.info')}</a>
                     </InfoTooltip>
                     <input type="radio" name="type" defaultChecked={electionType === 'ranked'} onClick={() => setElectionType('ranked')} value={'ranked'} disabled={isElectionActive} data-testid="ranked-radio"/>
-                    <a className='secondaryColor'>{t('electionType.ranked')}</a>
+                    <a className='secondaryColor'>{t('electionType.ranked.name')}</a>
                     <InfoTooltip>
-                        <a className='secondaryColor'>{t('electionType.info.ranked')}</a>
+                        <a className='secondaryColor'>{t('electionType.ranked.info')}</a>
                     </InfoTooltip>
                 </div>
                 <Form autoComplete='off'>

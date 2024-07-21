@@ -1,4 +1,5 @@
 {
+  "pageTitle": "eLection",
   "status": {
     "loadingFiles": "Loading files...",
     "loading": "Loading...",
@@ -9,11 +10,14 @@
     "noActiveElection": "There is currently no ongoing election!",
     "voteAlreadySubmitted": "You have already submitted your vote!",
     "connecting": "Connecting...",
-    "waitingForElection": "Waiting for the next election..."
+    "waitingForElection": "Waiting for the next election...",
+    "viewerLoadError": "Could not load the viewer correctly. Please first create a lobby and only then open this window",
+    "serverConnectionError": "Cannot connect to the server. Please check your connection and reload the page!",
+    "viewerKick": "You were disconnected from the server. This is probably because you opened the viewer in another tab!"
   },
   "welcomeMessage": "Welcome to eLection!",
-  "host": "Host",
-  "participate": "Participate",
+  "host": "Host an election",
+  "participate": "Participate in an election",
   "hostInstructions": {
     "closeLobbyConfirm": "Are you sure you want to close this lobby?",
     "closeLobbyConfirmation": "The lobby has been succesfully closed.",
@@ -44,28 +48,32 @@
   "fieldInfo": {
     "createElectionHeader": "Create an election",
     "title": "Title",
-    "titlePlaceholder": "Speaker 2024",
+    "titlePlaceholder": "Next speaker",
     "candidatesToRank": "Candidates to rank",
-    "candidatesToRankTooltip": "This determines how many candidates the participant should put in their top order. For example, if there are 3 candidates and the user has to rank 2 candidates, one candidate will receive 2 votes and another candidate 1 vote. The value has to be at least 2 and cannot be more than the number of candidates.",
+    "candidatesToRankTooltip": "This determines how many candidates the participant should put in their top order. For example, if there are four candidates and the user has to rank two candidates, one candidate will receive 2 votes and another candidate 1 vote. The value has to be at least 2 and cannot be more than the number of candidates.",
     "candidates": "Candidates",
     "namePlaceholder": "Barack Obama",
-    "createElection": "Create election",
+    "createElection": "Start election",
     "endElection": "End election"
   },
   "electionType": {
-    "fptp": "First-past-the-post election",
-    "info": {
-      "fptp": "Participants can only cast a single vote.",
-      "ranked": "Participants have to rank a number of candidates. The higher the rank, the more votes the candidate receives."
+    "fptp": {
+      "name": "First-past-the-post election",
+      "info": "Participants can only cast a single vote.",
+      "votingInstructions": "Select your candidate of choice by clicking and press 'Send vote'"
     },
-    "ranked": "Ranked election"
+    "ranked": {
+      "name": "Ranked election",
+      "info": "Participants have to rank a number of candidates. The higher the rank, the more votes the candidate receives.",
+      "votingInstructions": "Rank your top {{candidatesToRank}} candidates by dragging and press 'Submit'. The higher a candidate's position, the more votes they receive from you."
+    }
   },
   "name": "Name",
   "welcome": "Welcome!",
   "joinLobby": {
     "lobbyCodeInstructions": "Please enter a lobby code below",
     "userCodeHeader": "Here is your user code",
-    "userCodeInstructions": "Show this code to the secretary",
+    "userCodeInstructions": "Show this code to the host",
     "awaitingAccess": "Waiting for access into the lobby..."
   },
   "disconnectReason": {
@@ -76,19 +84,20 @@
   "lookAtResults": "Please look at the results screen!",
   "lobbyClose": {
     "header": "Lobby closing",
-    "hostClosed": "The host has closed this lobby. Thank you for participating! :)",
-    "inactivity": "This lobby has been closed due to inactivity."
+    "hostClosed": "The host has closed this lobby.",
+    "inactivity": "This lobby has been closed due to inactivity.",
+    "footer": "Thank you for participating! :)",
+    "unknown": "This lobby has been closed due to an unknown reason"
   },
   "rankedElection": {
-    "emptyVoteConfirm": "Are you sure you want to submit an empty vote?",
-    "voteInstructions": "Rank your top {{candidatesToRank}} candidates by dragging and press 'Submit'. The higher a candidate's position, the more votes they receive from you."
+    "emptyVoteConfirm": "Are you sure you want to submit an empty vote?"
   },
   "votes_one": "1 vote",
   "votes_other": "{{count}} votes",
   "voteSubmitMessage": "Your vote has been succesfully submitted! Thank you for participating!",
   "viewer": {
     "FPTPVotingInstructions": "Vote for one of the following:",
-    "rankedVotingInstructions": "Rank your top {electionInfo.candidatesToRank} candidates from the following:",
+    "rankedVotingInstructions": "Rank your top {{candidatesToRank}} candidates from the following:",
     "votingInstructions": "Vote on your device!",
     "votingStats": "<0>{{votesCasted}}</0> <1>/</1> <2>{{participantAmount}}</2> <1> votes casted</1>",
     "results": "Results",
@@ -98,5 +107,5 @@
     "lobbyStats_other": "<0>{{count}}<0/> <1>participants in lobby<1/>"
   },
   "emptyVotes_one": "1 empty vote",
-  "emptyVotes_other": "{{count}} votes"
+  "emptyVotes_other": "{{count}} empty votes"
 }

@@ -1,102 +1,111 @@
 {
+  "pageTitle": "eLection",
   "status": {
-    "loadingFiles": "",
-    "loading": "",
-    "userAuthenticated": "",
-    "userNotFound": "",
-    "electionCreateSuccess": "",
-    "electionEndSuccess": "",
-    "noActiveElection": "",
-    "voteAlreadySubmitted": "",
-    "connecting": "",
-    "waitingForElection": ""
+    "loadingFiles": "Ladataan tiedostoja...",
+    "loading": "Ladataan...",
+    "userAuthenticated": "Käyttäjä vahvistettu!",
+    "userNotFound": "Ei löytynyt käyttäjää kyseisellä käyttäjätunnuksella",
+    "electionCreateSuccess": "Vaalit luotu onnistuneesti",
+    "electionEndSuccess": "Vaalit päätetty onnistuneesti",
+    "noActiveElection": "Tällä hetkellä ei ole vaaleja meneillään!",
+    "voteAlreadySubmitted": "Olet jo äänestänyt näissä vaaleissa!",
+    "connecting": "Yhdistetään...",
+    "waitingForElection": "Odotetaan seuraavia vaaleja...",
+    "viewerLoadError": "Katseluikkunaa ei pystytty lataamaan oikein. Luo ensin aula ja avaa tämä ikkuna vasta sen jälkeen",
+    "serverConnectionError": "Palvelimelle yhdistäminen epäonnistui. Varmista, että olet yhteydessä internettiin ja yritä uudelleen!",
+    "viewerKick": "Yhteytesi palvelimelle katkaistiin. Tämä todennäköisesti johtuu siitä, että avasit katseluikkunan toiselle välilehdelle"
   },
-  "welcomeMessage": "",
-  "host": "",
-  "participate": "",
+  "welcomeMessage": "Tervetuloa eLection-palveluun!",
+  "host": "Järjestä vaalit",
+  "participate": "Osallistu vaaleihin",
   "hostInstructions": {
-    "closeLobbyConfirm": "",
-    "closeLobbyConfirmation": "",
-    "openViewerWindow": "",
-    "closeLobby": "",
-    "userAuthentication": ""
+    "closeLobbyConfirm": "Oletko varma, että haluat sulkea tämän aulan?",
+    "closeLobbyConfirmation": "Aula suljettu onnistuneesti.",
+    "openViewerWindow": "Avaa katseluikkuna",
+    "closeLobby": "Sulje aula",
+    "userAuthentication": "Päästä käyttäjä aulaan syöttämällä heidän käyttäjätunnuksensa"
   },
   "fieldError": {
-    "missingUserCode": "",
-    "onlyDigits": "",
-    "notValidUserCode": "",
-    "missingTitle": "",
-    "emptyCandidate": "",
-    "noCandidates": "",
-    "fewCandidatesToRank": "",
-    "lobbyNotFound": "",
-    "notValidLobbyCode": ""
+    "missingUserCode": "Ole hyvä ja syötä käyttäjätunnus.",
+    "onlyDigits": "Ole hyvä ja syötä vain numeroita.",
+    "notValidUserCode": "Ole hyvä ja syötä käypä käyttäjätunnus.",
+    "missingTitle": "Ole hyvä ja anna vaaleille teema.",
+    "emptyCandidate": "Ole hyvä ja anna nimi ehdokkaalle tai poista ehdokas.",
+    "noCandidates": "Ole hyvä ja lisää vähintään kaksi ehdokasta.",
+    "fewCandidatesToRank": "Osallistujien täytyy asetella vähintään kaksi ehdokasta. Muussa tapauksessa järjestä äänienemmistö-vaalit.",
+    "lobbyNotFound": "Kyseisellä aulakoodilla ei löytynyt aulaa. Ole hyvä ja yritä uudelleen.",
+    "notValidLobbyCode": "Ole hyvä, ja syötä käypä aulatunnus."
   },
-  "unexpectedError": "",
-  "lobbyCode": "",
+  "unexpectedError": "Tapahtui odottaman virhe: {{errorMessage}}",
+  "lobbyCode": "Aulatunnus",
   "button": {
-    "submit": "",
-    "empty": "",
-    "sendVote": "",
-    "returnToMainMenu": "",
-    "voteEmpty": ""
+    "submit": "Lähetä",
+    "empty": "Tyhjä ääni",
+    "sendVote": "Lähetä ääni",
+    "returnToMainMenu": "Palaa päävalikkoon",
+    "voteEmpty": "Lähetä tyhjä ääni"
   },
   "fieldInfo": {
-    "createElectionHeader": "",
-    "title": "",
-    "titlePlaceholder": "",
-    "candidatesToRank": "",
-    "candidatesToRankTooltip": "",
-    "candidates": "",
-    "namePlaceholder": "",
-    "createElection": "",
-    "endElection": ""
+    "createElectionHeader": "Luo vaalit",
+    "title": "Teema",
+    "titlePlaceholder": "Seuraava puheenjohtaja",
+    "candidatesToRank": "Järjesteltävien ehdokkaiden määrä",
+    "candidatesToRankTooltip": "Tämä määrittelee kuinka monta ehdokasta äänestäjän täytyy asettaa mieluisaan järjestykseen. Tämän arvon täytyy olla vähintään kaksi ja ei voi olla suurempi kuin ehdokkaiden määrä.",
+    "candidates": "Ehdokkaat",
+    "namePlaceholder": "Paavo Väyrynen",
+    "createElection": "Aloita vaalit",
+    "endElection": "Päätä vaalit"
   },
   "electionType": {
-    "fptp": "",
-    "info": {
-      "fptp": "",
-      "ranked": ""
+    "fptp": {
+      "name": "Yksinkertainen äänienemmistö",
+      "info": "Äänestäjät voivat antaa vain yhden äänen.",
+      "votingInstructions": "Valitse mieluisin ehdokas painamalla ja paina \"Lähetä ääni\""
     },
-    "ranked": ""
+    "ranked": {
+      "name": "Painotettu vaalitapa",
+      "info": "Äänestäjät asettavat tietyn määrän ehdokkaita mieluisuusjärjestykseen. Mitä korkeampi sijoitus ehdokkaalla on, sitä enemmän he saavat ääniä äänestäjältä.",
+      "votingInstructions": "Aseta {{candidatesToRank}} ehdokasta mieluisuusjärjestykseen raahaamalla ja paina 'Lähetä'. Mitä korkeampi ehdokkaan sijoitus on, sitä enemmän ääniä he sinulta saavat."
+    }
   },
-  "name": "",
-  "welcome": "",
+  "name": "Nimi",
+  "welcome": "Tervetuloa!",
   "joinLobby": {
-    "lobbyCodeInstructions": "",
-    "userCodeHeader": "",
-    "userCodeInstructions": "",
-    "awaitingAccess": ""
+    "lobbyCodeInstructions": "Ole hyvä ja syötä aulatunnus",
+    "userCodeHeader": "Tässä on sinun käyttäjätunnuksesi",
+    "userCodeInstructions": "Näytä tämä tunnus vaalien järjestäjälle",
+    "awaitingAccess": "Odotetaan pääsyä aulaan..."
   },
   "disconnectReason": {
-    "kicked": "",
-    "lostConnection": ""
+    "kicked": "Sinut on potkittu pois palvelimelta. Tämä saattoi tapahtua, koska avasit tämän sivuston toisella välilehdellä tai koska aula sulkeutui.",
+    "lostConnection": "Menetit yhteyden palvelimelle. Varmista, että olet yhteydessä nettiin ja lataa sivu uudelleen."
   },
-  "electionEnd": "",
-  "lookAtResults": "",
+  "electionEnd": "Vaalit ovat päättyneet!",
+  "lookAtResults": "Katso tulokset taululta!",
   "lobbyClose": {
-    "header": "",
-    "hostClosed": "",
-    "inactivity": ""
+    "header": "Aula sulkeutuu",
+    "hostClosed": "Järjestäjä on sulkenut tämän aulan.",
+    "inactivity": "Tämä aula on suljettu toimettomuuden takia.",
+    "footer": "Kiitos osallistumisesta!",
+    "unknown": "Tämä aula on suljettu tuntemattomasta syystä"
   },
   "rankedElection": {
-    "emptyVoteConfirm": "",
-    "voteInstructions": ""
+    "emptyVoteConfirm": "Oletko varma, että haluat lähettää tyhjän äänen?"
   },
-  "votes_one": "",
-  "votes_other": "",
-  "voteSubmitMessage": "",
+  "votes_one": "1 ääni",
+  "votes_other": "{{count}} ääntä",
+  "voteSubmitMessage": "Äänesi on onnistuneesti lähetetty. Kiitos osallistumisesta!",
   "viewer": {
-    "FPTPVotingInstructions": "",
-    "rankedVotingInstructions": "",
-    "votingInstructions": "",
-    "votingStats": "<0>{{votesCasted}}</0> <1>/</1> <2>{{participantAmount}}</2> <1> votes casted</1>",
-    "results": "",
-    "welcomeMessage": "",
-    "joiningInformation": "<0>Go to {{domain}}, select \"Participate\" and enter the lobby code</0><1>{{lobbyCode}}</1><0>on your device</0>",
-    "lobbyStats_one": "<0>{{count}}<0/> <1>participants in lobby<1/>",
-    "lobbyStats_other": "<0>{{count}}<0/> <1>participants in lobby<1/>"
+    "FPTPVotingInstructions": "Äänestä yhtä seuraavista:",
+    "rankedVotingInstructions": "Valitse seuraavista ehdokkaista {{candidatesToRank}} ja sijoita heidät mieluisuusjärjestykseen:",
+    "votingInstructions": "Äänestä laitteellasi!",
+    "votingStats": "<0>{{votesCasted}}</0> <1>/</1> <2>{{participantAmount}}</2> <1> ääntä lähetetty</1>",
+    "results": "Tulokset",
+    "welcomeMessage": "Tervetuloa äänestämään!",
+    "joiningInformation": "<0>Mene osoitteeseen {{domain}}, valitse \"Osallistu vaaleihin\" ja syötä aulakoodi</0><1>{{lobbyCode}}</1><0>laitteellasi</0>",
+    "lobbyStats_one": "<0>{{count}}<0/> <1>osallistuja aulassa<1/>",
+    "lobbyStats_other": "<0>{{count}}<0/> <1>osallistujaa aulassa<1/>"
   },
-  "emptyVotes_one": "",
-  "emptyVotes_other": ""
+  "emptyVotes_one": "1 tyhjä ääni",
+  "emptyVotes_other": "{{count}} tyhjää ääntä"
 }

@@ -8,9 +8,12 @@ import { useTranslation } from 'react-i18next'
 
 // Used React Spring's Draggable List example as base: https://codesandbox.io/s/zfy9p
 
+// These would usually be defined in a .css-file, but because they are needed for the animation library, these are defined here
 const candidateContainerHeight = 100
+const candidateContainerPadding = 15
 const candidateContainerGap = 20
-const candidateContainerSpace = candidateContainerHeight + candidateContainerGap
+const candidateContainerBorderWidth = 5
+const candidateContainerSpace = candidateContainerHeight + 2 * candidateContainerPadding + 2 * candidateContainerBorderWidth + candidateContainerGap
 
 const animateFn = (order: number[], active = false, originalIndex = 0, curIndex = 0, y = 0) => (index: number) => 
     active && index === originalIndex
@@ -22,7 +25,7 @@ const animateFn = (order: number[], active = false, originalIndex = 0, curIndex 
             immediate: (key :string) => key === 'y' || key === 'zIndex',
         }
         : {
-            y: order.indexOf(index) * candidateContainerSpace,
+            y: order.indexOf(index) * (candidateContainerSpace),
             scale: 1,
             zIndex: 0,
             shadow: 1,
@@ -72,7 +75,7 @@ const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : Ranke
     return (
         <>
         <h2>{electionInfo.title}</h2>
-        <p>{t('rankedElection.voteInstructions', {candidatesToRank: electionInfo.candidatesToRank})}</p>
+        <a className='votingInstructions secondaryColor'>{t('electionType.ranked.votingInstructions', {candidatesToRank: electionInfo.candidatesToRank})}</a>
         <div className='rankedCandidatesContainer' style={{minHeight: candidateOrder.length * candidateContainerSpace}}>
             {springs.map(({ zIndex, shadow, y, scale }, i) => {
                 const orderPosition = candidateOrder.indexOf(i)
@@ -84,6 +87,8 @@ const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : Ranke
                     data-testid={`candidate-drag-${i}`}
                     className={'candidateContainer rankedCandidate'}
                     style={{
+                        height: candidateContainerHeight,
+                        padding: candidateContainerPadding,
                         touchAction: 'none',
                         userSelect: 'none',
                         position: 'absolute',
@@ -105,7 +110,7 @@ const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : Ranke
                 </Fragment>
     })}
             {electionInfo.candidatesToRank < electionInfo.candidates.length && 
-                <hr key='separator' style={{position: 'absolute', top: electionInfo.candidatesToRank * candidateContainerSpace - 1.5 * (candidateContainerGap / 2), width: '100%'}} />
+                <hr key='separator' style={{position: 'absolute', top: electionInfo.candidatesToRank * candidateContainerSpace - 2 * candidateContainerBorderWidth - candidateContainerGap / 2, width: '100%'}} />
             }
         </div>
         <div className='submitContainer' >

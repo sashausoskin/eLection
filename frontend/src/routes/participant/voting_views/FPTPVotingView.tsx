@@ -16,6 +16,7 @@ const FPTPVotingView = ({electionInfo, canSubmitVote, onSubmitVote} : {electionI
 
     return<>
         <h2>{electionInfo.title}</h2>
+        <a className='secondaryColor votingInstructions'>{t('electionType.fptp.votingInstructions')}</a>
         <div className='candidateContainer'>
             {electionInfo.candidates.map((candidate) => 
                 <div key={candidate} className={`FPTPCandidate ${selectedCandidate === candidate && 'selectedCandidate'}`} data-testid='candidate-radio' onClick={() => {setSelectedCandidate(candidate)}}>

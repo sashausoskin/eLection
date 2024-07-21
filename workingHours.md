@@ -29,4 +29,5 @@
 | 18.7 | 2  | Created a popup interface |
 | 19.7 | 7  | Started working on a system for translations, small bug fixes and polishing |
 | 20.7 | 5  | Further work on translations, some small polishing and bugfixing. |
+| 21.7 | 5.5  | Finishing up with translations, some refactoring and bug-fixing |
 | total   | 117  | | 

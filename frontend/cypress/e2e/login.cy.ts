@@ -13,6 +13,19 @@ describe('Main menu', () => {
 		cy.get('[data-testid="welcome-message"]');
 	});
 
+	it('can change language', () => {
+		const finnishWelcome = 'Tervetuloa eLection-palveluun!'
+		const englishWelcome = 'Welcome to eLection!'
+
+		cy.get('[data-testid="language-selector"]').select('FI')
+		cy.get('[data-testid="welcome-message"]').contains(finnishWelcome)
+		cy.get('[data-testid="welcome-message"]').should('not.contain', englishWelcome)
+
+		cy.get('[data-testid="language-selector"]').select('EN')
+		cy.get('[data-testid="welcome-message"]').contains(englishWelcome)
+		cy.get('[data-testid="welcome-message"]').should('not.contain', finnishWelcome)
+	})
+
 	it('user can get to host view', () => {
 		cy.get('[data-testid="lobbycode"]').should('not.exist');
 		const hostButton = cy.get('[data-testid="go-to-host"]');
