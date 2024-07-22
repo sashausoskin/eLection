@@ -45,12 +45,29 @@ describe("In host view", () => {
             expect(res.body.numberOfLobbies).eq(1)
         })
         cy.get("[data-testid='close-lobby']").click()
-        cy.get("[data-testid='confirmButton']").click()
-        cy.get("[data-testid='confirmButton']").click()
+        cy.get("[data-testid='confirm-button']").click()
+        cy.get("[data-testid='confirm-button']").click()
         cy.get("[data-testid='welcome-message']")
         cy.getNumberOfLobbies().then((res) => {
             expect(res.body.numberOfLobbies).eq(0)
         })
 
+    })
+
+    describe('when the lobby is closed', () => {
+        beforeEach(() => {
+            cy.get('[data-testid="create-election-submit"]').should('be.enabled')
+            // This isn't the best method, but wait until the election status has been fetched
+            cy.closeLobby()
+        })
+
+        it('is kicked when trying to authenticate a user', () => {
+            cy.get('[data-testid="usercode-field"]').type('1234');
+			cy.get('[data-testid="submit-authentication"]').click();
+
+            cy.get('[data-testid="popup-text"]')
+            cy.get('[data-testid="confirm-button"]').click()
+            cy.get('[data-testid="welcome-message"]')
+        })
     })
 })

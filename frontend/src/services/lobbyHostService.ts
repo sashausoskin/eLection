@@ -15,7 +15,7 @@ export const createLobby = async () => {
 
 export const auhtenticateUserWithCode = async (userCode: string) => {
 	await apiClient.post(
-		'/lobby/authenticateUser',
+		'/host/authenticateUser',
 		{
 			userCode,
 			lobbyCode,
@@ -71,3 +71,11 @@ export const closeLobby = async () => {
 		Authorization: hostID
 	}})
 }
+
+export const getElectionStatus = async () => await (
+	apiClient.get('/host/getElectionStatus', {
+		params: {lobbyCode},
+		headers: {
+			Authorization: hostID
+	}})
+)

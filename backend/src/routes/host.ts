@@ -16,7 +16,7 @@ router.use((req, res, next) => {
 
     if (!authToken) return res.status(401).json({type: 'MISSING_AUTH_TOKEN', message: 'Did not receive an authorization token with the request'} as ErrorMessage)
 
-    const lobbyCode = req.body.lobbyCode
+    const lobbyCode = req.body.lobbyCode || req.query.lobbyCode
 
     if (!lobbyCode) return res.status(400).json({type: 'MISSING_LOBBY_CODE', message: 'Did not receive a lobby code'} as ErrorMessage)
     if (!lobbyService.isValidLobbyCode(lobbyCode)) return res.status(404).json({type: 'UNAUTHORIZED', message: 'Did not receive a valid lobby code'} as ErrorMessage)
@@ -85,6 +85,45 @@ router.post('/closeLobby', (req,res) => {
     closeLobby(lobbyCode, 'HOST_CLOSED')
 
     return res.send()
+})
+
+router.get('/getElectionStatus', (req, res) => {
+    const lobbyCode = req.query.lobbyCode as string
+
+    if ((typeof lobbyCode) !== 'string' || Array.isArray(lobbyCode)) return res.json({type: 'MALFORMATTED_REQUEST', message: 'Expected a lobby code in string format'} as ErrorMessage)
+
+    return res.json({electionActive: lobbyService.isElectionActive(lobbyCode)})
+})
+
+router.post('/authenticateUser', async (req, res) => {
+    const lobbyCode = req.body.lobbyCode
+
+    if (!req.body.userCode || typeof req.body.userCode !== 'string') {
+        res.status(400).json({type: 'MALFORMATTED_REQUEST', message: 'The request is missing the field userCode or it is malformatted'} as ErrorMessage)
+        return
+    }
+
+    const userToAuthorize = req.body.userCode
+
+    if (!lobbyService.isUserInQueue(userToAuthorize, lobbyCode)) {
+        res.status(404).json({type: 'NOT_FOUND', message: 'Could not find a user with the given code'} as ErrorMessage)
+        return
+    }
+
+    const userSocketID = lobbyService.getUserSocketID(lobbyCode, userToAuthorize)
+
+
+    lobbyService.removeUserFromQueue(lobbyCode, userToAuthorize)
+
+
+    const newUserID = lobbyService.createAuthenticatedUser(lobbyCode)
+
+    const viewerSocket = lobbyService.getViewerSocket(lobbyCode)
+
+    if (viewerSocket) io.of('/viewer').to(viewerSocket).emit('user-joined', lobbyService.getParticipants(lobbyCode).length)
+    io.of('/queue').to(userSocketID).emit('authorize', {userID: newUserID})
+
+    res.status(200).send()
 })
 
 export default router

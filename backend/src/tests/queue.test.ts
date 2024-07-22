@@ -86,27 +86,27 @@ describe('With one lobby created and one user in queue', () => {
     test('host can authenticate a user in queue', async () => {
         expect(lobbyService.getParticipants(lobbyCode).length).toBe(0)
 
-        await request(app).post('/lobby/authenticateUser')
+        await request(app).post('/host/authenticateUser')
             .set('Authorization', hostID)
             .send({lobbyCode, userCode})
     })
 
     test('host cannot authenticate with missing info', async () => {
         // No auth token
-        const authRequest = await request(app).post('/lobby/authenticateUser')
+        const authRequest = await request(app).post('/host/authenticateUser')
             .send({lobbyCode, userCode})
         
         expect(authRequest.status).toBe(401)
 
         // No lobby code
-        await request(app).post('/lobby/authenticateUser')
+        await request(app).post('/host/authenticateUser')
             .set('Authorization', hostID)
             .send({ userCode})
         
         expect(authRequest.status).toBe(401)
 
         // No user code
-        await request(app).post('/lobby/authenticateUser')
+        await request(app).post('/host/authenticateUser')
             .set('Authorization', hostID)
             .send({ lobbyCode })
         
@@ -116,11 +116,11 @@ describe('With one lobby created and one user in queue', () => {
     test('host cannot authenticate with invalid token', async () => {
         expect(lobbyService.getParticipants(lobbyCode).length).toBe(0)
 
-        const authRequest = await request(app).post('/lobby/authenticateUser')
+        const authRequest = await request(app).post('/host/authenticateUser')
             .set('Authorization', '11111111-1111-1111-1111-111111111111')
             .send({lobbyCode, userCode})
         
-        expect(authRequest.statusCode).toBe(401)
+        expect(authRequest.statusCode).toBe(403)
         expect(lobbyService.getParticipants(lobbyCode).length).toBe(0)
     })
 
@@ -129,18 +129,18 @@ describe('With one lobby created and one user in queue', () => {
         const host2ID = lobby2CreationRequest.body.hostID
         
         expect(lobbyService.getParticipants(lobbyCode).length).toBe(0)
-        const authRequest = await request(app).post('/lobby/authenticateUser')
+        const authRequest = await request(app).post('/host/authenticateUser')
             .set('Authorization', host2ID)
             .send({lobbyCode, userCode})
         
-        expect(authRequest.statusCode).toBe(401)
+        expect(authRequest.statusCode).toBe(403)
         expect(lobbyService.getParticipants(lobbyCode).length).toBe(0)
     })
 
     test('host cannot authenticate nonexistent user', async () => {
         const invalidUserCode = '1234' === userCode ? '1234' : '4321'
 
-        const authRequest = await request(app).post('/lobby/authenticateUser')
+        const authRequest = await request(app).post('/host/authenticateUser')
             .set('Authorization', hostID)
             .send({lobbyCode, userCode: invalidUserCode})
         
@@ -178,7 +178,7 @@ describe('With one lobby created and one user in queue', () => {
             done()
         })
         queueSocket.on('connect', async () => {
-            await request(app).post('/lobby/authenticateUser')
+            await request(app).post('/host/authenticateUser')
                 .set('Authorization', hostID)
                 .send({lobbyCode, userCode})
         })

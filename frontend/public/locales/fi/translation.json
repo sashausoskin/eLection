@@ -5,6 +5,7 @@
     "loading": "Ladataan...",
     "userAuthenticated": "Käyttäjä vahvistettu!",
     "userNotFound": "Ei löytynyt käyttäjää kyseisellä käyttäjätunnuksella",
+    "unauthorisedHost": "Sinulla ei ole valtuutusta tehdä tätä. Tämä todennäköisesti johtuu siitä, että aula on suljettu. Sinut palautetaan nyt päävalikkoon.",
     "electionCreateSuccess": "Vaalit luotu onnistuneesti",
     "electionEndSuccess": "Vaalit päätetty onnistuneesti",
     "noActiveElection": "Tällä hetkellä ei ole vaaleja meneillään!",
@@ -23,7 +24,7 @@
     "closeLobbyConfirmation": "Aula suljettu onnistuneesti.",
     "openViewerWindow": "Avaa katseluikkuna",
     "closeLobby": "Sulje aula",
-    "userAuthentication": "Päästä käyttäjä aulaan syöttämällä heidän käyttäjätunnuksensa"
+    "userAuthentication": "Päästä käyttäjä aulaan syöttämällä heidän käyttäjätunnuksensa:"
   },
   "fieldError": {
     "missingUserCode": "Ole hyvä ja syötä käyttäjätunnus.",
@@ -72,6 +73,7 @@
   "welcome": "Tervetuloa!",
   "joinLobby": {
     "lobbyCodeInstructions": "Ole hyvä ja syötä aulatunnus",
+    "authenticated": "Olet nyt hyväksytty äänestäjäksi!",
     "userCodeHeader": "Tässä on sinun käyttäjätunnuksesi",
     "userCodeInstructions": "Näytä tämä tunnus vaalien järjestäjälle",
     "awaitingAccess": "Odotetaan pääsyä aulaan..."

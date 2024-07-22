@@ -33,13 +33,13 @@ function App() {
 			{popupInfo && 
 				<div className='popupBackground'>
 					<div className='popupContainer'>
-						<a className='popupText'>{popupInfo.message}</a>
+						<a className='popupText' data-testid='popup-text'>{popupInfo.message}</a>
 						<div className='buttonsContainer'>
-							<button className='confirmButton' data-testid='confirmButton' onClick={() => {popupInfo.onConfirm?.(); clearPopup()}}>
+							<button className='confirmButton' data-testid='confirm-button' onClick={() => {popupInfo.onConfirm?.(); clearPopup()}}>
 								<img src={confirmIcon} />
 							</button>
 							{popupInfo.type === 'confirm' && 
-								<button className='cancelButton' data-testid='cancelButton' onClick={() => {popupInfo.onCancel?.(); clearPopup()}}>
+								<button className='cancelButton' data-testid='cancel-button' onClick={() => {popupInfo.onCancel?.(); clearPopup()}}>
 									<img src={cancelIcon} />
 								</button>
 							}

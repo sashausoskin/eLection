@@ -1,6 +1,5 @@
 import express from 'express'
 import * as lobbyService from '../services/lobbyservice'
-import {io} from '../util/server'
 import { ErrorMessage } from '../types/types'
 
 
@@ -27,54 +26,6 @@ router.post('/joinLobby', async (req, res) => {
     const userCode = lobbyService.getNewUserCode(lobbyCode)
 
     return res.send({userCode})
-})
-
-router.post('/authenticateUser', async (req, res) => {
-    if (!req.headers.authorization) {
-        res.status(401).json({error: 'Missing authorization header!'})
-        return
-    }
-
-    const hostID = req.headers.authorization
-
-    if (!req.body.lobbyCode) {
-        res.status(400).json({error: 'The request is missing field lobbyCode'})
-        return
-    }
-
-    const lobbyCode = req.body.lobbyCode
-
-    if (!lobbyService.isLobbyHost(lobbyCode, hostID)) {
-        res.status(401).json({error: 'You are not the host of this lobby'})
-        return
-    }
-
-    if (!req.body.userCode || typeof req.body.userCode !== 'string') {
-        res.status(400).json({error: 'The request is missing the field userCode or it is malformatted'})
-        return
-    }
-
-    const userToAuthorize = req.body.userCode
-
-    if (!lobbyService.isUserInQueue(userToAuthorize, lobbyCode)) {
-        res.status(404).json({error: 'Could not find a user with the given code'})
-        return
-    }
-
-    const userSocketID = lobbyService.getUserSocketID(lobbyCode, userToAuthorize)
-
-
-    lobbyService.removeUserFromQueue(lobbyCode, userToAuthorize)
-
-
-    const newUserID = lobbyService.createAuthenticatedUser(lobbyCode)
-
-    const viewerSocket = lobbyService.getViewerSocket(lobbyCode)
-
-    if (viewerSocket) io.of('/viewer').to(viewerSocket).emit('user-joined', lobbyService.getParticipants(lobbyCode).length)
-    io.of('/queue').to(userSocketID).emit('authorize', {userID: newUserID})
-
-    res.status(200).send()
 })
 
 router.post('/validateUserInfo', async (req, res) => {

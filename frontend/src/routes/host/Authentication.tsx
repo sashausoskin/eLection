@@ -1,12 +1,14 @@
 import { Field, Form, Formik, FormikHelpers } from 'formik'
 import { auhtenticateUserWithCode } from '../../services/lobbyHostService'
 import * as Yup from 'yup'
-import { useEffect, useState } from 'react'
-import { StatusMessage } from '../../types'
+import { useContext, useEffect, useState } from 'react'
+import { ErrorMessage, StatusMessage } from '../../types'
 import { AxiosError } from 'axios'
 import { Mock } from 'vitest'
 import './Authentication.css'
 import { useTranslation } from 'react-i18next'
+import { PopupContext } from '../../Contexts'
+import { useNavigate } from 'react-router'
 
 export const Authentication = ({
 	lobbyCode,
@@ -19,6 +21,8 @@ export const Authentication = ({
 	const statusMessageColor = statusMessage?.status === 'success' ? 'green' : 'red'
 
 	const {t} = useTranslation()
+	const {createPopup} = useContext(PopupContext)
+	const navigate = useNavigate()
 
     useEffect(() => {
         if (!statusMessage) return
@@ -53,12 +57,19 @@ export const Authentication = ({
 			actions.resetForm()
 		} catch (e) {
 			if (e instanceof AxiosError) {
-				if (e.response?.status === 404) {
-					setStatusMessage({
-						status: 'error',
-						message: t('status.userNotFound'),
-					})
-				} else {
+				switch((e.response?.data as ErrorMessage).type) {
+					case 'NOT_FOUND': 
+						setStatusMessage({
+							status: 'error',
+							message: t('status.userNotFound'),
+						})
+						break
+					case 'UNAUTHORIZED':
+						createPopup({type: 'alert', message: t('status.unauthorisedHost'), onConfirm: () => {
+							navigate('/')
+						}})
+						break
+				default:
 					console.error(t('unexpectedError'), e.response)
 				}
 			}

@@ -28,6 +28,13 @@ describe('With a lobby created and one authenticated user in lobby', () => {
         if (lobbySocket) lobbySocket.disconnect()
     })
 
+    const requestElectionStatus = async () => {
+        return await request(app).get('/host/getElectionStatus')
+        .set('Authorization', hostID)
+        .query({lobbyCode})
+        .then()
+    }
+
     describe('When creating an election', () => {
         const exampleElectionInfo : ElectionInfo = {type: 'FPTP', title: 'Which language should we use?', candidates: ['Python', 'JavaScript']}
 
@@ -96,6 +103,13 @@ describe('With a lobby created and one authenticated user in lobby', () => {
                 expect (electionCreationResponse.status).toBe(200)
             })
         })
+
+        test('correctly updates the lobby status', async () => {
+            await requestElectionCreation(lobbyCode, hostID, exampleElectionInfo)
+
+            const lobbyStatusRequest = await requestElectionStatus()
+            expect(lobbyStatusRequest.body.electionActive).toBeTruthy()
+        })
     })
 
     describe('When ending an election', () => {
@@ -128,6 +142,13 @@ describe('With a lobby created and one authenticated user in lobby', () => {
                 const endElectionResponse = await requestElectionEnd(lobbyCode, hostID)
 
                 expect(endElectionResponse.status).toBe(200)
+            })
+
+            test('correctly updates the lobby election status', async () => {
+                await requestElectionEnd(lobbyCode, hostID)
+
+                const electionStatusRequest = await requestElectionStatus()
+                expect(electionStatusRequest.body.electionActive).toBeFalsy()
             })
         })
 

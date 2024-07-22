@@ -1,7 +1,7 @@
 import { AxiosError } from 'axios'
 import { ErrorMessage, Field, FieldArray, Form, Formik, FormikHelpers } from 'formik'
 import * as Yup from 'yup'
-import { createElection, endElection } from '../../services/lobbyHostService'
+import { createElection, endElection, getElectionStatus } from '../../services/lobbyHostService'
 import { Fragment, useContext, useEffect, useState } from 'react'
 import { ElectionInfo,  ElectionType,  ErrorMessage as ResponseErrorMessage, StatusMessage } from '../../types'
 import './CreateElectionForm.css'
@@ -10,18 +10,19 @@ import trashIcon from '/img/icons/trash.svg'
 import addIcon from '/img/icons/add.svg'
 import { PopupContext } from '../../Contexts'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router'
 
 const CreateElectionForm = ({onSubmitForm, onEndElectionClick} : 
     {onSubmitForm?: ((values: ElectionInfo) => undefined),
     onEndElectionClick?: () => void}) => {
 
-    const {t} = useTranslation()
-
     const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
     const [electionType, setElectionType] = useState<ElectionType>('FPTP')
     const [isElectionActive, setIsElectionActive] = useState<boolean>(false)
-    const [isRequestPending, setIsRequestPending] = useState<boolean>(false)
+    const [isRequestPending, setIsRequestPending] = useState<boolean>(true)
     const {createPopup} = useContext(PopupContext)
+    const {t} = useTranslation()
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (!statusMessage) return
@@ -34,6 +35,16 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
         return () => clearTimeout(timeout)
 
     }, [statusMessage])
+
+    useEffect(() => {
+        // This is to make sure that if the host reloads the page, their election control buttons will still be up-to-date.
+        setIsRequestPending(true)
+
+        getElectionStatus().then((res) => {
+            setIsElectionActive(res.data.electionActive)
+            setIsRequestPending(false)
+        })
+    }, [])
 
     const ElectionCreationSchema = Yup.object().shape({
         type: Yup.string()
@@ -51,6 +62,12 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
                 .min(2, t('fieldError.fewCandidatesToRank'))
     })
 
+    const handleUnauthorizedRequest = () => {
+        createPopup({type: 'alert', message: t('status.unauthorisedHost'), onConfirm: () => {
+            navigate('/')
+        }})
+    }
+
     const defaultOnSubmit = 
         async (values: ElectionInfo, 
         formikHelpers: FormikHelpers<ElectionInfo>) => {
@@ -64,8 +81,13 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
             }
             catch(e) {
                 if (e instanceof AxiosError) {
+                    if ((e.response?.data as ResponseErrorMessage).type === 'UNAUTHORIZED') {
+                        handleUnauthorizedRequest()
+                    }
+                    else {
                     createPopup({type: 'alert', message: t('unexpectedError', {errorMessage: e.response?.data.message})})
                     setIsRequestPending(false)
+                }
                 }
             }
     }
@@ -85,6 +107,9 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
                         createPopup({type: 'alert', message: t('status.noActiveElection'), onConfirm: () => {
                             setIsElectionActive(false)
                         }})
+                        break
+                    case 'UNAUTHORIZED':
+                        handleUnauthorizedRequest()
                 }
                 setIsRequestPending(false)
             }
