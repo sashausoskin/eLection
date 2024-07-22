@@ -5,6 +5,7 @@
     "loading": "Loading...",
     "userAuthenticated": "User is now authenticated!",
     "userNotFound": "Could not find a user with the given code",
+    "unauthorisedHost": "You are not authorised to do this. This is probably due to the lobby being closed. You will now be redirected to the main menu.",
     "electionCreateSuccess": "Succesfully created the election",
     "electionEndSuccess": "Succesfully ended the election",
     "noActiveElection": "There is currently no ongoing election!",
@@ -72,6 +73,7 @@
   "welcome": "Welcome!",
   "joinLobby": {
     "lobbyCodeInstructions": "Please enter a lobby code below",
+    "authenticated": "You are now registered as a voter!",
     "userCodeHeader": "Here is your user code",
     "userCodeInstructions": "Show this code to the host",
     "awaitingAccess": "Waiting for access into the lobby..."

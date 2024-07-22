@@ -3,7 +3,7 @@ import { JoinLobbyForm } from './participant/JoinLobbyForm'
 import { UserCode } from './participant/UserCode'
 import { SetParticipantViewContext } from '../Contexts'
 import * as participantService from '../services/participantService'
-import LobbyView from './participant/Lobby'
+import LobbyView from './participant/LobbyView'
 import Loading from '../elements/Loading'
 
 const ParticipantView: () => JSX.Element = () => {

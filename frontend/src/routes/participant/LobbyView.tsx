@@ -117,7 +117,10 @@ const LobbyView = () : JSX.Element => {
 
     switch (lobbyStatus.status) {
         case 'STANDBY' :
-            return <a data-testid='lobby-standby-header'>{t('status.waitingForElection')}</a>
+            return <>
+            <h2  data-testid='lobby-standby-header'>{t('joinLobby.authenticated')}</h2>
+            <a>{t('status.waitingForElection')}</a>
+            </> 
         
     
         case 'VOTING':
