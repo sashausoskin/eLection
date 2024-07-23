@@ -80,7 +80,7 @@ describe("In participant view", () => {
         })
         it('can cast empty vote', () => {
             cy.get("[data-testid='cast-empty-vote']").click()
-            cy.get("[data-testid='confirmButton']").click()
+            cy.get("[data-testid='confirm-button']").click()
             cy.get("[data-testid='vote-submitted-header']").should('exist')
 
             cy.getElectionResults().then((res) => {
