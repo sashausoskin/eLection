@@ -18,3 +18,4 @@ FROM nginx:1.20-alpine
 # The target location here was found from the Docker hub page
 
 COPY --from=build-stage /usr/src/eLection-front/dist /usr/share/nginx/html
+COPY ./nginx.conf /etc/nginx/nginx.conf
