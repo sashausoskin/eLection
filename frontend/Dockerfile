@@ -7,6 +7,8 @@ RUN npm ci
 
 RUN CI=true npm test
 
+ENV VITE_BACKEND_URL=./api
+
 RUN npm run build
 
 # This is a new stage, everything before this is gone, except the files we want to COPY

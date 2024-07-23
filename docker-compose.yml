@@ -1,0 +1,21 @@
+name: e-lection
+
+services:
+    backend:
+        image: ghcr.io/sonicsasha/election-backend:main
+        container_name: eLection-backend
+    frontend:
+        image: ghcr.io/sonicsasha/election-frontend:main
+        container_name: eLection-frontend
+        depends_on:
+          - backend
+    nginx:
+        image: nginx:1.24.0
+        volumes:
+          - ./nginx.conf:/etc/nginx/nginx.conf:ro
+        ports:
+          - 8080:80
+        container_name: reverse-proxy
+        depends_on:
+          - backend
+          - frontend
