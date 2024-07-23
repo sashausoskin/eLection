@@ -150,7 +150,7 @@ describe('Joining a lobby', () => {
 
 				cy.request({
 					method: 'POST',
-					url: `${Cypress.env('BACKEND_URL')}/lobby/authenticateUser`,
+					url: `${Cypress.env('BACKEND_URL')}/host/authenticateUser`,
 					body: { userCode, lobbyCode },
 					headers: {
 						Authorization: hostID,
@@ -174,7 +174,7 @@ describe('Joining a lobby', () => {
 
 				cy.request({
 					method: 'POST',
-					url: `${Cypress.env('BACKEND_URL')}/lobby/authenticateUser`,
+					url: `${Cypress.env('BACKEND_URL')}/host/authenticateUser`,
 					body: { userCode, lobbyCode },
 					headers: {
 						Authorization: hostID,
