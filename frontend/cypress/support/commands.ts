@@ -95,7 +95,7 @@ Cypress.Commands.add('createUser', () => {
 			cy.get('@hostID').then((hostID) => {
 				return cy.request({
 					method: 'post',
-					url: `${Cypress.env('BACKEND_URL')}/lobby/authenticateUser`,
+					url: `${Cypress.env('BACKEND_URL')}/host/authenticateUser`,
 					body: {lobbyCode, userCode},
 					headers: {
 						"Authorization": hostID
