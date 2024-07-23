@@ -4,10 +4,15 @@ import userEvent from '@testing-library/user-event'
 import { Authentication } from '../routes/host/Authentication'
 import { Mock, vi } from 'vitest'
 
+
+vi.mock('react-router', () => ({
+	useNavigate: () => vi.fn()
+}))
+
 describe('In authentication view', () => {
-	let submitCallback: Mock | null = null
-	let userCodeField: HTMLElement | null = null
-	let userCodeSubmit: HTMLElement | null = null
+	let submitCallback: Mock
+	let userCodeField: HTMLElement
+	let userCodeSubmit: HTMLElement
 
 	beforeEach(() => {
 		submitCallback = vi.fn<string[]>()

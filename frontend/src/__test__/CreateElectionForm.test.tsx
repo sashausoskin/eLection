@@ -2,6 +2,10 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import CreateElectionForm from '../routes/host/CreateElectionForm'
 
+vi.mock('react-router', () => ({
+	useNavigate: () => vi.fn()
+}))
+
 describe('When creating a FTPT election', () => {
     const mockFn = vi.fn()
     let titleField = null as unknown as HTMLElement
@@ -11,7 +15,7 @@ describe('When creating a FTPT election', () => {
 
     beforeEach(async () => {
         mockFn.mockClear()
-        render(<CreateElectionForm onSubmitForm={mockFn} />)
+        render(<CreateElectionForm onSubmitForm={mockFn} skipStatusCheck/>)
         
         titleField = screen.getByTestId('title-field')
         

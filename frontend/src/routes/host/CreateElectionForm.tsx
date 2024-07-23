@@ -12,14 +12,15 @@ import { PopupContext } from '../../Contexts'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 
-const CreateElectionForm = ({onSubmitForm, onEndElectionClick} : 
+const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} : 
     {onSubmitForm?: ((values: ElectionInfo) => undefined),
-    onEndElectionClick?: () => void}) => {
+    onEndElectionClick?: () => void,
+    skipStatusCheck?: boolean}) => {
 
     const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
     const [electionType, setElectionType] = useState<ElectionType>('FPTP')
     const [isElectionActive, setIsElectionActive] = useState<boolean>(false)
-    const [isRequestPending, setIsRequestPending] = useState<boolean>(true)
+    const [isRequestPending, setIsRequestPending] = useState<boolean>(!skipStatusCheck)
     const {createPopup} = useContext(PopupContext)
     const {t} = useTranslation()
     const navigate = useNavigate()
@@ -38,13 +39,18 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick} :
 
     useEffect(() => {
         // This is to make sure that if the host reloads the page, their election control buttons will still be up-to-date.
+        if (skipStatusCheck) {
+            setIsRequestPending(false)
+            return
+        }
+
         setIsRequestPending(true)
 
         getElectionStatus().then((res) => {
             setIsElectionActive(res.data.electionActive)
             setIsRequestPending(false)
         })
-    }, [])
+    }, [skipStatusCheck])
 
     const ElectionCreationSchema = Yup.object().shape({
         type: Yup.string()
