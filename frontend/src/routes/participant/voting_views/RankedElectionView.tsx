@@ -9,9 +9,9 @@ import { useTranslation } from 'react-i18next'
 // Used React Spring's Draggable List example as base: https://codesandbox.io/s/zfy9p
 
 // These would usually be defined in a .css-file, but because they are needed for the animation library, these are defined here
-const candidateContainerHeight = 100
+const candidateContainerHeight = 50
 const candidateContainerPadding = 15
-const candidateContainerGap = 20
+const candidateContainerGap = 10
 const candidateContainerBorderWidth = 5
 const candidateContainerSpace = candidateContainerHeight + 2 * candidateContainerPadding + 2 * candidateContainerBorderWidth + candidateContainerGap
 

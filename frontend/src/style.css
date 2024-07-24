@@ -1,8 +1,8 @@
 :root {
     background-image: url('/img/bg.png');
-    background-position: top center;
-    background-size: 25%;
-    background-repeat: repeat;
+    background-position: var(--background-position);
+    background-size: var(--background-scale);
+    background-repeat: var(--background-repeat);
 }
 
 .icon {
@@ -32,7 +32,7 @@
     border-width: 3px;
     border-style: solid;
     border-color: var(--secondary-color);
-    background-color: var(--background-color);
+    background-color: var(--main-container-color);
     padding: 5vh 5vw;
 }
 
@@ -71,10 +71,6 @@
     color: var(--code-text-color);
     font-weight: 700;
     line-height: 1;
-}
-
-.tooltip {
-    max-width: 200px;
 }
 
 .viewerContainer {
@@ -165,6 +161,10 @@
     display: flex;
     align-items: center;
     gap: 5px;
+}
+
+.languageSelectionContainer img {
+    filter: var(--top-bar-icon-filter)
 }
 
 .languageSelectionContainer select {

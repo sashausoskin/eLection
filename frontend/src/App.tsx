@@ -1,5 +1,6 @@
 import './App.css'
 import './style.css'
+import './phone_style.css'
 import { Route, Routes } from 'react-router'
 import { Home } from './routes/Home' 
 import { PopupContext, SetParticipantViewContextProvider } from './Contexts'

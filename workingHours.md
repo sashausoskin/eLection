@@ -31,5 +31,6 @@
 | 20.7 | 5  | Further work on translations, some small polishing and bugfixing. |
 | 21.7 | 5.5  | Finishing up with translations, some refactoring and bug-fixing |
 | 22.7 | 2  | Improved the host experience and tried to fix bugs in some edge cases |
-| 21.7 | 5.5  | Started working on Docker images and creating a server setup |
-| total   | 124.5  | | 
+| 23.7 | 5.5  | Started working on Docker images and creating a server setup |
+| 24.7 | 4  | Almost finished work on creating a Docker setup. Refactored some functionality to be more customisable when runnning on Docker. |
+| total   | 147  | | 
