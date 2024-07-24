@@ -1,4 +1,4 @@
-FROM node:slim
+FROM node:20-alpine
 WORKDIR /usr/src/eLection-backend
 
 COPY . .

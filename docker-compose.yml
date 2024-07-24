@@ -4,11 +4,26 @@ services:
     backend:
         image: ghcr.io/sonicsasha/election-backend:main
         container_name: eLection-backend
+        restart: always
     frontend:
         image: ghcr.io/sonicsasha/election-frontend:main
         container_name: eLection-frontend
+        volumes:
+            -   type: bind
+                source: ./locales/
+                target: /usr/share/nginx/html/locales/custom
+            -   type: bind
+                source: ./stylesheet.css
+                target: /usr/share/nginx/html/stylesheet_custom.css
+            -   type: bind
+                source: ./bg.png
+                target: /usr/share/nginx/html/img/bg.png
+            -   type: bind
+                source: ./icon.svg
+                target: /usr/share/nginx/html/img/icon.svg
         depends_on:
           - backend
+        restart: always
     nginx:
         image: nginx:1.24.0
         volumes:
@@ -19,3 +34,4 @@ services:
         depends_on:
           - backend
           - frontend
+        restart: always
