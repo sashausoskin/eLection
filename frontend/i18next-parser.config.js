@@ -35,11 +35,11 @@ export default {
 
     namespaceSeparator: ':',
   
-    output: './public/locales/$LOCALE/$NAMESPACE.json',
+    output: './public/locales/$NAMESPACE/$LOCALE.json',
   
     pluralSeparator: '_',
   
-    input: './public/locales/**/translation.json',
+    input: './public/locales/$NAMESPACE/$LOCALE.json',
   
     verbose: true,
   

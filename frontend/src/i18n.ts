@@ -11,5 +11,11 @@ i18n
     .init({
         debug: process.env.NODE_ENV === 'dev',
         fallbackLng: ['en', 'fi'],
-        returnNull: false
+        returnNull: false,
+        ns: ['custom', 'translation'],
+        backend: {
+            loadPath: '/locales/{{ns}}/{{lng}}.json'
+        },
+        defaultNS: 'custom',
+        fallbackNS: 'translation'
     })
