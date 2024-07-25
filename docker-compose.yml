@@ -21,6 +21,7 @@ services:
             -   type: bind
                 source: ./icon.svg
                 target: /usr/share/nginx/html/img/icon.svg
+            -   ./sslcert:/etc/nginx/sslcert
         depends_on:
           - backend
         restart: always
@@ -28,8 +29,9 @@ services:
         image: nginx:mainline-alpine
         volumes:
           - ./nginx.conf:/etc/nginx/nginx.conf:ro
+          - ./sslcert:/etc/nginx/sslcert
         ports:
-          - 8080:80
+          - 443:443
         container_name: reverse-proxy
         depends_on:
           - backend
