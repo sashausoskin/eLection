@@ -21,7 +21,6 @@ services:
             -   type: bind
                 source: ./icon.svg
                 target: /usr/share/nginx/html/img/icon.svg
-            -   ./sslcert:/etc/nginx/sslcert
         depends_on:
           - backend
         restart: always
@@ -32,6 +31,7 @@ services:
           - ./sslcert:/etc/nginx/sslcert
         ports:
           - 443:443
+          - 80:80 # The reverse proxy should automatically redirect to use the more secure 443 port.
         container_name: reverse-proxy
         depends_on:
           - backend
