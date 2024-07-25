@@ -61,9 +61,22 @@ describe("In host view", () => {
             cy.closeLobby()
         })
 
-        it('is kicked when trying to authenticate a user', () => {
+        it('host is kicked when trying to authenticate a user', () => {
             cy.get('[data-testid="usercode-field"]').type('1234');
 			cy.get('[data-testid="submit-authentication"]').click();
+
+            cy.get('[data-testid="popup-text"]')
+            cy.get('[data-testid="confirm-button"]').click()
+            cy.get('[data-testid="welcome-message"]')
+        })
+
+        it('host is kicked when trying to start an election', () => {
+            cy.get("[data-testid='fptp-radio']").click()
+            cy.get("[data-testid='title-field']").type("Which one is the better nation?")
+            cy.get("[data-testid='candidate-field']").eq(0).type("PPO")
+            cy.get("[data-testid='candidate-field']").eq(1).type("EPO")
+    
+            cy.get("[data-testid='create-election-submit']").click()
 
             cy.get('[data-testid="popup-text"]')
             cy.get('[data-testid="confirm-button"]').click()
