@@ -7,7 +7,7 @@ RUN npm ci
 
 RUN CI=true npm test
 
-ENV VITE_BACKEND_URL=./api
+ENV VITE_BACKEND_URL=/api/
 
 RUN npm run build
 
