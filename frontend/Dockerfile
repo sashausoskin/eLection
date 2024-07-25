@@ -8,6 +8,7 @@ RUN npm ci
 RUN CI=true npm test
 
 ENV VITE_BACKEND_URL=/api/
+ENV VITE_SOCKET_URL=/
 ENV VITE_SOCKET_PATH=/api/socket.io
 
 RUN npm run build
