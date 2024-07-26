@@ -1,0 +1,28 @@
+services:
+  - type: web
+    runtime: docker
+    name: eLection-frontend
+    rootDir: frontend
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    healthCheckPath: /
+    envVars:
+      - key: VITE_BACKEND_URL
+        fromService:
+          type: web
+          name: eLection-backend
+          property: host
+      - key: VITE_SOCKET_URL
+        fromService:
+          type: web
+          name: eLection-backend
+          property: host
+      - key: VITE_SOCKET_PATH
+        value: /socket.io/
+  - type: web
+    runtime: docker
+    name: eLection-backend
+    rootDir: backend
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /ping

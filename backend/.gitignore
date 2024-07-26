@@ -131,3 +131,5 @@ dist
 
 # Schema file for election information. Can be generated using 'npm run build:schema"
 src/types/ElectionInfo_schema.json
+
+.env

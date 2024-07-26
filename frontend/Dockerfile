@@ -1,15 +1,20 @@
 FROM node:20-alpine AS build-stage
 WORKDIR /usr/src/eLection-front
 
+ARG VITE_BACKEND_URL=http://localhost:3000
+ARG VITE_SOCKET_URL=http://localhost:3000
+ARG VITE_SOCKET_PATH=/socket.io/
+
+
 COPY . .
 
 RUN npm ci
 
 RUN CI=true npm test
 
-ENV VITE_BACKEND_URL=/api/
-ENV VITE_SOCKET_URL=
-ENV VITE_SOCKET_PATH=/api/socket.io
+ENV VITE_BACKEND_URL=$backend_url
+ENV VITE_SOCKET_URL=$socket_url
+ENV VITE_SOCKET_PATH=$socket_path
 
 RUN npm run build
 

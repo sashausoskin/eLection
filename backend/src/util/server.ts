@@ -18,7 +18,7 @@ export const app = express()
 export const server = createServer(app)
 export const io = new Server(server, {
     cors: {
-        origin: process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'test' ? '*' : process.env.CORS_ORIGIN
+        origin: process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'test' ? '*' : process.env.CORS_ORIGIN // If server is not running in production mode, allow requests from everywhere.
     }
 })
 
@@ -27,6 +27,9 @@ app.use(express.json())
 app.use('/lobby', lobbyRouter)
 app.use('/host', hostRouter)
 app.use('/participant', participantRouter)
+app.get('/ping', (_req, res) => {
+    return res.send('pong')
+})
 
 if (process.env.NODE_ENV === 'test') app.use('/testing', testingRouter)
 
