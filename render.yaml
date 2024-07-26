@@ -8,15 +8,9 @@ services:
     healthCheckPath: /
     envVars:
       - key: VITE_BACKEND_URL
-        fromService:
-          type: web
-          name: eLection-backend
-          property: host
+        value: https://election-backend-smho.onrender.com
       - key: VITE_SOCKET_URL
-        fromService:
-          type: web
-          name: eLection-backend
-          property: host
+        value: https://election-backend-smho.onrender.com
       - key: VITE_SOCKET_PATH
         value: /socket.io/
   - type: web
