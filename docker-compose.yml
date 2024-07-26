@@ -2,7 +2,7 @@ name: e-lection
 
 services:
     backend:
-        image: ghcr.io/sonicsasha/election-backend:main
+        image: ghcr.io/sonicsasha/election-backend:latest
         container_name: eLection-backend
         volumes:
             -   type: bind
@@ -10,7 +10,7 @@ services:
                 target: /usr/src/eLection-backend/.env
         restart: always
     frontend:
-        image: ghcr.io/sonicsasha/election-frontend:main
+        image: ghcr.io/sonicsasha/election-frontend:latest
         container_name: eLection-frontend
         volumes:
             -   type: bind
