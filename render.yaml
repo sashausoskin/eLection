@@ -20,3 +20,6 @@ services:
     rootDir: backend
     dockerfilePath: ./Dockerfile
     healthCheckPath: /ping
+    envVars:
+      - key: CORS_ORIGIN
+        value: https://election-frontend-4vqy.onrender.com
