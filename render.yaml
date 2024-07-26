@@ -2,6 +2,7 @@ services:
   - type: web
     runtime: docker
     name: eLection-frontend
+    plan: free
     rootDir: frontend
     dockerfilePath: ./frontend/Dockerfile
     dockerContext: ./frontend
@@ -22,6 +23,7 @@ services:
   - type: web
     runtime: docker
     name: eLection-backend
+    plan: free
     rootDir: backend
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
