@@ -34,4 +34,5 @@
 | 23.7 | 5.5  | Started working on Docker images and creating a server setup |
 | 24.7 | 4  | Almost finished work on creating a Docker setup. Refactored some functionality to be more customisable when runnning on Docker. |
 | 25.7 | 4  | Took a long time fixing a bug breaking socket connections in Docker. Added SSL to the Docker image. |
-| total   | 151  | | 
+| 26.7 | 3.5  | Created a configuration to get the app to run on Render. Started working on better configuration for the repository.|
+| total   | 153  | | 

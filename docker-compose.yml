@@ -4,6 +4,10 @@ services:
     backend:
         image: ghcr.io/sonicsasha/election-backend:main
         container_name: eLection-backend
+        volumes:
+            -   type: bind
+                source: ./backend.env
+                target: /usr/src/eLection-backend/.env
         restart: always
     frontend:
         image: ghcr.io/sonicsasha/election-frontend:main

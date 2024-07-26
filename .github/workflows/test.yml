@@ -1,6 +1,10 @@
 name: Run tests
 run-name: Running unit and end-to-end tests
-on: [push]
+on: 
+  push:
+  pull_request:
+  release:
+    types: [created]
 jobs:
   unit_tests:
       name: Run unit tests
@@ -16,12 +20,16 @@ jobs:
         - name: Build schemas
           working-directory: ./backend
           run: npm run build:schema
+        - name: Check linting in backend
+          run: npm run lint
         - name: Run backend unit tests
           working-directory: ./backend
           run: npm run test:coverage
         - name: Install frontend dependencies
           working-directory: ./frontend
           run: npm install
+        - name: Check linting in frontend
+          run: npm run lint
         - name: Run frontend unit tests
           working-directory: ./frontend
           run: npm test
