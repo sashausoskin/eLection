@@ -4,7 +4,7 @@ services:
     name: eLection-frontend
     plan: free
     rootDir: frontend
-    dockerfilePath: ./frontend/Dockerfile
+    dockerfilePath: ./Dockerfile
     healthCheckPath: /
     envVars:
       - key: VITE_BACKEND_URL
@@ -24,5 +24,5 @@ services:
     name: eLection-backend
     plan: free
     rootDir: backend
-    dockerfilePath: ./backend/Dockerfile
+    dockerfilePath: ./Dockerfile
     healthCheckPath: /ping
