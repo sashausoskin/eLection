@@ -19,7 +19,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4.0.2
         with:
-          node-version: lts
+          node-version: 20
       - name: Create Docker template
         run: node create-docker-template.js
       - name: Add Docker template to release
