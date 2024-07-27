@@ -24,13 +24,9 @@ jobs:
           node-version: 20
       - name: Create Docker template
         run: node create-docker-template.js
-      - name: Add Docker template to release
-        uses: actions/upload-artifact@v4
-        with:
-          path: /dockerTemplate/
       - name: Upload the template to release
         uses: softprops/action-gh-release@v2
         with:
-          files: /dockerFile
+          files: ./dockerFile
           tag_name: ${{ github.event.release.tag_name }}
 
