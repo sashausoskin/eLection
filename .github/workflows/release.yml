@@ -24,9 +24,11 @@ jobs:
           node-version: 20
       - name: Create Docker template
         run: node create-docker-template.js
+      - name: Create zip-file for Docker template
+        run: zip -r docker-template.zip dockerTemplate/
       - name: Upload the template to release
         uses: softprops/action-gh-release@v2
         with:
-          files: dockerTemplate/
+          files: docker-template.zip
           tag_name: ${{ github.event.release.tag_name }}
 
