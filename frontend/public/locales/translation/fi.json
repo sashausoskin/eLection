@@ -19,6 +19,7 @@
   "welcomeMessage": "Tervetuloa eLection-palveluun!",
   "host": "Järjestä vaalit",
   "participate": "Osallistu vaaleihin",
+  "viewSource": "Tarkastele lähdekoodia GitHubissa",
   "hostInstructions": {
     "closeLobbyConfirm": "Oletko varma, että haluat sulkea tämän aulan?",
     "closeLobbyConfirmation": "Aula suljettu onnistuneesti.",

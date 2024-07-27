@@ -20,6 +20,9 @@ export const Home = (): React.ReactElement => {
 						{t('participate')}
 					</button>
 				</Link>
+				<Link to='https://github.com/sonicsasha/eLection' target='_blank'>
+					<a>{t('viewSource')}</a>
+				</Link>
 			</div>
 		</>
 	)

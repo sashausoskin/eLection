@@ -19,6 +19,7 @@
   "welcomeMessage": "Welcome to eLection!",
   "host": "Host an election",
   "participate": "Participate in an election",
+  "viewSource": "View source code on GitHub",
   "hostInstructions": {
     "closeLobbyConfirm": "Are you sure you want to close this lobby?",
     "closeLobbyConfirmation": "The lobby has been succesfully closed.",
