@@ -11,5 +11,5 @@
     --background-position: top center; /* The position of the background. See https://developer.mozilla.org/en-US/docs/Web/CSS/background-position */
     --top-bar-icon-filter: ;/* What filters to apply to the icons in the top bar. Does not affect the main icon. For example, you can use this to invert the icons to fit better with the color palette. See https://developer.mozilla.org/en-US/docs/Web/CSS/filter */ 
     --font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif; /* What fonts to use in priority order. You can also import additional fonts with @import.*/
-    --color-scheme: light dark; /* The color scheme the browser should use when displaying this page. See https://developer.mozilla.org/en-US/docs/Web/CSS/color-scheme */
+    --color-scheme: dark; /* The color scheme the browser should use when displaying this page. See https://developer.mozilla.org/en-US/docs/Web/CSS/color-scheme */
 }
