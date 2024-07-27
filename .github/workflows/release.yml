@@ -1,51 +1,14 @@
-name: Create and publish Docker images for front-end and back-end
+name: Release workflow
+run-name: Running release workflow for ${{ github.event.release.tag_name }}
 
 on:
   release:
     types: [released]
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-
 jobs:
-  build-and-push-image:
-    strategy:
-        matrix:
-            layer: [frontend, backend]
-
+  release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      attestations: write
-      id-token: write
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${{ matrix.layer }}
-      - name: Build and push Docker image
-        id: push
-        uses: docker/build-push-action@v6
-        with:
-          context: ./${{ matrix.layer }}
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-              VITE_BACKEND_URL=/api/
-              VITE_SOCKET_URL=
-              VITE_SOCKET_PATH=/api/socket.io/
       - name: Trigger a Render deployment
         env:
           FRONTEND_DEPLOY_TRIGGER: ${{ secrets.FRONTEND_DEPLOYURL }}
@@ -53,10 +16,19 @@ jobs:
         run: |
           curl $FRONTEND_DEPLOY_TRIGGER
           curl $BACKEND_DEPLOY_TRIGGER
-      - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v1
+      - name: Setup Node
+        uses: actions/setup-node@v4.0.2
         with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}-${{ matrix.layer }}
-          subject-digest: ${{ steps.push.outputs.digest }}
-          push-to-registry: true
-      
+          node-version: lts
+      - name: Create Docker template
+        run: node create-docker-template.js
+      - name: Add Docker template to release
+        uses: actions/upload-artifact@v4
+        with:
+          path: /dockerTemplate/
+      - name: Upload the template to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: /dockerFile
+          tag_name: ${{ github.event.release.tag_name }}
+

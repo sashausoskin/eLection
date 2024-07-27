@@ -2,3 +2,4 @@
 *.afphoto~lock~
 
 frontend/.env
+/dockerTemplate
