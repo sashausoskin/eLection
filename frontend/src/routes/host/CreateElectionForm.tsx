@@ -13,8 +13,18 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 
 const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} : 
-    {onSubmitForm?: ((values: ElectionInfo) => undefined),
+    {
+    /**
+     * If provided, this will be called when the user submits the election creation form instead of the default function. Right now only used for unit tests.
+     */
+    onSubmitForm?: ((values: ElectionInfo) => undefined),
+    /**
+     * If provided, this will be called when the user requests to end the election instead of the default function. Right now only used for unit tests.
+     */
     onEndElectionClick?: () => void,
+    /**
+     * Whether the election status check should be skipped in the beginning and just assume that there are no active elections. Used for unit tests.
+     */
     skipStatusCheck?: boolean}) => {
 
     const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
@@ -67,13 +77,19 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
         candidatesToRank: Yup.number()
                 .min(2, t('fieldError.fewCandidatesToRank'))
     })
-
+    /**
+     * This is called if the host receives the UNAUTHORIZED error message when creating elections or ending elections. Show an alert to the user and kick them out from the lobby.
+     */
     const handleUnauthorizedRequest = () => {
         createPopup({type: 'alert', message: t('status.unauthorisedHost'), onConfirm: () => {
             navigate('/')
         }})
     }
-
+    /**
+     * This is called when the host tries to create an election and if there was no {@link onSubmitForm}. Attempts to collect the data from the form and send it to the backend server.
+     * @param values - The values from the form.
+     * @param formikHelpers - Helper functions provided by {@link Formik}
+     */
     const defaultOnSubmit = 
         async (values: ElectionInfo, 
         formikHelpers: FormikHelpers<ElectionInfo>) => {
@@ -91,13 +107,16 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
                         handleUnauthorizedRequest()
                     }
                     else {
-                    createPopup({type: 'alert', message: t('unexpectedError', {errorMessage: e.response?.data.message})})
-                    setIsRequestPending(false)
-                }
+                        createPopup({type: 'alert', message: t('unexpectedError', {errorMessage: e.response?.data.message})})
+                        setIsRequestPending(false)
+                    }
                 }
             }
     }
-
+    /**
+     * This is called when the user tries to end an election and there was no {@link onEndElectionClick} provided.
+     * Tries to send an election ending request to the backend server.
+     */
     const defaultOnEndElectionClick = async () => {
         try {
             setIsRequestPending(true)
@@ -139,7 +158,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
         <>
         <h3>{t('fieldInfo.createElectionHeader')}</h3>
         <Formik
-            // Creating different initial values is to avoid problems with TypeScript, since the Formik function inherit the types from the initial values object.
+            // Creating different initial values is to avoid problems with TypeScript, since the Formik functions inherit the types from the initial values object.
             initialValues ={electionType === 'FPTP' ? initialFPTPValues : electionType === 'ranked' ? initialRankedValues : initialFPTPValues}
             onSubmit={(values : ElectionInfo, helpers : FormikHelpers<ElectionInfo>) => onSubmitForm !== undefined ? onSubmitForm(values) : defaultOnSubmit(values, helpers)}
             validationSchema={ElectionCreationSchema}

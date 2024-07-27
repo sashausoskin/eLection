@@ -11,12 +11,12 @@
     margin-top: 10px;
     margin-bottom: 10px;
     align-items: center;
-    max-width: 1000px;
+    width: 300px;
     justify-content: space-between;
 }
 
 .leftAlign {
-    width: 200px;
+    width: 100px;
     display: flex;
     margin-top: auto;
     margin-bottom: auto;
@@ -34,6 +34,7 @@
     margin-left: 15px;
     margin-right: 15px;
     flex: 1;
+    flex-grow: 1;
     display: flex;
     height: 30px;
 }
@@ -41,7 +42,7 @@
     flex: 1
 }
 .rightAlign {
-    width: 200px;
+    width: 100px;
     display: flex;
     margin-top: auto;
     margin-bottom: auto;
@@ -72,6 +73,12 @@
 .electionControl button {
     width: 200px;
     height: 80px;
+}
+
+@media only screen and (max-width: 600px) {
+    .electionControl button {
+        width: 150px;
+    }
 }
 
 .electionControl button:enabled {

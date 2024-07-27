@@ -1,3 +1,6 @@
+/**
+ * What a host should receive in response when they request to create a lobby.
+ */
 export interface LobbyCreationResponse {
 	lobbyCode: string;
 	hostID: string;
@@ -7,11 +10,16 @@ export interface StatusMessage {
 	status: 'success' | 'error';
 	message: string;
 }
-
+/**
+ * What a user should receive when they request to join a valid lobby.
+ */
 export interface JoinLobbyResponse {
 	userCode: string;
 }
 
+/**
+ * The different views that a participant can have.
+ */
 export type ParticipantViewTab = 'joinLobby' | 'inQueue' | 'inLobby';
 
 export type LobbyStatusInfo = {
@@ -53,12 +61,15 @@ export interface FPTPElectionInfo extends ElectionInfoBase {
 }
 
 export interface RankedElectionInfo extends ElectionInfoBase {
-    type: 'ranked'
+    type: 'ranked',
     candidatesToRank: number
 }
 
 export type ElectionInfo = FPTPElectionInfo | RankedElectionInfo
 
+/**
+ * A message the user receives from backend if something goes wrong.
+ */
 export type ErrorMessage = {
     type: ErrorType,
     message: string
@@ -69,7 +80,6 @@ type ErrorType = 'MISSING_AUTH_TOKEN' | 'MISSING_LOBBY_CODE' | 'UNAUTHORIZED' | 
 export interface ElectionResults {
     votes: Record<string, number>
     emptyVotes: number
-    usersVoted: string[]
 }
 
 export type ElectionResultsInfo = Omit<ElectionResults, 'usersVoted'> & Pick<ElectionInfo, 'type' | 'title'>
@@ -81,16 +91,32 @@ export interface ResultCandidateInfo {
 }
 
 interface PopupInfoBase {
+    /**
+     * The message that will be shown to the user with the popup.
+     */
     message: string
+    /**
+     * A function that is called if the user presses 'Accept'.
+     */
     onConfirm?: () => void | Promise<void>
 }
 
+/**
+ * Alert that is meant to deliver a message to the user. Should only show an accept button.
+ */
 interface AlertPopupInfo extends PopupInfoBase {
     type: 'alert'
 }
 
+/**
+ * A confirm popup is meant to confirm something from the user. Should have an accept and a reject button.
+ */
 interface ConfirmPopupInfo extends PopupInfoBase {
     type: 'confirm'
+    /**
+     * Function that is called if the user presses 'Reject'.
+     * @returns null
+     */
     onCancel?: () => void | Promise<void>
 }
 
