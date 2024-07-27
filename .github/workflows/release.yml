@@ -16,6 +16,8 @@ jobs:
         run: |
           curl $FRONTEND_DEPLOY_TRIGGER
           curl $BACKEND_DEPLOY_TRIGGER
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Setup Node
         uses: actions/setup-node@v4.0.2
         with:
