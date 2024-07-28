@@ -12,7 +12,7 @@
     "start:test": "cross-env NODE_ENV=test ts-node-dev src/index.ts",
     "start:prod": "cross-env NODE_ENV=production node dist/index.js",
     "lint": "eslint .",
-    "build:schema": "ts-json-schema-generator --path ./src/types/types.ts --type ElectionInfo --out src/types/ElectionInfo_schema.json",
+    "build:schema": "ts-json-schema-generator --path ./src/types/lobbyTypes.ts --type ElectionInfo --out src/types/ElectionInfo_schema.json",
     "test:coverage": "cross-env NODE_ENV=test jest --detectOpenHandles --collectCoverage"
   },
   "author": "Sasha Usoskin",
