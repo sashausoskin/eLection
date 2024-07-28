@@ -101,8 +101,7 @@ export const removeUserFromQueue = (lobbyCode : string, userCode: string) => {
     }
 
     delete lobbyInfo[lobbyCode]['queuedUsers'][userCode]
-    //TODO: Perhaps make the function below add the user code to a random position?
-    lobbyInfo[lobbyCode]['availableUserCodes'].push(userCode)
+    insertToRandomIndex(lobbyInfo[lobbyCode].availableUserCodes, userCode)
 }
 
 export const getUserSocketID = (lobbyCode : string, userCode : string) => {
