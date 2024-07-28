@@ -64,6 +64,10 @@ router.post('/castVote', (req, res) => {
                     }
                 })
 
+                if (voteContent.length !== new Set(voteContent).size) {
+                    return res.status(400).json({type: 'MALFORMATTED_REQUEST', message: 'You can give only one rank to a candidate.'} as ErrorMessage)
+                }
+
                 voteContent.forEach((candidate, index) => {
                     lobbyService.castVotes(lobbyCode, candidate, voteContent.length - index)
                 })

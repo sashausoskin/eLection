@@ -178,6 +178,12 @@ describe('With an active ranked election', () => {
         expect(voteCastRequest.body.type).toBe('MALFORMATTED_REQUEST')
     })
 
+    test('Cannot have a candidate ranked two times', async () => {
+        const voteCastRequest = await castVote(['Oulu', 'Oulu'])
+        expect(voteCastRequest.statusCode).toBe(400)
+        expect(voteCastRequest.body.type).toBe('MALFORMATTED_REQUEST')
+    })
+
     test('Cannot vote for someone that isn\'t on the ballot', async () => {
         const voteCastRequest = await castVote(['Tampere', 'Rovaniemi'])
         expect(voteCastRequest.statusCode).toBe(400)
