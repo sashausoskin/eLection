@@ -12,6 +12,7 @@ export const JoinLobbyForm = ({
 	handleSubmitLobbyCode,
 }: {
 	handleSubmitLobbyCode?: (lobbyCode: string) => never | Mock<string[]>;
+	handleSubmitLobbyCode?: (lobbyCode: string) => never | Mock;
 }): React.ReactElement => {
 	const { setViewTab } = useContext(SetParticipantViewContext)
 	const {t} = useTranslation()

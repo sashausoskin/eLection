@@ -1,11 +1,11 @@
 import '@testing-library/jest-dom'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Mock, vi } from 'vitest'
+import { vi } from 'vitest'
 import { JoinLobbyForm } from '../routes/participant/JoinLobbyForm'
 
 describe('In join lobby view', () => {
-	const submitCallback: Mock<string[]> = vi.fn<string[]>()
+	const submitCallback= vi.fn()
 	let lobbyCodeField: HTMLElement
 	let lobbyCodeSubmit: HTMLElement
 

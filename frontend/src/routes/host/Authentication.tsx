@@ -22,7 +22,7 @@ export const Authentication = ({
 	/**
 	 * If provided, this is a function that will be called instead of the default function. Right now used only for unit tests.
 	 */
-	onSubmitUserCode?: ((userCode: string) => never ) | Mock<string[]>;
+	onSubmitUserCode?: ((userCode: string) => never ) | Mock;
 }): React.ReactElement => {
 	const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
 	const statusMessageColor = statusMessage?.status === 'success' ? 'green' : 'red'
