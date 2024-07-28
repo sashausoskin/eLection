@@ -3,7 +3,8 @@ import * as lobbyService from '../services/lobbyservice'
 import request from 'supertest'
 import { app, server } from '../util/server'
 import { LobbyWithUserCreationResponse } from '../types/testTypes'
-import { ElectionInfo, ErrorMessage } from '../types/types'
+import { ErrorMessage } from '../types/communicationTypes'
+import { ElectionInfo } from '../types/lobbyTypes'
 
 describe('With a lobby created and one authenticated user in lobby', () => {
     let hostID : string

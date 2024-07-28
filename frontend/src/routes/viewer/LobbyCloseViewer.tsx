@@ -1,12 +1,18 @@
 import { useTranslation } from 'react-i18next'
 import { LobbyStatusInfo } from '../../types'
 
-const LobbyCloseViewer = ({lobbyStatus} : {lobbyStatus : LobbyStatusInfo}) => {
+/**
+ * What the viewer sees when the lobby is closed.
+ */
+const LobbyCloseViewer = ({lobbyStatus} : {
+    /**
+     * The lobby's status, including information on why the lobby closed.
+     */
+    lobbyStatus : LobbyStatusInfo}) => {
     const {t} = useTranslation()
 
-    console.log('Rendering lobby close')
-
-    if (lobbyStatus.status !== 'CLOSING') return <></>
+    // This shouldn't be possible, but just to make sure and to comply with TypeScript.
+    if (lobbyStatus.status !== 'CLOSING') return <a>{t('unexpectedError', {errorMessage: 'Showing the lobby close view, even though the status isn\'t closed.'})}</a>
 
     return <> 
         <h2>{

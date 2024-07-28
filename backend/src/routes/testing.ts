@@ -5,6 +5,11 @@ import { cleanupRoutine } from '../services/cleanupservice'
 
 const router = express.Router()
 
+/**
+ * These are routes that are used for testing purposes.
+ * DO NOT USE IN PRODUCTION
+ */
+
 router.post('/reset', (req, res) => {
     lobbyService.resetLobbies()
     res.status(200).send()
@@ -22,7 +27,7 @@ router.post<LobbyWithUserCreationResponse>('/createLobbyWithUser', (req, res) =>
     const {lobbyCode, hostID} = lobbyService.createNewLobby()
     const participantID = lobbyService.createAuthenticatedUser(lobbyCode)
 
-    res.json({lobbyCode, hostID, participantID})
+    return res.json({lobbyCode, hostID, participantID})
 })
 
 router.post('/createUser', (req, res) => {

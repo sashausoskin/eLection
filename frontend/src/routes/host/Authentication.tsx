@@ -12,7 +12,6 @@ import './Authentication.css'
 
 /**
  * A form that allows the host to let people into the lobby.
- * @param onSubmitUserCode - If provided, this is a function that will be called instead of the default function. Right now used only for unit tests.
  */
 export const Authentication = ({
 	lobbyCode,

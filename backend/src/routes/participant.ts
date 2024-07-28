@@ -1,10 +1,11 @@
 import express from 'express'
-import { ErrorMessage } from '../types/types'
+import { ErrorMessage } from '../types/communicationTypes'
 import * as lobbyService from '../services/lobbyservice'
 import { io } from '../util/server'
 
 const router = express.Router()
 
+// Check the authorization of the participant
 router.use((req, res, next) => {
     const authToken = req.headers.authorization
 
@@ -53,10 +54,10 @@ router.post('/castVote', (req, res) => {
                 break
             case 'ranked':
                 if (!Array.isArray(voteContent)) {
-                    return res.status(400).json({type: 'MALFORMATTED_REQUEST', message: 'You casted a vote for a single candidate while expecting an array of candidates.'} as ErrorMessage)
+                    return res.status(400).json({type: 'MALFORMATTED_REQUEST', message: 'Casted a vote for a single candidate while expecting an array of candidates.'} as ErrorMessage)
                 }
                 if (voteContent.length !== currentLobbyStatus.electionInfo.candidatesToRank) {
-                    return res.status(400).json({type: 'MALFORMATTED_REQUEST', message: `You casted votes for ${voteContent.length} candidates, while expecting ${currentLobbyStatus.electionInfo.candidatesToRank} candidates`} as ErrorMessage)
+                    return res.status(400).json({type: 'MALFORMATTED_REQUEST', message: `Casted votes for ${voteContent.length} candidates, while expecting ${currentLobbyStatus.electionInfo.candidatesToRank} candidates`} as ErrorMessage)
                 }
                 voteContent.forEach((candidate) => {
                     if (!lobbyService.isValidCandidate(lobbyCode, candidate)) {

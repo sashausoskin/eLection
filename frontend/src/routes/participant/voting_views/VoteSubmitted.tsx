@@ -1,5 +1,8 @@
 import { useTranslation } from 'react-i18next'
 
+/**
+ * What the participant sees when they succesfully submitted a vote.
+ */
 const VoteSubmitted = () : JSX.Element => {
     const {t} = useTranslation()
 

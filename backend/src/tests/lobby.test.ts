@@ -4,7 +4,8 @@ import * as dateMock from 'jest-date-mock'
 import { app, server } from '../util/server'
 import { LobbyWithUserCreationResponse } from '../types/testTypes'
 import { io as ioc, Socket as ClientSocket } from 'socket.io-client'
-import { ElectionInfo, LobbyStatusInfo } from '../types/types'
+import { ElectionInfo } from '../types/lobbyTypes'
+import { LobbyStatusInfo } from '../types/lobbyTypes'
 import { cleanupRoutine } from '../services/cleanupservice'
 
 describe('With a lobby created and one authenticated user in lobby', () => {

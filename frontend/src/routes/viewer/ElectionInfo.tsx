@@ -2,7 +2,22 @@ import { Trans, useTranslation } from 'react-i18next'
 import { ElectionInfo } from '../../types'
 import './ViewerStyle.css'
 
-const ElectionInfoView = ({electionInfo, votesCasted, participantAmount} : {electionInfo : ElectionInfo, votesCasted: number, participantAmount : number}) => {
+/**
+ * Shows the information on an active election
+ */
+const ElectionInfoView = ({electionInfo, votesCasted, participantAmount} :{
+    /**
+     * Information on the active election.
+     */
+    electionInfo : ElectionInfo,
+    /**
+     * How many votes have been cast in the active election.
+     */
+    votesCasted: number,
+    /**
+     * How many participants there are in the active election.
+     */
+    participantAmount : number}) => {
     const {t} = useTranslation()
 
     return <>
@@ -18,7 +33,7 @@ const ElectionInfoView = ({electionInfo, votesCasted, participantAmount} : {elec
         </div>
         <h2>{t('viewer.votingInstructions')}</h2>
 
-        {/* This is a very convoluted way to get translations, but TypeScript, for some reason, does not allow writing values directly with components, so put all of the components in an array*/}
+        {/* This is a fairly convoluted way to get translations, but TypeScript, for some reason, does not allow writing values directly with components, so put all of the components in an array*/}
         
         <Trans i18nKey={'viewer.votingStats'}
             values={{votesCasted, participantAmount}}

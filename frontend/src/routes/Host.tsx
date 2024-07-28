@@ -9,6 +9,9 @@ import Loading from '../elements/Loading'
 import { PopupContext } from '../Contexts'
 import { useTranslation } from 'react-i18next'
 
+/**
+ * The host's view
+ */
 const Host = () => {
 	const [lobbyCode, setLobbyCode] = useState<string | null>(null)
 	const navigate = useNavigate()
@@ -16,11 +19,16 @@ const Host = () => {
 
 	const {t} = useTranslation()
 
+	/**
+	 * Called when the user clicks 'Close lobby'. First tries to confirm the action with the user, then tries to send the lobby closure request to the backend.
+	 * If succesful, shows the user an alert and throws the user back to the main menu.
+	 */
 	const handleCloseLobbyClick = async () => {
 		createPopup({type: 'confirm', message: t('hostInstructions.closeLobbyConfirm'), onConfirm: async () => {
 			await lobbyService.closeLobby()
 
 			createPopup({type: 'alert', message: t('hostInstructions.closeLobbyConfirmation'), onConfirm: () => {
+				lobbyService.clearSavedInfo()
 				navigate('/')
 			}})
 		}})		
@@ -29,10 +37,15 @@ const Host = () => {
 	// Note that the effect below is run twice in React's StrictMode. This shouldn't be a problem in production.
 	// This is why lobbyCode is also saved to a state, as otherwise it may cause bugs in development mode.
 	useEffect(() => {
+		/**
+		 * Initialises the lobby. First checks if there is any lobby information stored in local storage and if it is valid.
+		 * If yes, show the host view with the saved values.
+		 * If the saved information is not valid, send a lobby creation request to the backend.
+		 */
 		const initLobby = async () => {
 			setLobbyCode(null)
 			try {
-				await lobbyService.validateInfoFromStorage()
+				await lobbyService.validateStoredValues()
 				setLobbyCode(lobbyService.getLobbyCode())
 			} catch {
 				lobbyService.clearSavedInfo()
@@ -50,7 +63,7 @@ const Host = () => {
     <>
         <Authentication lobbyCode={lobbyCode} />
 		<button className='viewerOpen'onClick={() => window.open('/viewer', '_blank', 'popup=true')}>
-			<img src={linkIcon} className='icon' height={20} /><p>{t('hostInstructions.openViewerWindow')}</p>
+			<img src={linkIcon} className='icon' height={20} />{t('hostInstructions.openViewerWindow')}
 		</button>
 		<hr style={{width: '100%'}}/>
         <CreateElectionForm />

@@ -5,6 +5,7 @@ import { useDrag } from '@use-gesture/react'
 import { clamp } from 'lodash'
 import { PopupContext } from '../../../Contexts'
 import { useTranslation } from 'react-i18next'
+import { move } from '../../../util/arrayUtil'
 
 // Used React Spring's Draggable List example as base and inspiration: https://codesandbox.io/s/zfy9p
 
@@ -32,14 +33,11 @@ const animateFn = (order: number[], active = false, originalIndex = 0, curIndex 
             immediate: false
         }
 
-const move = (array: number[], fromIndex : number, toIndex : number) => {
-    const arrayCopy = array.slice() as number[]
-
-    arrayCopy.splice(toIndex, 0, arrayCopy.splice(fromIndex, 1)[0])
-
-    return arrayCopy
-}
-
+/**
+ * The view a participant sees when they are voting in a ranked election
+ * @param electionInfo - Information on the election
+ * @param onSubmitVote - Called when the user submits a vote.
+ */
 const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : RankedElectionInfo, onSubmitVote: (voteContent: string[] | string | null) => Promise<void> | void}) => {
     const {createPopup} = useContext(PopupContext)
     const {t} = useTranslation()

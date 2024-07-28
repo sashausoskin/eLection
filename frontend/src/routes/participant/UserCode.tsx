@@ -7,7 +7,15 @@ import './UserCode.css'
 import Loading from '../../elements/Loading'
 import { useTranslation } from 'react-i18next'
 
-export const UserCode = ({ onAuthenticated }: { onAuthenticated?: (userID: string) => void }) => {
+/**
+ * Shows the user their code after they entered a valid lobby code.
+ */
+export const UserCode = ({ onAuthenticated }: {
+	/**
+	 * If provided, this is called when the host authenticates the user. Currently used for unit tests.
+	 * @param userID - The ID/Authentication token the user receives
+	 */
+	onAuthenticated?: (userID: string) => void }) => {
 	const [isConnecting, setIsConnecting] = useState<boolean>(true)
 
 	const { setViewTab } = useContext(SetParticipantViewContext)
@@ -18,6 +26,10 @@ export const UserCode = ({ onAuthenticated }: { onAuthenticated?: (userID: strin
 	const {t} = useTranslation()
 
 	useEffect(() => {
+		/**
+		 * Called if {@link onAuthenticated} is not provided.
+		 * @param userID - The ID/Authentication token the user receives
+		 */
 		const defaultOnAuthenticated = (userID: string) => {
 			setAuthToken(userID)
 			setViewTab('inLobby')
@@ -30,14 +42,11 @@ export const UserCode = ({ onAuthenticated }: { onAuthenticated?: (userID: strin
 		}
 
 		setIsConnecting(true)
+
 		const lobbySocket: Socket = createQueueSocket(userCode, lobbyCode)
-		lobbySocket.on('connect', () => {
-			setIsConnecting(false)
-		})
+		lobbySocket.on('connect', () => setIsConnecting(false))
 		lobbySocket.on('connect_error', (err) => console.error(err))
-		lobbySocket.on('error', (error) => {
-			console.error('A socket error occurred: ', error)
-		})
+		lobbySocket.on('error', (error) => console.error('A socket error occurred: ', error))
 		lobbySocket.on('authorize', ({ userID }) => {
 			(onAuthenticated === null ? onAuthenticated : defaultOnAuthenticated)(userID)
 		})
@@ -46,7 +55,7 @@ export const UserCode = ({ onAuthenticated }: { onAuthenticated?: (userID: strin
 		const handleDisconnect = () => {
 			lobbySocket.disconnect()
 		}
-
+		//Diconnect the socket if this element is unmounted.
 		return handleDisconnect
 	}, [lobbyCode, userCode, setViewTab, onAuthenticated])
 

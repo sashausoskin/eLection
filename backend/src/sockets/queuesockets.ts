@@ -2,6 +2,9 @@ import { ExtendedError } from 'socket.io/dist/namespace'
 import * as lobbyService from '../services/lobbyservice'
 import { Socket } from 'socket.io'
 
+/**
+ * Checks if the user connecting to the socket is actually in the queue.
+ */
 export const queueSocketAuthenticationMiddleware = async (socket : Socket, next: (err?: ExtendedError) => void) => {
     const userCode = socket.handshake.auth.userCode
     const lobbyCode = socket.handshake.auth.lobbyCode

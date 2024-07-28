@@ -1,16 +1,18 @@
 import express from 'express'
 import * as lobbyService from '../services/lobbyservice'
-import { ElectionInfo, ErrorMessage, LobbyStatusInfo } from '../types/types'
+import { ErrorMessage } from '../types/communicationTypes'
+import { ElectionInfo } from '../types/lobbyTypes'
+import { LobbyStatusInfo } from '../types/lobbyTypes'
 import Ajv from 'ajv'
 import * as electioninfo_schema from '../types/ElectionInfo_schema.json'
 import { io } from '../util/server'
-import { closeLobby } from '../services/cleanupservice'
+import * as cleanupService from '../services/cleanupservice'
 
 const router = express.Router()
 
 const ajv = new Ajv()
 
-//Authorization
+//Check that the person sending the request is actually the host.
 router.use((req, res, next) => {
     const authToken = req.headers.authorization
 
@@ -82,7 +84,7 @@ router.post('/endElection', (req,res) => {
 router.post('/closeLobby', (req,res) => {
     const lobbyCode = req.body.lobbyCode
 
-    closeLobby(lobbyCode, 'HOST_CLOSED')
+    cleanupService.closeLobby(lobbyCode, 'HOST_CLOSED')
 
     return res.send()
 })
@@ -98,12 +100,15 @@ router.get('/getElectionStatus', (req, res) => {
 router.post('/authenticateUser', async (req, res) => {
     const lobbyCode = req.body.lobbyCode
 
-    if (!req.body.userCode || typeof req.body.userCode !== 'string') {
-        res.status(400).json({type: 'MALFORMATTED_REQUEST', message: 'The request is missing the field userCode or it is malformatted'} as ErrorMessage)
-        return
+    if (!lobbyCode || typeof lobbyCode !== 'string') {
+        return res.status(400).json({type: 'MALFORMATTED_REQUEST', message: 'The request is missing the field lobbyCode or it is malformatted'} as ErrorMessage)
     }
 
     const userToAuthorize = req.body.userCode
+
+    if (!userToAuthorize || typeof userToAuthorize !== 'string') {
+        return res.status(400).json({type: 'MALFORMATTED_REQUEST', message: 'The request is missing the field userCode or it is malformatted'} as ErrorMessage)
+    }
 
     if (!lobbyService.isUserInQueue(userToAuthorize, lobbyCode)) {
         res.status(404).json({type: 'NOT_FOUND', message: 'Could not find a user with the given code'} as ErrorMessage)
@@ -112,18 +117,16 @@ router.post('/authenticateUser', async (req, res) => {
 
     const userSocketID = lobbyService.getUserSocketID(lobbyCode, userToAuthorize)
 
-
     lobbyService.removeUserFromQueue(lobbyCode, userToAuthorize)
 
 
     const newUserID = lobbyService.createAuthenticatedUser(lobbyCode)
-
     const viewerSocket = lobbyService.getViewerSocket(lobbyCode)
 
     if (viewerSocket) io.of('/viewer').to(viewerSocket).emit('user-joined', lobbyService.getParticipants(lobbyCode).length)
     io.of('/queue').to(userSocketID).emit('authorize', {userID: newUserID})
 
-    res.status(200).send()
+    return res.status(200).send()
 })
 
 export default router

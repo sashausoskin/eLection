@@ -1,28 +1,11 @@
 import { Socket } from 'socket.io'
 import { ExtendedError } from 'socket.io/dist/namespace'
 import * as lobbyService from '../services/lobbyservice'
-import { LobbyStatusInfo } from '../types/types'
+import { LobbyStatusInfo } from '../types/lobbyTypes'
 
-export const handleParticipantSocketConnection = (participantSocket : Socket) => {
-    const lobbyCode = participantSocket['lobbyCode']
-    const participantID = participantSocket['participantID']
-
-    const lobbyStatus = lobbyService.getLobbyStatus(lobbyCode, false)
-
-
-    if (lobbyStatus.status === 'VOTING' && lobbyService.hasUserVoted(lobbyCode, participantID)) {
-        participantSocket.emit('status-change', {status: 'STANDBY'} as LobbyStatusInfo)
-    }
-    else {
-        participantSocket.emit('status-change', lobbyStatus)
-    }
-
-    participantSocket.on('disconnect', () => {
-        if (!lobbyService.isValidLobbyCode(participantSocket['lobbyCode'])) return
-        lobbyService.removeParticipantSocket(participantSocket['lobbyCode'], participantSocket['participantID'])
-    })
-}
-
+/**
+ * Checks if the user connecting to the socket is actually a participant.
+ */
 export const isParticipantMiddleware = async (socket : Socket, next: (err?: ExtendedError) => void) => {
     const authToken = socket.handshake.auth.participantID
     const lobbyCode = socket.handshake.auth.lobbyCode
@@ -54,4 +37,24 @@ export const isParticipantMiddleware = async (socket : Socket, next: (err?: Exte
     lobbyService.assignSocketIDToParticipant(lobbyCode, authToken, socket.id)
 
     next()
+}
+
+export const handleParticipantSocketConnection = (participantSocket : Socket) => {
+    const lobbyCode = participantSocket['lobbyCode']
+    const participantID = participantSocket['participantID']
+
+    const lobbyStatus = lobbyService.getLobbyStatus(lobbyCode, false)
+
+
+    if (lobbyStatus.status === 'VOTING' && lobbyService.hasUserVoted(lobbyCode, participantID)) {
+        participantSocket.emit('status-change', {status: 'STANDBY'} as LobbyStatusInfo)
+    }
+    else {
+        participantSocket.emit('status-change', lobbyStatus)
+    }
+
+    participantSocket.on('disconnect', () => {
+        if (!lobbyService.isValidLobbyCode(participantSocket['lobbyCode'])) return
+        lobbyService.removeParticipantSocket(participantSocket['lobbyCode'], participantSocket['participantID'])
+    })
 }
