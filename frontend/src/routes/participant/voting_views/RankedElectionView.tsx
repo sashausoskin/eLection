@@ -6,7 +6,7 @@ import { clamp } from 'lodash'
 import { PopupContext } from '../../../Contexts'
 import { useTranslation } from 'react-i18next'
 
-// Used React Spring's Draggable List example as base: https://codesandbox.io/s/zfy9p
+// Used React Spring's Draggable List example as base and inspiration: https://codesandbox.io/s/zfy9p
 
 // These would usually be defined in a .css-file, but because they are needed for the animation library, these are defined here
 const candidateContainerHeight = 50
@@ -32,10 +32,10 @@ const animateFn = (order: number[], active = false, originalIndex = 0, curIndex 
             immediate: false
         }
 
-const swap = (array: number[], indexA : number, indexB : number) => {
+const move = (array: number[], fromIndex : number, toIndex : number) => {
     const arrayCopy = array.slice() as number[]
 
-    [arrayCopy[indexA], arrayCopy[indexB]] = [array[indexB], array[indexA]]
+    arrayCopy.splice(toIndex, 0, arrayCopy.splice(fromIndex, 1)[0])
 
     return arrayCopy
 }
@@ -51,7 +51,7 @@ const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : Ranke
     const bind = useDrag(({args: [originalIndex], active, movement: [, y]}) => {
         const curIndex = candidateOrder.indexOf(originalIndex)
         const curRow = clamp(Math.round((curIndex * candidateContainerSpace + y) / candidateContainerSpace), 0, candidateOrder.length - 1)
-        const newOrder = swap(candidateOrder, curIndex, curRow)
+        const newOrder = move(candidateOrder, curIndex, curRow)
         animationApi.start(animateFn(newOrder, active, originalIndex, curIndex, y))
         if (!active) setCandidateOrder(newOrder)
     })
@@ -93,7 +93,7 @@ const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : Ranke
                         userSelect: 'none',
                         position: 'absolute',
                         zIndex,
-                        boxShadow: shadow.to(s => `rgba(0,0,0,0.15) 0px ${s}px ${2 * s} px 0px`),
+                        boxShadow: shadow.to(s => `rgba(0, 0, 0, 0.15) 0px ${s}px ${2 * s}px 0px`),
                         y,
                         scale,
                     }}
