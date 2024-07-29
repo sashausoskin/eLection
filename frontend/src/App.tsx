@@ -8,7 +8,6 @@ import Popup from './elements/Popup'
 import Topbar from './elements/Topbar'
 import './App.css'
 import './style.css'
-import './phone_style.css'
 
 
 const Host = lazy(() => import('./routes/Host'))
