@@ -19,4 +19,4 @@ COPY ./package-lock.json ./package-lock.json
 
 RUN npm ci
 
-CMD ["node", "index.js"]
+CMD ["npm", "exec", "cross-env", "NODE_ENV=production", "node", "index.js"]
