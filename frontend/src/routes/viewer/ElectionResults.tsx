@@ -9,6 +9,11 @@ const ElectionResults = ({results} : {
      * The results of the ended election.
      */
     results: ElectionResultsInfo}) => {
+        /**
+         * This controls how long the reveal animation is.
+         */
+        const animationDuration = 1000
+
         const {t} = useTranslation()
 
         const orderedResults : ResultCandidateInfo[] = []
@@ -27,13 +32,21 @@ const ElectionResults = ({results} : {
             result.position = positionNumber
         })
 
+        // When a result is revealed, automatically scroll to it.
+        orderedResults.forEach((result, index) => {
+            setTimeout(() => {
+                const revealedCandidateDiv = document.getElementById(`${result.name}_div`)
+                revealedCandidateDiv?.scrollIntoView({behavior: 'smooth', block: 'center'})
+            }, (orderedResults.length - index - 1)*animationDuration)
+        })
+
         return <>
             <h1>{results.title}</h1>
             <h2 data-testid="results-header">{t('viewer.results')}</h2>
 
             <div className='resultsContainer'>
-            {orderedResults.map((result) => {
-                return <div className='candidateResultContainer' key={result.name} data-testid='result' id={`${result.name}_div`}>
+            {orderedResults.map((result, index) => {
+                return <div style={{animationDuration: `${animationDuration}ms`, animationDelay: `${(orderedResults.length - 1 - index)*animationDuration}ms`}} className='candidateResultContainer' key={result.name} data-testid='result' id={`${result.name}_div`}>
                     <a className='candidatePosition'>{result.position}.</a>
                     <a className='candidateName'>{result.name}</a>
                     <a className='candidateVotes'>{t('votes', {count: result.votes})}</a>
