@@ -1,5 +1,5 @@
 import request from 'supertest'
-import { app, server, io } from '../util/server'
+import { app, server } from '../util/server'
 import { ElectionInfo } from '../types/lobbyTypes'
 import { LobbyStatusInfo } from '../types/lobbyTypes'
 import * as lobbyService from '../services/lobbyservice'
