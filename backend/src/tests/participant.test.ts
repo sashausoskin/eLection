@@ -1,9 +1,9 @@
 import request from 'supertest'
-import { app, server } from '../util/server'
+import { app, server, io } from '../util/server'
 import { ElectionInfo } from '../types/lobbyTypes'
 import { LobbyStatusInfo } from '../types/lobbyTypes'
 import * as lobbyService from '../services/lobbyservice'
-import { Socket, io } from 'socket.io-client'
+import { Socket, io as ioc } from 'socket.io-client'
 import * as dateMock from 'jest-date-mock'
 import { cleanupRoutine } from '../services/cleanupservice'
 
@@ -20,17 +20,17 @@ beforeEach(() => {
 })
 
 beforeAll((done) => {
-    server.listen(3000, () => {
+    server.listen(3001, () => {
         done()
     })
 })
 
 afterEach(() => {
-    if (lobbySocket) lobbySocket.close()
+    if (lobbySocket) lobbySocket.disconnect()
 })
 
-afterAll(() => {
-    server.close()
+afterAll((done) => {
+    server.close(done)
 })
 
 const createElection = async (electionInfo : ElectionInfo) => {
@@ -49,7 +49,7 @@ const endElection = async () => {
 }
 
 const connectToParticipantSocket = () : Socket => {
-    return io('http://localhost:3000/lobby', {auth: {lobbyCode, participantID}})
+    return ioc('http://localhost:3001/lobby', {auth: {lobbyCode, participantID}})
 }
 
 beforeEach(async () => {
@@ -202,7 +202,7 @@ describe('With an active ranked election', () => {
     })
 })
 
-describe('Without an active election', () => {
+describe.only('Without an active election', () => {
     beforeEach(async () => {
         lobbyService.resetLobbies()
 

@@ -24,7 +24,7 @@ describe('With a lobby created and one authenticated user in lobby', () => {
     })
 
     beforeAll((done) => {
-        server.listen(3000, () => {
+        server.listen(3001, () => {
             done()
         })
     })
@@ -42,7 +42,7 @@ describe('With a lobby created and one authenticated user in lobby', () => {
 
     describe('When user is connecting to the lobby socket', () => {
         const testSocketConnection = (lobbyCode? : string, participantID? : string, done? : jest.DoneCallback, expectToConnect? : boolean) => {
-            lobbySocket = ioc('http://localhost:3000/lobby', {auth: {lobbyCode, participantID}})
+            lobbySocket = ioc('http://localhost:3001/lobby', {auth: {lobbyCode, participantID}})
             lobbySocket.on('connect_error', () => {
                 if (expectToConnect) expect(1).toBe(2)
                 else done && done()
@@ -74,7 +74,7 @@ describe('With a lobby created and one authenticated user in lobby', () => {
         })
 
         test('Immediately gets the status-change emit', (done) => {
-            lobbySocket = ioc('http://localhost:3000/lobby', {auth: {lobbyCode, participantID}})
+            lobbySocket = ioc('http://localhost:3001/lobby', {auth: {lobbyCode, participantID}})
             lobbySocket.on('connect_error', () => {
                 expect(1).toBe(2)
             })
@@ -84,12 +84,12 @@ describe('With a lobby created and one authenticated user in lobby', () => {
         })
 
         test('Cannot have two connections at the same time', (done) => {
-            lobbySocket = ioc('http://localhost:3000/lobby', {auth: {lobbyCode, participantID}})
+            lobbySocket = ioc('http://localhost:3001/lobby', {auth: {lobbyCode, participantID}})
             lobbySocket.on('connect_error', (err) => {
                 throw new Error(err.message)
             })
             lobbySocket.on('connect', () => {
-                const lobbySocket2 = ioc('http://localhost:3000/lobby', {auth: {lobbyCode, participantID}})
+                const lobbySocket2 = ioc('http://localhost:3001/lobby', {auth: {lobbyCode, participantID}})
                 lobbySocket2.on('connect', () => {
                     throw new Error('Second socket connected')
                 })

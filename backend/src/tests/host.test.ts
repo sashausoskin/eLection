@@ -18,12 +18,6 @@ describe('With a lobby created and one authenticated user in lobby', () => {
         lobbyCode = createLobbyResponse.lobbyCode
     })
 
-    beforeEach((done) => {
-        server.listen(3000, () => {
-            done()
-        })
-    })
-
     afterEach(() => {
         server.close()
         if (lobbySocket) lobbySocket.disconnect()
