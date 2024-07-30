@@ -5,6 +5,12 @@ This is the backend of eLection. This was created using [TypeScript](https://www
 - [jest](https://jestjs.io/) for running unit tests.
 - [ESLint](https://eslint.org/) for linting.
 
+## Table of contents
+1. [Setup](#setup)
+2. [Commands](#commands)
+3. [Testing](#testing)
+4. [Docker](#docker)
+
 ## Setup
 Here's how to set up the backend for local development.
 
@@ -75,3 +81,24 @@ npm run test:coverage
 ```
 Runs the unit tests, but also collects coverage information.
 
+## Testing
+The backend features robust unit tests that test all the paths of the backend and also tests socket functionality. The unit test coverage is uploaded to Codecov. You can run the unit tests with the command
+```bash
+npm test
+```
+
+You can see the unit test coverage percentage here: [![codecov](https://codecov.io/github/sonicsasha/eLection/graph/badge.svg?token=X4JKDW6CF6)](https://codecov.io/github/sonicsasha/eLection)
+
+End-to-end tests also cover backend functionality. More information about the end-to-end tests can be found in the [frontend's README](../frontend/README.md)
+
+## Docker
+You can build a Docker image of the backend using the command
+```bash
+docker build -t election-back .
+```
+
+After the image has been built, you can start it with the command
+```bash
+docker run -p 3000:3000 election-back
+```
+This will start the server in the port 3000. If you want to modify the environment variables, you can use the [--env or --env-file flag](https://docs.docker.com/reference/cli/docker/container/run/#env)

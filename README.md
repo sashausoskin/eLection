@@ -113,5 +113,4 @@ after the container is shut down.
 
 
 
-Backend coverage: [![codecov](https://codecov.io/github/sonicsasha/eLection/graph/badge.svg?token=X4JKDW6CF6)](https://codecov.io/github/sonicsasha/eLection)
 

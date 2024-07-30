@@ -128,12 +128,21 @@ If you want to run the end-to-end tests with a GUI, run the command
 npm run test:e2e-ui
 ```
 
+Note that currently there is no end-to-end test for testing dragging the candidates around during ranked elections. I was unable to create a consistent test for it, so for now it is disabled.
+
 ## Docker
 You can build a Docker image of the frontend with the command
 ```bash
 docker build -t election-front .
 ```
 ⚠️**NOTE!** You have to pass the environment variables in with the [`--build-args` flag](https://docs.docker.com/build/guide/build-args/). By default, the environment variables in the build are set so that the frontend connects to the locally hosted backend server.
+
+After the image has been built, you can start it with the command
+```bash
+docker run -p 80:80 election-front
+```
+This will start the server in port 80.
+
 ## Translations
 The translation files can be found in [`./public/locales/translation/`](./public/locales/translation/). If any keys need to be added, it's suggested to first add the key to the code and then run the `sync-translations` command.
 
