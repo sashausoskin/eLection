@@ -1,7 +1,12 @@
 {
 	"name": "frontend",
 	"private": true,
-	"version": "0.0.0",
+	"version": "1.0.0",
+	"description": "Frontend service for the eLection app",
+	"author": {"name": "Sasha Usoskin", "url": "https://github.com/sonicsasha"},
+	"repository": {"type": "GitHub", "url": "https://github.com/sonicsasha/eLection"},
+	"readme": "https://github.com/sonicsasha/eLection/blob/main/frontend/README.md",
+	"icon": "https://raw.githubusercontent.com/sonicsasha/eLection/main/frontend/public/img/icon.svg",
 	"type": "module",
 	"license": "Apache-2.0",
 	"scripts": {
