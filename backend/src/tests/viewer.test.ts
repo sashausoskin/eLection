@@ -10,7 +10,7 @@ let lobbySocket : Socket
 
 describe('With a created lobby and user', () => {
     beforeAll((done) => {
-        server.listen(3000, () => {
+        server.listen(3001, () => {
             done()
         })
     })
@@ -33,7 +33,7 @@ describe('With a created lobby and user', () => {
     })
 
     const testSocketConnection = (done?: jest.DoneCallback, lobbyCode? : string, hostID? : string, expectToConnect? : boolean) => {
-        lobbySocket = io('http://localhost:3000/viewer', {auth: {lobbyCode, hostID}})
+        lobbySocket = io('http://localhost:3001/viewer', {auth: {lobbyCode, hostID}})
 
         lobbySocket.on('connect', () => {
             if (expectToConnect) done &&done()
@@ -62,10 +62,10 @@ describe('With a created lobby and user', () => {
     })
 
     test('when a new viewer connects, previous gets disconnected', (done) => {
-        const lobbySocket2 = io('http://localhost:3000/viewer', {auth: {lobbyCode, hostID}})
+        const lobbySocket2 = io('http://localhost:3001/viewer', {auth: {lobbyCode, hostID}})
 
         lobbySocket2.on('connect', () => {
-            lobbySocket = io('http://localhost:3000/viewer', {auth: {lobbyCode, hostID}})
+            lobbySocket = io('http://localhost:3001/viewer', {auth: {lobbyCode, hostID}})
             lobbySocket.on('connect', () => {
                 expect(lobbySocket2.connected).toBeFalsy()
                 done()

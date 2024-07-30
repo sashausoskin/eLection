@@ -54,7 +54,7 @@ describe('With one lobby created and one user in queue', () => {
     let queueSocket : ClientSocket = null
 
     beforeAll((done) => {
-        server.listen(3000, () => {
+        server.listen(3001, () => {
             done()
         })
     })
@@ -169,7 +169,7 @@ describe('With one lobby created and one user in queue', () => {
     })
 
     test('authenticated user gets a socket message when authenticated', (done) => {
-        queueSocket = ioc('http://localhost:3000/queue', {auth: {lobbyCode, userCode}})
+        queueSocket = ioc('http://localhost:3001/queue', {auth: {lobbyCode, userCode}})
         queueSocket.on('connect_error', (error) => {
             console.error(error.message)
         })
@@ -185,9 +185,9 @@ describe('With one lobby created and one user in queue', () => {
     })
 
     test('cannot connect twice to the queue socket', (done) => {
-        queueSocket = ioc('http://localhost:3000/queue', {auth: {lobbyCode, userCode}, multiplex: false})
+        queueSocket = ioc('http://localhost:3001/queue', {auth: {lobbyCode, userCode}, multiplex: false})
         queueSocket.on('connect', async () => {
-            const queueSocket2 = ioc('http://localhost:3000/queue', {auth: {lobbyCode, userCode}, multiplex: false})
+            const queueSocket2 = ioc('http://localhost:3001/queue', {auth: {lobbyCode, userCode}, multiplex: false})
             queueSocket2.on('connect_error', () => {
                 queueSocket2.disconnect()
                 done()
@@ -221,7 +221,7 @@ describe('With one lobby created and one user in queue', () => {
     describe('when connecting to the queue socket', () => {
 
         const testSocketConnection = (done: jest.DoneCallback, lobbyCode?: string, userCode?: string, expectToConnect?: boolean) => {
-            queueSocket = ioc('http://localhost:3000/queue', {auth: {lobbyCode, userCode}, multiplex: false})
+            queueSocket = ioc('http://localhost:3001/queue', {auth: {lobbyCode, userCode}, multiplex: false})
             queueSocket.on('connect', () => {
                 if (expectToConnect) done()
                 else expect(1).toBe(2)
@@ -249,7 +249,7 @@ describe('With one lobby created and one user in queue', () => {
         })
 
         test('cannot connect twice', (done) => {
-            const queuedSocket2 = ioc('http://localhost:3000/queue', {auth: {lobbyCode, userCode}, multiplex: false})
+            const queuedSocket2 = ioc('http://localhost:3001/queue', {auth: {lobbyCode, userCode}, multiplex: false})
             queuedSocket2.on('connect', () => {
                 testSocketConnection(done, lobbyCode, userCode, false)
                 queuedSocket2.disconnect()

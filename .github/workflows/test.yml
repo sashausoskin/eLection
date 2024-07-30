@@ -46,7 +46,7 @@ jobs:
               cd backend 
               npm run start:test &
               cd ../frontend
-              npm run build
+              npm run build:test
               npm run preview &
         - name: Cypress run
           run: npm run test:e2e

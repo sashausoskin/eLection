@@ -2,8 +2,14 @@
   "name": "e-lection_backend",
   "version": "1.0.0",
   "description": "The backend for the eLection software.",
-  "author": {"name": "Sasha Usoskin", "url": "https://github.com/sonicsasha"},
-  "repository": {"type": "GitHub", "url": "https://github.com/sonicsasha/eLection"},
+  "author": {
+    "name": "Sasha Usoskin",
+    "url": "https://github.com/sonicsasha"
+  },
+  "repository": {
+    "type": "GitHub",
+    "url": "https://github.com/sonicsasha/eLection"
+  },
   "readme": "https://github.com/sonicsasha/eLection/blob/main/backend/README.md",
   "icon": "https://raw.githubusercontent.com/sonicsasha/eLection/main/frontend/public/img/icon.svg",
   "main": "index.js",
@@ -21,7 +27,6 @@
   "dependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
-    "@types/jest": "^29.5.12",
     "ajv": "^8.17.1",
     "axios": "^1.7.2",
     "cors": "^2.8.5",
@@ -33,6 +38,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.8.0",
+    "@types/jest": "^29.5.12",
     "@types/supertest": "^6.0.2",
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^7.17.0",
