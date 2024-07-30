@@ -202,7 +202,7 @@ describe('With an active ranked election', () => {
     })
 })
 
-describe.only('Without an active election', () => {
+describe('Without an active election', () => {
     beforeEach(async () => {
         lobbyService.resetLobbies()
 
