@@ -18,7 +18,7 @@
 		"test": "vitest run",
 		"test:e2e-ui": "cypress open",
 		"test:e2e": "cypress run",
-		"start:e2e": "npm run build && cross-env NODE_ENV=test npm run preview",
+		"start:e2e": "cross-env NODE_ENV=test npm run build && npm run preview",
 		"sync-translations": "i18next 'src/**/*.{ts,tsx}' [-oc]"
 	},
 	"dependencies": {
