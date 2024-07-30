@@ -46,7 +46,7 @@ jobs:
               cd backend 
               npm run start:test &
               cd ../frontend
-              npm run cross-env NODE_ENV=test build
+              npm exec cross-env NODE_ENV=test build
               npm run preview &
         - name: Cypress run
           run: npm run test:e2e

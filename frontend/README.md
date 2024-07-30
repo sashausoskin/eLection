@@ -56,6 +56,12 @@ Same as previous, but builds a version specifically for production.
 <br/><br/>
 
 ```bash
+npm run build:test
+```
+Builds a static version of the app meant for testing. The testing version disables React Spring animations.
+<br/><br/>
+
+```bash
 npm run lint
 ```
 Checks the linting of the app. Can be run with `-- --fix` at the end to fix common linting problems.
