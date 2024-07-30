@@ -22,7 +22,7 @@ export const Home = (): JSX.Element => {
 					</button>
 				</Link>
 				<Link to='https://github.com/sonicsasha/eLection' target='_blank'>
-					<a>{t('viewSource')}</a>
+					{t('viewSource')}
 				</Link>
 			</div>
 		</>
