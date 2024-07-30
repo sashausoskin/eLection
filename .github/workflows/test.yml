@@ -2,7 +2,6 @@ name: Run tests
 run-name: Running unit and end-to-end tests - ${{ github.event.head_commit.message }}
 on: 
   push:
-  pull_request:
   release:
     types: [created]
 jobs:
