@@ -6,15 +6,20 @@ import * as participantService from '../services/participantService'
 import LobbyView from './participant/LobbyView'
 import Loading from '../elements/Loading'
 
+/**
+ * The participant's view.
+ */
 const ParticipantView: () => JSX.Element = () => {
 	const { viewTab, setViewTab } = useContext(SetParticipantViewContext)
 	const [isLoading, setIsLoading] = useState<boolean>(true)
 
 	useEffect(() => {
+		/**
+		 * Checks if there are any values stored in local storage. If yes, let the user directly into the lobby.
+		 */
 		const validateStoredValues = async () => {
 			setIsLoading(true)
 			try {
-				participantService.loadValuesFromStorage()
 				await participantService.validateStoredUserValues()
 				setViewTab('inLobby')
 			} catch (e) {

@@ -35,4 +35,7 @@
 | 24.7 | 4  | Almost finished work on creating a Docker setup. Refactored some functionality to be more customisable when runnning on Docker. |
 | 25.7 | 4  | Took a long time fixing a bug breaking socket connections in Docker. Added SSL to the Docker image. |
 | 26.7 | 3.5  | Created a configuration to get the app to run on Render. Started working on better configuration for the repository.|
-| total   | 153  | | 
+| 27.7 | 4.5  | Finished the workflow for creating releases. Worked on repository rulesets. Started cleaning up code.|
+| 28.7 | 8  | Spent a long time fixing bugs with the ranked election voting. Cleaned up the code and documented it. Started writing repo documentation. Some other small fixes|
+| 29.7 | 4.5  | Added a license to the repository, did some more cleanup and documentation.|
+| total   | 170  | | 

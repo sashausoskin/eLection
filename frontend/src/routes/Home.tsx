@@ -1,10 +1,11 @@
-import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
-export const Home = (): React.ReactElement => {
+/**
+ * The main menu of the app.
+ */
+export const Home = (): JSX.Element => {
 	const { t } = useTranslation()
-
 
 	return (
 		<>

@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next'
-
+/**
+ * An element that shows the user that the election has ended.
+ */
 const ElectionEnded = () => {
     const {t} = useTranslation()
 

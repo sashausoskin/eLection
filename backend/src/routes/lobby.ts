@@ -1,11 +1,11 @@
 import express from 'express'
 import * as lobbyService from '../services/lobbyservice'
-import { ErrorMessage } from '../types/types'
+import { ErrorMessage } from '../types/communicationTypes'
 
 
 const router = express.Router()
 
-router.post('/createLobby', async (req, res) => {
+router.post('/createLobby', async (_req, res) => {
     const {lobbyCode, hostID} = lobbyService.createNewLobby()
     res.send({lobbyCode, hostID})
 })
@@ -16,7 +16,7 @@ router.post('/joinLobby', async (req, res) => {
         return
     }
 
-    const lobbyCode : string = req.body.lobbyCode as string
+    const lobbyCode = req.body.lobbyCode as string
 
     if (!lobbyService.isValidLobbyCode(lobbyCode)) {
         res.status(404).json({type: 'MALFORMATTED_REQUEST', message: 'No lobby was found with the given code'} as ErrorMessage)
@@ -53,13 +53,12 @@ router.post('/validateHostInfo', async (req, res) => {
     const lobbyCode = req.body.lobbyCode
     const hostID = req.body.hostID
 
-    if (!lobbyCode) return res.status(400).json({error: 'Request is missing field lobbyCode'})
+    if (!lobbyCode) return res.status(400).json({type: 'MALFORMATTED_REQUEST',message: 'Request is missing field lobbyCode'} as ErrorMessage)
+    if (!hostID) return res.status(400).json({type: 'MALFORMATTED_REQUEST', message: 'Request is missing field hostID'} as ErrorMessage)
 
-    if (!hostID) return res.status(400).json({error: 'Request is missing field hostID'})
+    if (!lobbyService.isValidLobbyCode(lobbyCode)) return res.status(404).json({type: 'NOT_FOUND', message: 'Could not find a lobby with the given code'} as ErrorMessage)
 
-    if (!lobbyService.isValidLobbyCode(lobbyCode)) return res.status(404).json({error: 'Could not find a lobby with the given code'})
-
-    if (!lobbyService.isLobbyHost(lobbyCode, hostID)) return res.status(403).send()
+    if (!lobbyService.isLobbyHost(lobbyCode, hostID)) return res.status(403).send({type: 'UNAUTHORIZED', message: 'You are not the host of this lobby.'} as ErrorMessage)
     
     return res.status(200).send()
 })

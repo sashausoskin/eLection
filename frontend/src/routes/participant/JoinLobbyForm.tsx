@@ -8,14 +8,29 @@ import { Mock } from 'vitest'
 import './JoinLobbyForm.css'
 import { useTranslation } from 'react-i18next'
 
+/**
+ * The participant's view when they want to join a lobby
+ */
 export const JoinLobbyForm = ({
 	handleSubmitLobbyCode,
 }: {
-	handleSubmitLobbyCode?: (lobbyCode: string) => never | Mock<string[]>;
+	/**
+	 * An optional function that is called when the user presses 'Submit'. If not provided, runs the default function. Currently used for unit tests 
+	 * @param lobbyCode The lobby code the user entered
+	 */
+	handleSubmitLobbyCode?: (lobbyCode: string) => never | Mock;
 }): React.ReactElement => {
 	const { setViewTab } = useContext(SetParticipantViewContext)
 	const {t} = useTranslation()
 
+	/**
+	 * The function that is called if {@link handleSubmitLobbyCode} is not provided.
+	 * Tries to contact the backend to validate if the lobby code is valid.
+	 * If it is, changes the view to show the user code.
+	 * @param values Values from the form
+	 * @param setErrors A function provided by {@link FormikHelpers} 
+	 * @returns null
+	 */
 	const defaultHandleSubmitLobbyCode = async (
 		values: { lobbyCode: string },
 		{ setErrors }: FormikHelpers<{ lobbyCode: string }>

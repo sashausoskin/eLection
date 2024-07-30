@@ -2,15 +2,15 @@ import express from 'express'
 import { createServer } from 'node:http'
 import { Server } from 'socket.io'
 import cors from 'cors'
-import { handleQueueSocketConnection, queueSocketAuthenticationMiddleware } from '../sockets/queuesockets'
 import * as dotenv from 'dotenv'
-
+import { handleQueueSocketConnection, queueSocketAuthenticationMiddleware } from '../sockets/queuesockets'
+import { getAuthenticationMiddleware, handleViewerSocketConnection } from '../sockets/viewersockets'
+import { handleParticipantSocketConnection, isParticipantMiddleware } from '../sockets/lobbysockets'
 import lobbyRouter from '../routes/lobby'
 import testingRouter from '../routes/testing'
 import hostRouter from '../routes/host'
 import participantRouter from '../routes/participant'
-import { getAuthenticationMiddleware, handleViewerSocketConnection } from '../sockets/viewersockets'
-import { handleParticipantSocketConnection, isParticipantMiddleware } from '../sockets/lobbysockets'
+
 
 dotenv.config()
 
@@ -34,14 +34,11 @@ app.get('/ping', (_req, res) => {
 if (process.env.NODE_ENV === 'test') app.use('/testing', testingRouter)
 
 io.of('/queue').use(queueSocketAuthenticationMiddleware)
-
 io.of('/queue').on('connection', handleQueueSocketConnection)
 
 io.of('/viewer').use(getAuthenticationMiddleware)
-
 io.of('/viewer').on('connection', handleViewerSocketConnection)
 
 io.of('/lobby').use(isParticipantMiddleware)
-
 io.of('/lobby').on('connection', handleParticipantSocketConnection)
 

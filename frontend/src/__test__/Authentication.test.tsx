@@ -15,7 +15,7 @@ describe('In authentication view', () => {
 	let userCodeSubmit: HTMLElement
 
 	beforeEach(() => {
-		submitCallback = vi.fn<string[]>()
+		submitCallback = vi.fn()
 		render(<Authentication lobbyCode={'1234'} onSubmitUserCode={submitCallback} />)
 
 		userCodeField = screen.getByTestId('usercode-field')

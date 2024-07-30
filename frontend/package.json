@@ -1,8 +1,14 @@
 {
 	"name": "frontend",
 	"private": true,
-	"version": "0.0.0",
+	"version": "1.0.0",
+	"description": "Frontend service for the eLection app",
+	"author": {"name": "Sasha Usoskin", "url": "https://github.com/sonicsasha"},
+	"repository": {"type": "GitHub", "url": "https://github.com/sonicsasha/eLection"},
+	"readme": "https://github.com/sonicsasha/eLection/blob/main/frontend/README.md",
+	"icon": "https://raw.githubusercontent.com/sonicsasha/eLection/main/frontend/public/img/icon.svg",
 	"type": "module",
+	"license": "Apache-2.0",
 	"scripts": {
 		"dev": "cross-env NODE_ENV=dev vite --host",
 		"build": "tsc && vite build",
@@ -16,8 +22,7 @@
 		"sync-translations": "i18next 'src/**/*.{ts,tsx}' [-oc]"
 	},
 	"dependencies": {
-		"@react-spring/web": "^9.7.3",
-		"@types/lodash": "^4.17.5",
+		"@react-spring/web": "^9.7.4",
 		"@use-gesture/react": "^10.3.1",
 		"axios": "^1.7.2",
 		"dotenv": "^16.4.5",
@@ -26,7 +31,6 @@
 		"i18next-browser-languagedetector": "^8.0.0",
 		"i18next-http-backend": "^2.5.2",
 		"lodash": "^4.17.21",
-		"lodash-move": "^1.1.1",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
 		"react-i18next": "^15.0.0",
@@ -44,6 +48,7 @@
 		"@testing-library/react": "^16.0.0",
 		"@testing-library/user-event": "^14.5.2",
 		"@types/jest": "^29.5.12",
+		"@types/lodash": "^4.17.7",
 		"@types/mocha": "^10.0.7",
 		"@types/node": "^20.14.0",
 		"@types/react": "^18.3.3",
@@ -64,6 +69,6 @@
 		"prettier": "^3.3.2",
 		"typescript": "^5.2.2",
 		"vite": "^5.2.0",
-		"vitest": "^1.6.0"
+		"vitest": "^2.0.4"
 	}
 }

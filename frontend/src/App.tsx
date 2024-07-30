@@ -1,16 +1,13 @@
+import { Navigate, Route, Routes } from 'react-router'
+import { Home } from './routes/Home' 
+import {  SetParticipantViewContextProvider } from './Contexts'
+import { lazy, Suspense, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+import Loading from './elements/Loading'
+import Popup from './elements/Popup'
+import Topbar from './elements/Topbar'
 import './App.css'
 import './style.css'
-import './phone_style.css'
-import { Route, Routes } from 'react-router'
-import { Home } from './routes/Home' 
-import { PopupContext, SetParticipantViewContextProvider } from './Contexts'
-import { lazy, Suspense, useContext, useEffect } from 'react'
-import Loading from './elements/Loading'
-import icon from '/img/icon.svg'
-import confirmIcon from '/img/icons/confirm.svg'
-import cancelIcon from '/img/icons/cancel.svg'
-import languageIcon from '/img/icons/language.svg'
-import { useTranslation } from 'react-i18next'
 
 
 const Host = lazy(() => import('./routes/Host'))
@@ -20,7 +17,6 @@ const Viewer = lazy(() => import('./routes/Viewer'))
 
 
 function App() {
-	const {popupInfo, clearPopup} = useContext(PopupContext)
 	const {t, i18n} = useTranslation()
 
 	useEffect(() => {
@@ -31,35 +27,9 @@ function App() {
 
 	return (
 		<>
-			{popupInfo && 
-				<div className='popupBackground'>
-					<div className='popupContainer'>
-						<a className='popupText' data-testid='popup-text'>{popupInfo.message}</a>
-						<div className='buttonsContainer'>
-							<button className='confirmButton' data-testid='confirm-button' onClick={() => {popupInfo.onConfirm?.(); clearPopup()}}>
-								<img src={confirmIcon} />
-							</button>
-							{popupInfo.type === 'confirm' && 
-								<button className='cancelButton' data-testid='cancel-button' onClick={() => {popupInfo.onCancel?.(); clearPopup()}}>
-									<img src={cancelIcon} />
-								</button>
-							}
-						</div>
-					</div>
-				</div>
-			}
+			<Popup/>
+			<Topbar />
 
-			<div className='topbar'>
-				<img className='mainIcon' width={50} height={50} src={icon} />
-				<div className='languageSelectionContainer'>
-					<img width={30} src={languageIcon} />
-					<select onChange={(e) => i18n.changeLanguage(e.target.value)} defaultValue={i18n.resolvedLanguage} data-testid={'language-selector'} name='language' id='language'>
-						{i18n.languages.concat().sort().map((language) => (
-							<option key={language} value={language} onSelect={() => i18n.changeLanguage(language)}>{language.toUpperCase()}</option>
-						))}
-					</select>
-				</div>
-			</div>
 			<div className='mainContainer'>
 				<Suspense fallback={<Loading>
 						<a>{t('status.loadingFiles')}</a>
@@ -80,6 +50,11 @@ function App() {
 									<ParticipantView />
 								</SetParticipantViewContextProvider>
 							}
+						/>
+						<Route
+							//If none of the paths match, navigate back to main menu. 
+							path='*'
+							element={<Navigate to='/' replace />}
 						/>
 					</Routes>
 				</Suspense>

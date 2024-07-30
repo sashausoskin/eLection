@@ -5,17 +5,23 @@ import { useContext, useEffect, useState } from 'react'
 import { ErrorMessage, StatusMessage } from '../../types'
 import { AxiosError } from 'axios'
 import { Mock } from 'vitest'
-import './Authentication.css'
 import { useTranslation } from 'react-i18next'
 import { PopupContext } from '../../Contexts'
 import { useNavigate } from 'react-router'
+import './Authentication.css'
 
+/**
+ * A form that allows the host to let people into the lobby.
+ */
 export const Authentication = ({
 	lobbyCode,
 	onSubmitUserCode,
 }: {
 	lobbyCode: string;
-	onSubmitUserCode?: ((userCode: string) => never ) | Mock<string[]>;
+	/**
+	 * If provided, this is a function that will be called instead of the default function. Right now used only for unit tests.
+	 */
+	onSubmitUserCode?: ((userCode: string) => never ) | Mock;
 }): React.ReactElement => {
 	const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
 	const statusMessageColor = statusMessage?.status === 'success' ? 'green' : 'red'
@@ -25,6 +31,7 @@ export const Authentication = ({
 	const navigate = useNavigate()
 
     useEffect(() => {
+		// When the status message changes, make the message disappear after a certain time.
         if (!statusMessage) return
 
         const timeout = setTimeout(() => {
@@ -44,6 +51,11 @@ export const Authentication = ({
 			.max(4, t('fieldError.notValidUserCode')),
 	})
 
+	/**
+	 * Called when the host presses 'Submit' if {@link onSubmitUserCode} was not provided.
+	 * @param userCode - The user code that should be authenticated.
+	 * @param actions - Actions provided by Formik.
+	 */
 	const defaultOnSubmitUserCode = async (
 		userCode: string,
 		actions: FormikHelpers<{ userCode: string }>
@@ -65,6 +77,7 @@ export const Authentication = ({
 						})
 						break
 					case 'UNAUTHORIZED':
+						// If the host is no longer authorized, it probably means that the lobby has closed and the lobby is redirected to the main menu.
 						createPopup({type: 'alert', message: t('status.unauthorisedHost'), onConfirm: () => {
 							navigate('/')
 						}})

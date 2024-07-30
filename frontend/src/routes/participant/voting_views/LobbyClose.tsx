@@ -2,6 +2,10 @@ import { useNavigate } from 'react-router'
 import { LobbyStatusInfo } from '../../../types'
 import { useTranslation } from 'react-i18next'
 
+/**
+ * The view a participant sees when the lobby is closing.
+ * @param lobbyInfo The lobby info, that contains information on why the lobby is closing. 
+ */
 const LobbyClose = ({lobbyInfo} : {lobbyInfo : LobbyStatusInfo}) => {
     const navigate = useNavigate()
     const {t} = useTranslation()

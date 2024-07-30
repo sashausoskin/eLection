@@ -1,6 +1,7 @@
 import request from 'supertest'
 import { app, server } from '../util/server'
-import { ElectionInfo, LobbyStatusInfo } from '../types/types'
+import { ElectionInfo } from '../types/lobbyTypes'
+import { LobbyStatusInfo } from '../types/lobbyTypes'
 import * as lobbyService from '../services/lobbyservice'
 import { Socket, io } from 'socket.io-client'
 import * as dateMock from 'jest-date-mock'
@@ -174,6 +175,12 @@ describe('With an active ranked election', () => {
         expect(voteCastRequest.body.type).toBe('MALFORMATTED_REQUEST')
 
         voteCastRequest = await castVote(['Tampere', 'Turku', 'Oulu'])
+        expect(voteCastRequest.statusCode).toBe(400)
+        expect(voteCastRequest.body.type).toBe('MALFORMATTED_REQUEST')
+    })
+
+    test('Cannot have a candidate ranked two times', async () => {
+        const voteCastRequest = await castVote(['Oulu', 'Oulu'])
         expect(voteCastRequest.statusCode).toBe(400)
         expect(voteCastRequest.body.type).toBe('MALFORMATTED_REQUEST')
     })

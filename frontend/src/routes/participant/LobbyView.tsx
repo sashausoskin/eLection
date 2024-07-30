@@ -11,7 +11,7 @@ import RankedElectionView from './voting_views/RankedElectionView'
 import LobbyClose from './voting_views/LobbyClose'
 import { Socket } from 'socket.io-client'
 import Loading from '../../elements/Loading'
-import { redirect } from 'react-router'
+import { Navigate, redirect } from 'react-router'
 import { useTranslation } from 'react-i18next'
 
 const LobbyView = () : JSX.Element => {
@@ -52,6 +52,7 @@ const LobbyView = () : JSX.Element => {
     }, [createPopup, lobbyStatus?.status, t])
 
     // This is a bit of a hacky solution. This is to avoid dependency issues with useEffect()
+    // Handles the connection to the socket.
     useEffect(() => {
         if (!lobbyCode || !participantToken) {
             setViewTab('joinLobby')
@@ -69,7 +70,7 @@ const LobbyView = () : JSX.Element => {
         return handleUnmount
     }, [lobbyCode, participantToken, setViewTab])
 
-
+    // Assigns functions to socket events. This is done separately from the socket connection to make sure that the socket doesn't try to connect multiple times.
     useEffect(() => {
         lobbySocket.current?.on('status-change', onStatusChange)
         lobbySocket.current?.on('connect_error', onConnectError)
@@ -83,7 +84,12 @@ const LobbyView = () : JSX.Element => {
     }, [onDisconnect])
 
     
-
+    /**
+     * Handles the submission of a vote. Tries to send the vote data to the backend. If unsuccesful, triest to act according to the error message.
+     * @param voteContent - Information on what the user voted for. If the active is election is FPTP, then this should be a string of the candidate the user voted for.
+     *      If the active election is ranked, this should be an array of candidate names, starting with the one who receives the most votes.
+     *      If null, empty vote.
+     */
     const onSubmitVote = async (voteContent : string | string[] | null) => {
         setCanSubmitVote(false)
         try {
@@ -139,15 +145,12 @@ const LobbyView = () : JSX.Element => {
         case 'ELECTION_ENDED': 
             return <ElectionEnded />
         case 'CLOSING':
-            if (lobbySocket.current) {
-                lobbySocket.current.disconnect()
-            }
+            lobbySocket.current?.disconnect()
             return <LobbyClose lobbyInfo={lobbyStatus} />
     }
 
-
-
-    return <></>
+    // If none of these views can be shown, then a weird error occurred and the user is redirected to the main menu.
+    return <Navigate to={'/'} />
 }
 
 export default LobbyView
