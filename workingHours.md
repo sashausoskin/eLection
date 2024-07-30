@@ -38,5 +38,5 @@
 | 27.7 | 4.5  | Finished the workflow for creating releases. Worked on repository rulesets. Started cleaning up code.|
 | 28.7 | 8  | Spent a long time fixing bugs with the ranked election voting. Cleaned up the code and documented it. Started writing repo documentation. Some other small fixes|
 | 29.7 | 4.5  | Added a license to the repository, did some more cleanup and documentation.|
-| 30.7 | 5  | Prepared the repository for initial release. Added an animation to popup. Added a reveal animation to the election results and spent a frustratingly long time trying to get it to work with React Spring.|
-| total   | 176.5  | | 
+| 30.7 | 5.5  | Prepared the repository for initial release. Added an animation to popup. Added a reveal animation to the election results and spent a frustratingly long time trying to get it to work with React Spring.|
+| total   | 177  | | 
