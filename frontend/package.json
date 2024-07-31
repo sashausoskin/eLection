@@ -1,7 +1,7 @@
 {
 	"name": "frontend",
 	"private": true,
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"description": "Frontend service for the eLection app",
 	"author": {"name": "Sasha Usoskin", "url": "https://github.com/sonicsasha"},
 	"repository": {"type": "GitHub", "url": "https://github.com/sonicsasha/eLection"},
@@ -12,14 +12,14 @@
 	"scripts": {
 		"dev": "cross-env NODE_ENV=dev vite --host",
 		"build": "tsc && vite build",
-		"build:test": "cross-env NODE_ENV=test npm run build",
+		"build:test": "cross-env VITE_SKIP_ANIMATIONS=true npm run build",
 		"build:production": "tsc && cross-env NODE_ENV=production vite build",
 		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
 		"preview": "vite preview  --host",
 		"test": "vitest run",
 		"test:e2e-ui": "cypress open",
 		"test:e2e": "cypress run",
-		"start:e2e": "cross-env NODE_ENV=test npm run build && npm run preview",
+		"start:e2e": "cross-env VITE_SKIP_ANIMATIONS=true npm run build && npm run preview",
 		"sync-translations": "i18next 'src/**/*.{ts,tsx}' [-oc]"
 	},
 	"dependencies": {
