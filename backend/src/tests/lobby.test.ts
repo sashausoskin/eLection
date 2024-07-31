@@ -38,7 +38,10 @@ describe('With a lobby created and one authenticated user in lobby', () => {
         server.close()
     })
 
-
+    test('Ping ponging works', async () => {
+        const pingRequest = await request(app).get('/ping')
+        expect(pingRequest.text).toBe('pong')
+    })
 
     describe('When user is connecting to the lobby socket', () => {
         const testSocketConnection = (lobbyCode? : string, participantID? : string, done? : jest.DoneCallback, expectToConnect? : boolean) => {
