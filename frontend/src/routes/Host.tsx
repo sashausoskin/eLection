@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import * as lobbyService from '../services/lobbyHostService'
 import { Authentication } from './host/Authentication'
 import CreateElectionForm from './host/CreateElectionForm'
@@ -8,6 +8,7 @@ import './Host.css'
 import Loading from '../elements/Loading'
 import { PopupContext } from '../Contexts'
 import { useTranslation } from 'react-i18next'
+import { AxiosError } from 'axios'
 
 /**
  * The host's view
@@ -16,6 +17,7 @@ const Host = () => {
 	const [lobbyCode, setLobbyCode] = useState<string | null>(null)
 	const navigate = useNavigate()
 	const {createPopup} = useContext(PopupContext)
+	const lobbyInitialised = useRef<boolean>(false)
 
 	const {t} = useTranslation()
 
@@ -43,6 +45,10 @@ const Host = () => {
 		 * If the saved information is not valid, send a lobby creation request to the backend.
 		 */
 		const initLobby = async () => {
+			// This is a bit hacky, but this is to make sure that this function only gets called once.
+			if (lobbyInitialised.current) return
+			lobbyInitialised.current = true
+
 			setLobbyCode(null)
 			try {
 				await lobbyService.validateStoredValues()
@@ -51,11 +57,15 @@ const Host = () => {
 				lobbyService.clearSavedInfo()
 				lobbyService.createLobby().then(() => {
 					setLobbyCode(lobbyService.getLobbyCode())
+				}).catch((reason) => {
+					if (reason instanceof AxiosError) {
+						createPopup({type: 'alert', message: t('unexpectedError', {errorMessage: reason.message}), onConfirm: () => navigate('/')})
+					}
 				})
-			}
-		}
+			}}
+		
 		initLobby()
-	}, [])
+	}, [createPopup, navigate, t])
 
 	if (lobbyCode === null) return <Loading><a>{t('status.loading')}</a></Loading>
 
