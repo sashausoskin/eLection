@@ -155,7 +155,7 @@ describe('With a created lobby and user', () => {
         })
     })
 
-    test.only('receives a message when the lobby is closed', (done) => {
+    test('receives a message when the lobby is closed', (done) => {
         testSocketConnection(undefined, lobbyCode, hostID, true)
 
         lobbySocket.on('connect', () => {
