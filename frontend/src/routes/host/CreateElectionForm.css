@@ -11,12 +11,13 @@
     margin-top: 10px;
     margin-bottom: 10px;
     align-items: center;
-    width: 300px;
+    width: 700px;
+    max-width: 80vw;
     justify-content: space-between;
 }
 
 .leftAlign {
-    width: 100px;
+    width: 250px;
     display: flex;
     margin-top: auto;
     margin-bottom: auto;
@@ -39,10 +40,10 @@
     height: 30px;
 }
 .centerFill input {
-    flex: 1
+    flex-grow: 1;
 }
 .rightAlign {
-    width: 100px;
+    width: 250px;
     display: flex;
     margin-top: auto;
     margin-bottom: auto;
