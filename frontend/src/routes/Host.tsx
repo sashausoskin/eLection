@@ -8,6 +8,7 @@ import './Host.css'
 import Loading from '../elements/Loading'
 import { PopupContext } from '../Contexts'
 import { useTranslation } from 'react-i18next'
+import { AxiosError } from 'axios'
 
 /**
  * The host's view
@@ -51,6 +52,10 @@ const Host = () => {
 				lobbyService.clearSavedInfo()
 				lobbyService.createLobby().then(() => {
 					setLobbyCode(lobbyService.getLobbyCode())
+				}).catch((reason) => {
+					if (reason instanceof AxiosError) {
+						createPopup({type: 'alert', message: t('unexpectedError', {errorMessage: reason.message}), onConfirm: () => navigate('/')})
+					}
 				})
 			}
 		}

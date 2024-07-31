@@ -5,6 +5,10 @@
     background-repeat: var(--background-repeat);
 }
 
+html {
+	background-color: var(--primary-color);
+}
+
 .icon {
     filter: invert(100%);
 }
@@ -20,14 +24,12 @@
     display: flex;
     flex-shrink: 0;
     flex-direction: column;
-    justify-content: safe center;
     justify-items: safe center;
     align-items: center;
     height: 70vh;
     width: 80vw;
     overflow-x: hidden;
     overflow-y: scroll;
-    overflow-anchor: none;
     border-radius: 25px;
     border-width: 3px;
     border-style: solid;
