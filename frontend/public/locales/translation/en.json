@@ -32,8 +32,11 @@
     "onlyDigits": "Please enter only digits",
     "notValidUserCode": "Please enter a valid user code",
     "missingTitle": "Please enter a title for your election",
+    "titleTooLong": "The title cannot be more than {{limit}} characters long",
     "emptyCandidate": "Please enter a name for the candidate or remove the candidate",
+    "nameTooLong": "A candidate's name cannot be more that {{limit}} characters long",
     "noCandidates": "Please enter at least two candidates",
+    "tooManyCandidates": "There cannot be more than {{candidateLimit}} candidates",
     "fewCandidatesToRank": "You have to rank at least 2 candidates. Otherwise, select FPTP election.",
     "lobbyNotFound": "Could not find a lobby with the given code. Please try again!",
     "notValidLobbyCode": "Please enter a valid lobby code"

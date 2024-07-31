@@ -89,6 +89,8 @@ npm test
 
 You can see the unit test coverage percentage here: [![codecov](https://codecov.io/github/sonicsasha/eLection/graph/badge.svg?token=X4JKDW6CF6)](https://codecov.io/github/sonicsasha/eLection)
 
+Not that Jest will complain about an open handle after the unit tests have finished. It's unknown why this is happening, but it shouldn't cause any issues.
+
 End-to-end tests also cover backend functionality. More information about the end-to-end tests can be found in the [frontend's README](../frontend/README.md)
 
 ## Docker

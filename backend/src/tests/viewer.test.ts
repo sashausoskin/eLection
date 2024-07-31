@@ -2,6 +2,7 @@ import request from 'supertest'
 import { app, server } from '../util/server'
 import { Socket, io } from 'socket.io-client'
 import * as lobbyService from '../services/lobbyservice'
+import { ElectionInfo, LobbyStatusInfo } from '../types/lobbyTypes'
 
 let lobbyCode : string
 let hostID : string
@@ -74,4 +75,100 @@ describe('With a created lobby and user', () => {
         })
     })
 
+    test('receives a message when an election is created', (done) => {
+        testSocketConnection(undefined, lobbyCode, hostID, true)
+        lobbySocket.on('status-change', (lobbyStatus : LobbyStatusInfo) => {
+            if (lobbyStatus.status === 'STANDBY') {
+                request(app).post('/host/createElection')
+                    .set('Authorization', hostID)
+                    .send({lobbyCode, electionInfo: {type: 'FPTP', title: 'Is the host a cool guy?', candidates: ['Yeah', 'Hell yeah!']} as ElectionInfo})
+                    .then()
+            }
+            if (lobbyStatus.status === 'VOTING' && lobbyStatus.electionInfo.title === 'Is the host a cool guy?') {
+                done()
+            }
+        })
+    })
+
+    test('receives a message when a user joins the lobby', (done) => {
+        testSocketConnection(undefined, lobbyCode, hostID, true)
+
+        lobbySocket.on('connect', () => {
+            request(app).post('/lobby/joinLobby')
+            .send({lobbyCode})
+            .then((res) => {
+                const userCode = res.body.userCode
+
+                request(app).post('/host/authenticateUser')
+                    .set('Authorization', hostID)
+                    .send({lobbyCode, userCode})
+                    .then()
+            })
+        })
+
+        lobbySocket.on('user-joined', (newNumberOfUsers) => {
+            if (newNumberOfUsers === 2) done()
+        })
+    })
+
+    test('receives a message when someone casts a vote', (done) => {
+        request(app).post('/host/createElection')
+                    .set('Authorization', hostID)
+                    .send({lobbyCode, electionInfo: {type: 'FPTP', title: 'Is the host a cool guy?', candidates: ['Yeah', 'Hell yeah!']} as ElectionInfo})
+                    .then()
+        
+        testSocketConnection(undefined, lobbyCode, hostID, true)
+
+        lobbySocket.on('status-change', (newStatus : LobbyStatusInfo) => {
+            if (newStatus.status === 'VOTING') {
+                request(app).post('/participant/castVote')
+                    .set('Authorization', participantID)
+                    .send({lobbyCode, voteContent: 'Yeah'})
+                    .then()
+            }
+        })
+
+        lobbySocket.on('vote-casted', (numberOfVotes) => {
+            if (numberOfVotes === 1) done() 
+        })
+    })
+
+    test('receives a message when the election is ended', (done) => {
+        request(app).post('/host/createElection')
+            .set('Authorization', hostID)
+            .send({lobbyCode, electionInfo: {type: 'FPTP', title: 'Is the host a cool guy?', candidates: ['Yeah', 'Hell yeah!']} as ElectionInfo})
+            .then()
+
+        testSocketConnection(undefined, lobbyCode, hostID, true)
+
+        lobbySocket.on('status-change', (newStatus : LobbyStatusInfo) => {
+            switch (newStatus.status) {
+                case 'VOTING':
+                    request(app).post('/host/endElection')
+                    .set('Authorization', hostID)
+                    .send({lobbyCode})
+                    .then()
+                    break
+                case 'ELECTION_ENDED':
+                    done()
+            }
+        })
+    })
+
+    test.only('receives a message when the lobby is closed', (done) => {
+        testSocketConnection(undefined, lobbyCode, hostID, true)
+
+        lobbySocket.on('connect', () => {
+            request(app).post('/host/closeLobby')
+                .set('Authorization', hostID)
+                .send({lobbyCode})
+                .then()
+        })
+        lobbySocket.on('status-change', (newStatus : LobbyStatusInfo) => {
+            if (newStatus.status === 'CLOSING') {
+                done()
+            }
+        })
+    })
+        
 })

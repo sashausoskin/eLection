@@ -31,9 +31,18 @@ router.post('/createElection', (req, res) => {
     const electionInfo = req.body.electionInfo as ElectionInfo
     const lobbyCode = req.body.lobbyCode
 
+    const maxCandidateNameLength = 40
+
     const valid = ajv.validate(electioninfo_schema, electionInfo)
 
-    if (!valid) return res.status(400).send(ajv.errors)
+    if (!valid) return res.status(400).send({type: 'MALFORMATTED_REQUEST', message: ajv.errors.toString()} as ErrorMessage)
+
+    // This cannot be done with a JSON schema, so make sure that all of the candidate names aren't too long
+    electionInfo.candidates.forEach((candidate) => {
+        if (candidate.length > maxCandidateNameLength) {
+            return res.status(400).send({type: 'MALFORMATTED_REQUEST', message: `The candidate name ${candidate} is too long. Make sure that it is not longer than ${maxCandidateNameLength} characters`} as ErrorMessage)
+        }
+    })
 
     if (electionInfo.type === 'ranked') {
         // This cannot be validated with ajv, so validate manually that the candidatesToRank is not bigger than the amount of candidates.
@@ -45,7 +54,7 @@ router.post('/createElection', (req, res) => {
     lobbyService.createElection(lobbyCode, electionInfo)
 
     lobbyService.getAllParticipantSockets(lobbyCode).forEach(socket => {
-        if (socket) io.of('/lobby').to(socket).emit('status-change', lobbyService.getLobbyStatus(lobbyCode, true))
+        if (socket) io.of('/lobby').to(socket).emit('status-change', lobbyService.getLobbyStatus(lobbyCode, false))
     })
 
     const viewerSocket = lobbyService.getViewerSocket(lobbyCode)
@@ -92,18 +101,11 @@ router.post('/closeLobby', (req,res) => {
 router.get('/getElectionStatus', (req, res) => {
     const lobbyCode = req.query.lobbyCode as string
 
-    if ((typeof lobbyCode) !== 'string' || Array.isArray(lobbyCode)) return res.json({type: 'MALFORMATTED_REQUEST', message: 'Expected a lobby code in string format'} as ErrorMessage)
-
     return res.json({electionActive: lobbyService.isElectionActive(lobbyCode)})
 })
 
 router.post('/authenticateUser', async (req, res) => {
     const lobbyCode = req.body.lobbyCode
-
-    if (!lobbyCode || typeof lobbyCode !== 'string') {
-        return res.status(400).json({type: 'MALFORMATTED_REQUEST', message: 'The request is missing the field lobbyCode or it is malformatted'} as ErrorMessage)
-    }
-
     const userToAuthorize = req.body.userCode
 
     if (!userToAuthorize || typeof userToAuthorize !== 'string') {

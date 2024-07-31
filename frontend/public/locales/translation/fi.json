@@ -32,8 +32,11 @@
     "onlyDigits": "Ole hyvä ja syötä vain numeroita.",
     "notValidUserCode": "Ole hyvä ja syötä käypä käyttäjätunnus.",
     "missingTitle": "Ole hyvä ja anna vaaleille teema.",
+    "titleTooLong": "Teema ei voi olla yli {{limit}} merkkiä pitkä",
     "emptyCandidate": "Ole hyvä ja anna nimi ehdokkaalle tai poista ehdokas.",
+    "nameTooLong": "Ehdokkaan nimi ei voi olla yli {{limit}} merkkiä pitkä",
     "noCandidates": "Ole hyvä ja lisää vähintään kaksi ehdokasta.",
+    "tooManyCandidates": "Ehdokkaita ei voi olla enempää kuin {{candidateLimit}}",
     "fewCandidatesToRank": "Osallistujien täytyy asetella vähintään kaksi ehdokasta. Muussa tapauksessa järjestä äänienemmistö-vaalit.",
     "lobbyNotFound": "Kyseisellä aulakoodilla ei löytynyt aulaa. Ole hyvä ja yritä uudelleen.",
     "notValidLobbyCode": "Ole hyvä, ja syötä käypä aulatunnus."

@@ -36,6 +36,7 @@ type ElectionInfoBase = {
      *
      * @TJS-type string
      * @require
+     * @maxLength 80
      */
     title: string
     /**
@@ -43,6 +44,7 @@ type ElectionInfoBase = {
      *
      * @items.type string
      * @minItems 2
+     * @maxItems 20
      * @require(".")
      */
     candidates: string[]
