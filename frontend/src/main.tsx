@@ -7,8 +7,8 @@ import { PopupContextProvider } from './Contexts.tsx'
 import './index.css'
 import './i18n.ts'
 
-if (process.env.NODE_ENV === 'test') {
-	console.log('Noticed test environment, skipping animations...')
+if (import.meta.env.VITE_SKIP_ANIMATIONS) {
+	console.log('Skipping animations...')
 	// This will force React Spring to skip animations
 	Globals.assign({skipAnimation: true})
 }
