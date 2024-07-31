@@ -75,6 +75,18 @@ describe('With a lobby created and one authenticated user in lobby', () => {
             //Only two candidates
             createElectionResponse = await requestElectionCreation(lobbyCode, hostID, {type: 'FPTP', title: 'Presidential election', candidates: ['Candidate 1']} as ElectionInfo)
             expect(createElectionResponse.status).toBe(400)
+
+            //Title too long
+            createElectionResponse = await requestElectionCreation(lobbyCode, hostID, {type: 'FPTP', title: 'This is the most important election of your life; nothing even comes close. Think carefully about what you choose!', candidates: ['Pineapple on pizza', 'No pineapple on pizza']} as ElectionInfo)
+            expect(createElectionResponse.status).toBe(400)
+
+            //Too many candidates
+            createElectionResponse = await requestElectionCreation(lobbyCode, hostID, {type: 'FPTP', title: 'The next national number', candidates: [...Array(30).keys()].join().split(',')} as ElectionInfo)
+            expect(createElectionResponse.status).toBe(400)
+
+            //Candidate name is too long
+            createElectionResponse = await requestElectionCreation(lobbyCode, hostID, {type: 'FPTP', title: 'Speaker of the painter union', candidates: ['Pablo Diego José Francisco de Paula Juan Nepomuceno Crispín Crispiniano María de los Remedios de la Santísima Trinidad Ruiz Picasso', 'Banksy']} as ElectionInfo)
+            expect(createElectionResponse.status).toBe(400)
         })
 
         test('Can create an election with valid info', async () => {

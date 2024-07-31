@@ -35,6 +35,10 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
     const {t} = useTranslation()
     const navigate = useNavigate()
 
+    const titleMaxLength = 80
+    const candidateLimit = 20
+    const candidateNameMaxLength = 40
+
     useEffect(() => {
         if (!statusMessage) return
 
@@ -67,12 +71,15 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
         .required(),
 
         title: Yup.string()
-        .required(t('fieldError.missingTitle')),
+        .required(t('fieldError.missingTitle'))
+        .max(titleMaxLength, t('fieldError.titleTooLong', {limit: titleMaxLength})),
 
         candidates: Yup.array()
                 .of(Yup.string()
                     .required(t('fieldError.emptyCandidate'))
-                ).min(2, t('fieldError.noCandidates')),
+                    .max(candidateNameMaxLength, t('fieldError.nameTooLong', {limit: candidateNameMaxLength}))
+                ).min(2, t('fieldError.noCandidates'))
+                .max(candidateLimit, t('fieldError.tooManyCandidates', {candidateLimit})),
         
         candidatesToRank: Yup.number()
                 .min(2, t('fieldError.fewCandidatesToRank'))
@@ -197,6 +204,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
                                 disabled={isElectionActive}
                                 data-lpignore="true"
                                 type="text"
+                                maxLength={titleMaxLength}
                             />
                         </div>
                         <div className='rightAlign' />
@@ -250,6 +258,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
                                                 type="string"
                                                 data-testid={'candidate-field'}
                                                 disabled={isElectionActive}
+                                                maxLength={candidateNameMaxLength}
                                                 />
                                         </div>
                                         <div className='rightAlign'>
@@ -267,7 +276,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
                                     </Fragment>
                             ))
                             }
-                            <button className={'addCandidateButton '} disabled={isElectionActive}type="button" onClick={() => push('')} data-testid="add-candidate-button">
+                            <button className={'addCandidateButton '} disabled={isElectionActive || values.candidates.length >= 20}type="button" onClick={() => push('')} data-testid="add-candidate-button">
                                 <img className={`icon ${isElectionActive && 'disabledIcon'}`} src={addIcon} height={30} />
                             </button>
                             </>

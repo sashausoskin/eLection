@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import CreateElectionForm from '../routes/host/CreateElectionForm'
 
@@ -79,5 +79,14 @@ describe('When creating a FTPT election', () => {
         })
         expect(mockFn).toHaveBeenLastCalledWith({type: 'FPTP', title: 'title', candidates: ['candidate1', 'candidate2']})
 
+    })
+
+    test('number of candidates is limited', async () => {
+        for (let index = 0; index < 20; index++) {
+            await act(async () => {
+                await userEvent.click(screen.getByTestId('add-candidate-button'))
+            })
+        }
+        expect(screen.getByTestId('add-candidate-button')).toBeDisabled()
     })
 })
