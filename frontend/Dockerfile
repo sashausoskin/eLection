@@ -17,11 +17,7 @@ ENV VITE_SOCKET_PATH=$VITE_SOCKET_PATH
 
 RUN npm run build
 
-# This is a new stage, everything before this is gone, except the files we want to COPY
-
 FROM nginx:mainline-alpine
-# COPY the directory build from build-stage to /usr/share/nginx/html
-# The target location here was found from the Docker hub page
 
 COPY --from=build-stage /usr/src/eLection-front/dist /usr/share/nginx/html
 COPY ./nginx.conf /etc/nginx/nginx.conf
