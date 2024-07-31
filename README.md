@@ -1,7 +1,11 @@
 <div align="center">
   <img src="https://github.com/user-attachments/assets/4ba1a8ad-981f-4154-bd27-190feb6ae791"/>
   <h1>eLection</h1>
-  <img src=https://github.com/sonicsasha/eLection/actions/workflows/test.yml/badge.svg />
+  <a href=https://github.com/sonicsasha/eLection/actions/workflows/test.yml><img src=https://github.com/sonicsasha/eLection/actions/workflows/test.yml/badge.svg /></a>
+  <br />
+  Backend unit test coverage:
+  <br />
+  <a href=https://codecov.io/github/sonicsasha/eLection><img src=https://codecov.io/github/sonicsasha/eLection/graph/badge.svg?token=X4JKDW6CF6 href=https://codecov.io/github/sonicsasha/eLection /></a>
 </div>
 
 Welcome to eLection!
@@ -56,7 +60,7 @@ I do not plan on actively maintaining this app besides doing some library update
 5. After an election ends, you can see the results in the viewer window.
 
 ## Development installation
-First, clone this repository. Then check out the README's for both the backend and the frontend as they have information on how to set them up for development.
+First, clone this repository. Then check out the READMEs for both [the backend](./backend/README.md) and the [frontend](./frontend/README.md) as they have information on how to set them up for development.
 
 ## Production installation
 This guide will show you how to install the app on your server. 
@@ -66,7 +70,7 @@ This guide will show you how to install the app on your server.
 4. It is highly recommended to use SSL certificates for your server. If you have them, place them in the `sslcert` folder and name them `domain.pem` and `domain-key.pem` respectively. If you do not want to protect your traffic, open `nginx.conf` and follow the instructions in the comments.
 5. Open the directory in your terminal and run `docker compose up -d`. Now the server should be running on port 443 (or 80 if you disabled SSL).
 
-⚠️**NOTE!** Because of how the websocket Socket.IO functions, this server does not work behind a page path (such as www.company.com/eLection). Instead try to use subdomains (such as election.company.com)
+⚠️**NOTE!** Because of how the websocket Socket.IO functions, this server does not work behind a page path (such as company.com/eLection). Instead try to use subdomains (such as election.company.com)
 
 ⚠️**ANOTHER NOTE!** While the template is designed to be future-proof, changes to it are possible. So if the server suddenly stops functioning after an update or if there is something you wish you could modify, check the template from the latest release.
 
