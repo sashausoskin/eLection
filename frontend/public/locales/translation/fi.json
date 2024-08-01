@@ -27,6 +27,7 @@
     "closeLobby": "Sulje aula",
     "userAuthentication": "Päästä käyttäjä aulaan syöttämällä heidän käyttäjätunnuksensa:"
   },
+  "unexpectedError": "Tapahtui odottaman virhe: {{errorMessage}}",
   "fieldError": {
     "missingUserCode": "Ole hyvä ja syötä käyttäjätunnus.",
     "onlyDigits": "Ole hyvä ja syötä vain numeroita.",
@@ -41,7 +42,6 @@
     "lobbyNotFound": "Kyseisellä aulakoodilla ei löytynyt aulaa. Ole hyvä ja yritä uudelleen.",
     "notValidLobbyCode": "Ole hyvä, ja syötä käypä aulatunnus."
   },
-  "unexpectedError": "Tapahtui odottaman virhe: {{errorMessage}}",
   "lobbyCode": "Aulatunnus",
   "button": {
     "submit": "Lähetä",
@@ -100,7 +100,10 @@
   },
   "votes_one": "1 ääni",
   "votes_other": "{{count}} ääntä",
-  "voteSubmitMessage": "Äänesi on onnistuneesti lähetetty. Kiitos osallistumisesta!",
+  "voteSubmit": {
+    "header": "Äänesi on onnistuneesti lähetetty!",
+    "message": "Kiitos osallistumisesta! :)"
+  },
   "viewer": {
     "FPTPVotingInstructions": "Äänestä yhtä seuraavista:",
     "rankedVotingInstructions": "Valitse seuraavista ehdokkaista {{candidatesToRank}} ja sijoita heidät mieluisuusjärjestykseen:",

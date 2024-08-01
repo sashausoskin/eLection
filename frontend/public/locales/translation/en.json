@@ -27,6 +27,7 @@
     "closeLobby": "Close lobby",
     "userAuthentication": "Let a user into the lobby by entering their user code below"
   },
+  "unexpectedError": "An unexpected error occurred: {{errorMessage}}",
   "fieldError": {
     "missingUserCode": "Please enter the user code",
     "onlyDigits": "Please enter only digits",
@@ -41,7 +42,6 @@
     "lobbyNotFound": "Could not find a lobby with the given code. Please try again!",
     "notValidLobbyCode": "Please enter a valid lobby code"
   },
-  "unexpectedError": "An unexpected error occurred: {{errorMessage}}",
   "lobbyCode": "Lobby code",
   "button": {
     "submit": "Submit",
@@ -100,7 +100,10 @@
   },
   "votes_one": "1 vote",
   "votes_other": "{{count}} votes",
-  "voteSubmitMessage": "Your vote has been succesfully submitted! Thank you for participating!",
+  "voteSubmit": {
+    "header": "Your vote has been succesfully submitted!",
+    "message": "Thank you for participating! :)"
+  },
   "viewer": {
     "FPTPVotingInstructions": "Vote for one of the following:",
     "rankedVotingInstructions": "Rank your top {{candidatesToRank}} candidates from the following:",

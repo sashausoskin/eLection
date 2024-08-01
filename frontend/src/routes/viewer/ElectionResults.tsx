@@ -54,7 +54,7 @@ const ElectionResults = ({results} : {
             })}
             </div>
             <br />
-            <a>{t('emptyVotes', {count: results.emptyVotes})}</a>
+            <a className='secondaryColor'>{t('emptyVotes', {count: results.emptyVotes})}</a>
         </>
 }
 

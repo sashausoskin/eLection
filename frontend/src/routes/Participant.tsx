@@ -33,14 +33,14 @@ const ParticipantView: () => JSX.Element = () => {
 	if (isLoading) return <Loading><a>Loading....</a></Loading>
 
 	return (
-		<>
+		<div>
 			{viewTab === 'joinLobby' && <JoinLobbyForm />}
 			{viewTab === 'inQueue' && <UserCode />}
 			{viewTab === 'inLobby' && <>
 				<a data-testid="lobby-header" hidden></a>
 				<LobbyView />
 				</>}
-		</>
+		</div>
 	)
 }
 
