@@ -29,6 +29,7 @@ const LobbyView = () : JSX.Element => {
 
     const onStatusChange = (newStatus : LobbyStatusInfo) => {
         setHasVoted(false)
+        setCanSubmitVote(true)
         setLobbyStatus(newStatus)
     }
 
@@ -138,7 +139,7 @@ const LobbyView = () : JSX.Element => {
                 return <FPTPVotingView electionInfo={lobbyStatus.electionInfo} canSubmitVote={canSubmitVote} onSubmitVote={onSubmitVote}/>
             }
             else if (lobbyStatus.electionInfo.type === 'ranked') {
-                return <RankedElectionView electionInfo={lobbyStatus.electionInfo} onSubmitVote={onSubmitVote}/>
+                return <RankedElectionView electionInfo={lobbyStatus.electionInfo} canSubmitVote={canSubmitVote} onSubmitVote={onSubmitVote}/>
             }
             break
 

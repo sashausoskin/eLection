@@ -35,10 +35,24 @@ const animateFn = (order: number[], active = false, originalIndex = 0, curIndex 
 
 /**
  * The view a participant sees when they are voting in a ranked election
- * @param electionInfo - Information on the election
- * @param onSubmitVote - Called when the user submits a vote.
+ * @param onSubmitVote - 
  */
-const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : RankedElectionInfo, onSubmitVote: (voteContent: string[] | string | null) => Promise<void> | void}) => {
+const RankedElectionView = ({electionInfo, onSubmitVote, canSubmitVote} : {
+    /**
+     * Information on the election
+     */
+    electionInfo : RankedElectionInfo,
+    /**
+     * Called when the user submits a vote.
+     * @param voteContent What the participant voted for
+     * @returns null
+     */
+    onSubmitVote: (voteContent: string[] | string | null) => Promise<void> | void,
+    /**
+     * If the participant can submit a vote.
+     */
+    canSubmitVote: boolean
+    }) => {
     const {createPopup} = useContext(PopupContext)
     const {t} = useTranslation()
 
@@ -112,8 +126,8 @@ const RankedElectionView = ({electionInfo, onSubmitVote} : {electionInfo : Ranke
             }
         </div>
         <div className='submitContainer' >
-            <button type='button' data-testid='cast-vote' onClick={handleButtonClick}>{t('button.submit')}</button>
-            <button type='button' data-testid='cast-empty-vote' onClick={handleEmptyVote} style={{backgroundColor: 'red'}}>{t('button.voteEmpty')}</button>
+            <button type='button' disabled={!canSubmitVote} data-testid='cast-vote' onClick={handleButtonClick}>{t('button.submit')}</button>
+            <button type='button' disabled={!canSubmitVote} data-testid='cast-empty-vote' onClick={handleEmptyVote} style={{backgroundColor: 'red'}}>{t('button.voteEmpty')}</button>
         </div>
         </>
     )
