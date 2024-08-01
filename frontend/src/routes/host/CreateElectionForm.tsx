@@ -162,7 +162,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
     }
 
     return (
-        <>
+        <div>
         <h3>{t('fieldInfo.createElectionHeader')}</h3>
         <Formik
             // Creating different initial values is to avoid problems with TypeScript, since the Formik functions inherit the types from the initial values object.
@@ -291,7 +291,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
         </Formik>
         
         {statusMessage && <a data-testid={`status-${statusMessage.status}`}style={{color: statusMessage.status === 'success' ? 'green' : 'red'}}>{statusMessage.message}</a>}
-        </>
+        </div>
     )
 }
 

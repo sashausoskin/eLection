@@ -7,7 +7,8 @@ const VoteSubmitted = () : JSX.Element => {
     const {t} = useTranslation()
 
     return <>
-        <a data-testid="vote-submitted-header">{t('voteSubmitMessage')}</a>
+        <h2 data-testid="vote-submitted-header">{t('voteSubmit.header')}</h2>
+        <a>{t('voteSubmit.message')}</a>
     </>
 }
 

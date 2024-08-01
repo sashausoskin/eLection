@@ -38,6 +38,13 @@ html {
     padding: 5vh 5vw;
 }
 
+.mainContainer > div {
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .topbar {
     background-color: var(--primary-color);
     width: 96vw;

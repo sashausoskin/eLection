@@ -8,7 +8,7 @@ export const Home = (): JSX.Element => {
 	const { t } = useTranslation()
 
 	return (
-		<>
+		<div>
 			<h1 data-testid="welcome-message">{t('welcomeMessage')}</h1>
 			<div className='mainMenuButtonsContainer'>
 				<Link data-testid="go-to-host" to='/host'>
@@ -25,6 +25,6 @@ export const Home = (): JSX.Element => {
 					{t('viewSource')}
 				</Link>
 			</div>
-		</>
+		</div>
 	)
 }
