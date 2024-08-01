@@ -40,4 +40,5 @@
 | 29.7 | 4.5  | Added a license to the repository, did some more cleanup and documentation.|
 | 30.7 | 7 | Prepared the repository for initial release. Added an animation to popup. Added a reveal animation to the election results and spent a frustratingly long time trying to get it to work with React Spring.|
 | 31.7 | 3.5 | Added protection against long inputs when creating elections. Added some unit tests and also did some small cleanup. Debugged inconsistent end-to-end tests. Debugged React effect functionality.|
-| total   | 182 | | 
+| 1.8 | 1.5 | Bug fixing. Improving styling. Adding error handling. |
+| total   | 183.5 | | 
