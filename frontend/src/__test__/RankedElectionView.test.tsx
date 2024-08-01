@@ -10,7 +10,7 @@ describe.skip('In ranked election view', () => {
 
     beforeEach(() => {
         jestFn.mockReset()
-        render(<RankedElectionView onSubmitVote={jestFn} electionInfo={exampleElectionInfo} />)
+        render(<RankedElectionView onSubmitVote={jestFn} electionInfo={exampleElectionInfo} canSubmitVote={true}/>)
     })
 
     test('can order candidates', async () => {
