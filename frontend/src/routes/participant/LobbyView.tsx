@@ -11,7 +11,7 @@ import RankedElectionView from './voting_views/RankedElectionView'
 import LobbyClose from './voting_views/LobbyClose'
 import { Socket } from 'socket.io-client'
 import Loading from '../../elements/Loading'
-import { Navigate, redirect } from 'react-router'
+import { Navigate, useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 
 const LobbyView = () : JSX.Element => {
@@ -21,6 +21,7 @@ const LobbyView = () : JSX.Element => {
     const { setViewTab } = useContext(SetParticipantViewContext)
     const { createPopup } = useContext(PopupContext)
     const { t } = useTranslation()
+    const navigate = useNavigate()
 
     const lobbySocket = useRef<Socket>()
 
@@ -33,24 +34,24 @@ const LobbyView = () : JSX.Element => {
         setLobbyStatus(newStatus)
     }
 
-    const onConnectError = (err : Error) => {
-        console.error('A socket error occurred:', err.message)
-    }
+    const onConnectError = useCallback((err : Error) => {
+        createPopup({type: 'alert', message: t('unexpectedError', {errorMessage: err.message}), onConfirm: () => {navigate('/')}})
+    }, [createPopup, navigate, t])
 
     const onDisconnect = useCallback((reason : Socket.DisconnectReason) => {
         if (reason === 'io server disconnect') {
             if (lobbyStatus?.status !== 'CLOSING') {
                 createPopup({type: 'alert', message: t('disconnectReason.kicked'), onConfirm: () => {
-                    redirect('/')
+                    navigate('/')
                 }})
             }
         }
         if (reason === 'ping timeout') {
             createPopup({type: 'alert', message: t('disconnectReason.lostConnection'), onConfirm: () => {
-                redirect('/participant')
+                window.location.reload()
             }})
         }
-    }, [createPopup, lobbyStatus?.status, t])
+    }, [createPopup, lobbyStatus?.status, t, navigate])
 
     // This is a bit of a hacky solution. This is to avoid dependency issues with useEffect()
     // Handles the connection to the socket.
@@ -82,7 +83,7 @@ const LobbyView = () : JSX.Element => {
             lobbySocket.current?.off('connect_error', onConnectError)
             lobbySocket.current?.off('disconnect', onDisconnect)
         }
-    }, [onDisconnect])
+    }, [onDisconnect, onConnectError])
 
     
     /**
