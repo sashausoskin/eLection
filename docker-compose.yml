@@ -9,6 +9,7 @@ services:
                 source: ./backend.env
                 target: /usr/src/eLection-backend/.env
         restart: always
+        pull_policy: always
     frontend:
         image: ghcr.io/sonicsasha/election-frontend:latest
         container_name: eLection-frontend
@@ -28,6 +29,7 @@ services:
         depends_on:
           - backend
         restart: always
+        pull_policy: always
     nginx:
         image: nginx:mainline-alpine
         volumes:
@@ -41,3 +43,4 @@ services:
           - backend
           - frontend
         restart: always
+        pull_policy: always
