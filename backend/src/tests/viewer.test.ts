@@ -37,11 +37,11 @@ describe('With a created lobby and user', () => {
         lobbySocket = io('http://localhost:3001/viewer', {auth: {lobbyCode, hostID}})
 
         lobbySocket.on('connect', () => {
-            if (expectToConnect) done &&done()
+            if (expectToConnect) done?.()
             else expect(1).toBe(2)
         })
         lobbySocket.on('connect_error', () => {
-            if (!expectToConnect) done && done()
+            if (!expectToConnect) done?.()
             else expect(1).toBe(2)
         })
     }
