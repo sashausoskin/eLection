@@ -21,7 +21,11 @@ const ParticipantView: () => JSX.Element = () => {
 			setIsLoading(true)
 			participantService.validateStoredUserValues().then(() => {
 				setViewTab('inLobby')
-			}).finally(() => {
+			})
+			.catch((error) => {
+				console.log(error)
+			})
+			.finally(() => {
 				setIsLoading(false)
 			})
 		}
