@@ -78,9 +78,12 @@ export const JoinLobbyForm = ({
 				initialValues={{ lobbyCode: '' }}
 				validationSchema={lobbyFormSchema}
 				onSubmit={(values, formikHelpers) => {
-					handleSubmitLobbyCode !== undefined
-						? handleSubmitLobbyCode(values.lobbyCode)
-						: defaultHandleSubmitLobbyCode(values, formikHelpers)
+					if (handleSubmitLobbyCode !== undefined) {
+						handleSubmitLobbyCode(values.lobbyCode)
+					}
+					else {
+						defaultHandleSubmitLobbyCode(values, formikHelpers)
+					}
 				}}
 			>
 				{({ errors, touched, isValid }) => (

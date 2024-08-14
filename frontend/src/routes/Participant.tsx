@@ -19,13 +19,11 @@ const ParticipantView: () => JSX.Element = () => {
 		 */
 		const validateStoredValues = async () => {
 			setIsLoading(true)
-			try {
-				await participantService.validateStoredUserValues()
+			participantService.validateStoredUserValues().then(() => {
 				setViewTab('inLobby')
-			} catch (e) {
-                true
-			}
-			setIsLoading(false)
+			}).finally(() => {
+				setIsLoading(false)
+			})
 		}
 		validateStoredValues()
 	}, [setViewTab])

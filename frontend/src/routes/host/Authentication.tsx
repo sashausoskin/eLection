@@ -98,9 +98,12 @@ export const Authentication = ({
 				initialValues={{ userCode: '' }}
 				validationSchema={userCodeSchema}
 				onSubmit={(values, actions) => {
-					onSubmitUserCode !== undefined
-						? onSubmitUserCode(values.userCode)
-						: defaultOnSubmitUserCode(values.userCode, actions)
+					if (onSubmitUserCode === undefined) {
+						defaultOnSubmitUserCode(values.userCode, actions)
+					}
+					else {
+						onSubmitUserCode(values.userCode)
+					}
 				}}
 			>
 				{({ errors, touched, isValid }) => (
