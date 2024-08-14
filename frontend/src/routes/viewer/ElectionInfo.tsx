@@ -18,32 +18,32 @@ const ElectionInfoView = ({electionInfo, votesCasted, participantAmount} :{
      * How many participants there are in the active election.
      */
     participantAmount : number}) => {
-    const {t} = useTranslation()
+	const {t} = useTranslation()
 
-    return <>
-        <h1>{electionInfo.title}</h1>
-        {electionInfo.type === 'FPTP' 
+	return <>
+		<h1>{electionInfo.title}</h1>
+		{electionInfo.type === 'FPTP' 
             && <a>{t('viewer.FPTPVotingInstructions')}</a>}
-        {electionInfo.type === 'ranked' &&
+		{electionInfo.type === 'ranked' &&
             <a>{t('viewer.rankedVotingInstructions', {candidatesToRank: electionInfo.candidatesToRank})}</a>}
-        <div className='candidatesContainer'>
-            {electionInfo.candidates.map((candidate) => 
-                <a key={candidate}>{candidate}</a>
-            )}
-        </div>
-        <h2>{t('viewer.votingInstructions')}</h2>
+		<div className='candidatesContainer'>
+			{electionInfo.candidates.map((candidate) => 
+				<a key={candidate}>{candidate}</a>
+			)}
+		</div>
+		<h2>{t('viewer.votingInstructions')}</h2>
 
-        {/* This is a fairly convoluted way to get translations, but TypeScript, for some reason, does not allow writing values directly with components, so put all of the components in an array*/}
+		{/* This is a fairly convoluted way to get translations, but TypeScript, for some reason, does not allow writing values directly with components, so put all of the components in an array*/}
         
-        <div>
-            <Trans i18nKey={'viewer.votingStats'}
-                values={{votesCasted, participantAmount}}
-                components={[<a className='secondaryColor' data-testid="votes-cast" />, <a/>, <a className='secondaryColor' data-testid="participant-amount">{participantAmount}</a>]}
-            >
-                {'<0>{{votesCasted}}</0> <1>/</1> <2>{{participantAmount}}</2> <1> votes casted</1>'}
-            </Trans>
-        </div>
-    </>
+		<div>
+			<Trans i18nKey={'viewer.votingStats'}
+				values={{votesCasted, participantAmount}}
+				components={[<a className='secondaryColor' data-testid="votes-cast" />, <a/>, <a className='secondaryColor' data-testid="participant-amount">{participantAmount}</a>]}
+			>
+				{'<0>{{votesCasted}}</0> <1>/</1> <2>{{participantAmount}}</2> <1> votes casted</1>'}
+			</Trans>
+		</div>
+	</>
 }
 
 export default ElectionInfoView

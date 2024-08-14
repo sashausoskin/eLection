@@ -9,10 +9,10 @@ import { ReactNode } from 'react'
  * @returns The Loading element
  */
 const Loading = ({children} : {children: ReactNode}) => {
-    return <div className="loadingContainer">
-        <img className='loadingIcon icon' src={loadingIcon} width={100} />
-        {children}
-    </div>
+	return <div className="loadingContainer">
+		<img className='loadingIcon icon' src={loadingIcon} width={100} />
+		{children}
+	</div>
 }
 
 export default Loading

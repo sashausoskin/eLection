@@ -22,12 +22,12 @@ const ParticipantView: () => JSX.Element = () => {
 			participantService.validateStoredUserValues().then(() => {
 				setViewTab('inLobby')
 			})
-			.catch((error) => {
-				console.log(error)
-			})
-			.finally(() => {
-				setIsLoading(false)
-			})
+				.catch((error) => {
+					console.log(error)
+				})
+				.finally(() => {
+					setIsLoading(false)
+				})
 		}
 		validateStoredValues()
 	}, [setViewTab])
@@ -41,7 +41,7 @@ const ParticipantView: () => JSX.Element = () => {
 			{viewTab === 'inLobby' && <>
 				<a data-testid="lobby-header" hidden></a>
 				<LobbyView />
-				</>}
+			</>}
 		</div>
 	)
 }

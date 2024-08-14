@@ -9,12 +9,12 @@ import { renderToStaticMarkup } from 'react-dom/server'
  * @returns 
  */
 const InfoTooltip = ({children} : {children : JSX.Element}) => {
-    // I don't know why, but the tooltip elements need an id or they don't work
-    const tooltipId = '123'
+	// I don't know why, but the tooltip elements need an id or they don't work
+	const tooltipId = '123'
 
-    return <>
-        <img className='icon tooltipIcon' src={infoIcon} width={20} height={20} data-tooltip-id={tooltipId} data-tooltip-html={renderToStaticMarkup(children)}/>
-        <Tooltip className='tooltip' id={tooltipId} />
-    </>
+	return <>
+		<img className='icon tooltipIcon' src={infoIcon} width={20} height={20} data-tooltip-id={tooltipId} data-tooltip-html={renderToStaticMarkup(children)}/>
+		<Tooltip className='tooltip' id={tooltipId} />
+	</>
 }
 export default InfoTooltip

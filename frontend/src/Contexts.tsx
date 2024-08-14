@@ -56,13 +56,13 @@ export const PopupContext = createContext<{
 	 * @returns null
 	 */
 	clearPopup: () => void 
-}>(
+		}>(
 	{} as {
 		popupInfo: PopupInfo,
 		createPopup: (popupInfo : PopupInfo) => void,
 		clearPopup: () => void
 	}
-)
+		)
 
 export const PopupContextProvider = (props: React.PropsWithChildren) => {
 	const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null)

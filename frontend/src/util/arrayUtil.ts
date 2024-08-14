@@ -6,9 +6,9 @@
  * @returns Array with a moved item.
  */
 export const move = (array: number[], fromIndex: number, toIndex: number) => {
-    const arrayCopy = array.slice() as number[]
+	const arrayCopy = array.slice() as number[]
 
-    arrayCopy.splice(toIndex, 0, arrayCopy.splice(fromIndex, 1)[0])
+	arrayCopy.splice(toIndex, 0, arrayCopy.splice(fromIndex, 1)[0])
 
-    return arrayCopy
+	return arrayCopy
 }

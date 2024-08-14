@@ -70,19 +70,19 @@ const Host = () => {
 	if (lobbyCode === null) return <Loading><a>{t('status.loading')}</a></Loading>
 
 	return ( 
-    <>
-        <Authentication lobbyCode={lobbyCode} />
-		<button className='viewerOpen'onClick={() => window.open('/viewer', '_blank', 'popup=true')}>
-			<img src={linkIcon} className='icon' height={20} />{t('hostInstructions.openViewerWindow')}
-		</button>
-		<a>{t('hostInstructions.viewerWindowDesc')}</a>
-		<hr style={{width: '100%'}}/>
-        <CreateElectionForm />
-		<br />
-		<hr style={{width: '100%'}}/>
-		<button className='closeLobby' onClick={handleCloseLobbyClick} data-testid='close-lobby'>{t('hostInstructions.closeLobby')}</button>
-    </>
-    )
+		<>
+			<Authentication lobbyCode={lobbyCode} />
+			<button className='viewerOpen'onClick={() => window.open('/viewer', '_blank', 'popup=true')}>
+				<img src={linkIcon} className='icon' height={20} />{t('hostInstructions.openViewerWindow')}
+			</button>
+			<a>{t('hostInstructions.viewerWindowDesc')}</a>
+			<hr style={{width: '100%'}}/>
+			<CreateElectionForm />
+			<br />
+			<hr style={{width: '100%'}}/>
+			<button className='closeLobby' onClick={handleCloseLobbyClick} data-testid='close-lobby'>{t('hostInstructions.closeLobby')}</button>
+		</>
+	)
 }
 
 export default Host
