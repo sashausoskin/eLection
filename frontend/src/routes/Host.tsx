@@ -75,6 +75,7 @@ const Host = () => {
 		<button className='viewerOpen'onClick={() => window.open('/viewer', '_blank', 'popup=true')}>
 			<img src={linkIcon} className='icon' height={20} />{t('hostInstructions.openViewerWindow')}
 		</button>
+		<a>{t('hostInstructions.viewerWindowDesc')}</a>
 		<hr style={{width: '100%'}}/>
         <CreateElectionForm />
 		<br />

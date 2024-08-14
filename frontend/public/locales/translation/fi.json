@@ -12,9 +12,9 @@
     "voteAlreadySubmitted": "Olet jo äänestänyt näissä vaaleissa!",
     "connecting": "Yhdistetään...",
     "waitingForElection": "Odotetaan seuraavia vaaleja...",
-    "viewerLoadError": "Katseluikkunaa ei pystytty lataamaan oikein. Luo ensin aula ja avaa tämä ikkuna vasta sen jälkeen",
+    "viewerLoadError": "Tulosikkunaa ei pystytty lataamaan oikein. Luo ensin aula ja avaa tämä ikkuna vasta sen jälkeen",
     "serverConnectionError": "Palvelimelle yhdistäminen epäonnistui. Varmista, että olet yhteydessä internettiin ja yritä uudelleen!",
-    "viewerKick": "Yhteytesi palvelimelle katkaistiin. Tämä todennäköisesti johtuu siitä, että avasit katseluikkunan toiselle välilehdelle"
+    "viewerKick": "Yhteytesi palvelimelle katkaistiin. Tämä todennäköisesti johtuu siitä, että avasit tulosikkunan toiselle välilehdelle"
   },
   "welcomeMessage": "Tervetuloa eLection-palveluun!",
   "host": "Järjestä vaalit",
@@ -23,7 +23,8 @@
   "hostInstructions": {
     "closeLobbyConfirm": "Oletko varma, että haluat sulkea tämän aulan?",
     "closeLobbyConfirmation": "Aula suljettu onnistuneesti.",
-    "openViewerWindow": "Avaa katseluikkuna",
+    "openViewerWindow": "Avaa tulosikkuna",
+    "viewerWindowDesc": "Tulosikkuna on erillinen ikkuna, joka näyttää tietoja aulaan liittymisestä, meneillään olevista vaaleista sekä vaalien tuloksista. Sijoita tämä ikkuna erilliselle näytölle niin, että kaikki näkevät sen.",
     "closeLobby": "Sulje aula",
     "userAuthentication": "Päästä käyttäjä aulaan syöttämällä heidän käyttäjätunnuksensa:"
   },
