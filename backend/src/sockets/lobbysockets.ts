@@ -1,6 +1,7 @@
 import { Socket } from 'socket.io'
 import { ExtendedError } from 'socket.io/dist/namespace'
 import * as lobbyService from '../services/lobbyservice'
+import * as socketservice from '../services/socketservice'
 import { LobbyStatusInfo } from '../types/lobbyTypes'
 
 /**
@@ -22,7 +23,7 @@ export const isParticipantMiddleware = async (socket : Socket, next: (err?: Exte
         return
     }
 
-    const existingParticipantSocket = lobbyService.getParticipantSocket(lobbyCode, authToken)
+    const existingParticipantSocket = socketservice.getParticipantSocket(lobbyCode, authToken)
 
     if (existingParticipantSocket !== null) {
         const err = new Error('You are already connected to this lobby, probably in another tab. Please open that tab!')
@@ -34,7 +35,7 @@ export const isParticipantMiddleware = async (socket : Socket, next: (err?: Exte
     socket['lobbyCode'] = lobbyCode
     socket['participantID'] = authToken
 
-    lobbyService.assignSocketIDToParticipant(lobbyCode, authToken, socket.id)
+    socketservice.assignSocketIDToParticipant(lobbyCode, authToken, socket.id)
 
     next()
 }
@@ -55,6 +56,6 @@ export const handleParticipantSocketConnection = (participantSocket : Socket) =>
 
     participantSocket.on('disconnect', () => {
         if (!lobbyService.isValidLobbyCode(participantSocket['lobbyCode'])) return
-        lobbyService.removeParticipantSocket(participantSocket['lobbyCode'], participantSocket['participantID'])
+        socketservice.removeParticipantSocket(participantSocket['lobbyCode'], participantSocket['participantID'])
     })
 }

@@ -1,5 +1,6 @@
 import { ExtendedError } from 'socket.io/dist/namespace'
 import * as lobbyService from '../services/lobbyservice'
+import * as socketservice from '../services/socketservice'
 import { Socket } from 'socket.io'
 
 /**
@@ -21,7 +22,7 @@ export const queueSocketAuthenticationMiddleware = async (socket : Socket, next:
         return
     }
 
-    if (lobbyService.isUserConnectedToQueue(lobbyCode, userCode)) {
+    if (socketservice.isUserConnectedToQueue(lobbyCode, userCode)) {
         const err = new Error('You have already connected to this queue!')
         next(err)
         return
@@ -34,7 +35,7 @@ export const queueSocketAuthenticationMiddleware = async (socket : Socket, next:
 }
 
 export const handleQueueSocketConnection = (socket: Socket) => {
-    lobbyService.assignSocketIdToQueueingUser(socket['userCode'], socket['lobbyCode'], socket.id)
+    socketservice.assignSocketIdToQueueingUser(socket['userCode'], socket['lobbyCode'], socket.id)
 
     socket.on('disconnect', () => {
         if (!lobbyService.isValidLobbyCode(socket['lobbyCode'])) return

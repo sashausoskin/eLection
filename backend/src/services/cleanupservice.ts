@@ -1,6 +1,7 @@
 import { LobbyCloseReason, LobbyStatusInfo } from '../types/lobbyTypes'
 import { io } from '../util/server'
 import * as lobbyService from './lobbyservice'
+import * as socketservice from './socketservice'
 
 const defaultTimeoutDuration = (process.env.LOBBY_TIMEOUT_LENGTH && Number(process.env.LOBBY_TIMEOUT_LENGTH)) | 7200000
 
@@ -10,8 +11,8 @@ const defaultTimeoutDuration = (process.env.LOBBY_TIMEOUT_LENGTH && Number(proce
  * @param reason The reason why the lobby is closing down. See {@link LobbyCloseReason}
  */
 export const closeLobby = (lobbyCode : string, reason: LobbyCloseReason) => {
-    const viewerSocket = lobbyService.getViewerSocket(lobbyCode)
-    const participantSockets = lobbyService.getAllParticipantSockets(lobbyCode)
+    const viewerSocket = socketservice.getViewerSocket(lobbyCode)
+    const participantSockets = socketservice.getAllParticipantSockets(lobbyCode)
 
     const lobbyClosingMessage : LobbyStatusInfo = {status: 'CLOSING', reason}
 

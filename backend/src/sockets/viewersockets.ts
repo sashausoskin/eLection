@@ -1,6 +1,7 @@
 import { Socket } from 'socket.io'
 import { ExtendedError } from 'socket.io/dist/namespace'
 import * as lobbyService from '../services/lobbyservice'
+import * as socketservice from '../services/socketservice'
 import { io } from '../util/server'
 
 export const getAuthenticationMiddleware = (socket : Socket, next: (err?: ExtendedError) => void) => {
@@ -27,11 +28,11 @@ export const getAuthenticationMiddleware = (socket : Socket, next: (err?: Extend
 
     socket['lobbyCode'] = lobbyCode
 
-    const existingViewerSocket = lobbyService.getViewerSocket(lobbyCode)
+    const existingViewerSocket = socketservice.getViewerSocket(lobbyCode)
 
     if (existingViewerSocket) io.of('/viewer').in(existingViewerSocket).disconnectSockets(false)
 
-    lobbyService.assignViewerSocket(lobbyCode, socket.id)
+    socketservice.assignViewerSocket(lobbyCode, socket.id)
 
     next()
 }
@@ -45,7 +46,7 @@ export const handleViewerSocketConnection = (viewerSocket : Socket) => {
 
     viewerSocket.on('disconnect', () => {
         if (!lobbyService.isValidLobbyCode(viewerSocket['lobbyCode'])) return
-        lobbyService.removeViewerSocket(viewerSocket['lobbyCode'])
+        socketservice.removeViewerSocket(viewerSocket['lobbyCode'])
     })
 }
 

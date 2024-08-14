@@ -1,5 +1,6 @@
 import express from 'express'
 import * as lobbyService from '../services/lobbyservice'
+import * as socketservice from '../services/socketservice'
 import { ErrorMessage } from '../types/communicationTypes'
 import { ElectionInfo } from '../types/lobbyTypes'
 import { LobbyStatusInfo } from '../types/lobbyTypes'
@@ -53,11 +54,11 @@ router.post('/createElection', (req, res) => {
 
     lobbyService.createElection(lobbyCode, electionInfo)
 
-    lobbyService.getAllParticipantSockets(lobbyCode).forEach(socket => {
+    socketservice.getAllParticipantSockets(lobbyCode).forEach(socket => {
         if (socket) io.of('/lobby').to(socket).emit('status-change', lobbyService.getLobbyStatus(lobbyCode, false))
     })
 
-    const viewerSocket = lobbyService.getViewerSocket(lobbyCode)
+    const viewerSocket = socketservice.getViewerSocket(lobbyCode)
 
     io.of('/viewer').to(viewerSocket).emit('status-change', lobbyService.getLobbyStatus(lobbyCode, true))
     io.of('/viewer').to(viewerSocket).emit('vote-casted', 0)
@@ -76,12 +77,12 @@ router.post('/endElection', (req,res) => {
 
     lobbyService.endElection(lobbyCode)
 
-    lobbyService.getAllParticipantSockets(lobbyCode).forEach((socket) => {
+    socketservice.getAllParticipantSockets(lobbyCode).forEach((socket) => {
         io.of('/lobby').to(socket).emit('status-change', {status:'ELECTION_ENDED' } as LobbyStatusInfo)
     })
 
     const lobbyStatus = lobbyService.getLobbyStatus(lobbyCode, true)
-    const viewerSocket = lobbyService.getViewerSocket(lobbyCode)
+    const viewerSocket = socketservice.getViewerSocket(lobbyCode)
 
     io.of('/viewer').to(viewerSocket).emit('status-change', lobbyStatus)
 
@@ -117,13 +118,13 @@ router.post('/authenticateUser', async (req, res) => {
         return
     }
 
-    const userSocketID = lobbyService.getUserSocketID(lobbyCode, userToAuthorize)
+    const userSocketID = socketservice.getUserSocketID(lobbyCode, userToAuthorize)
 
     lobbyService.removeUserFromQueue(lobbyCode, userToAuthorize)
 
 
     const newUserID = lobbyService.createAuthenticatedUser(lobbyCode)
-    const viewerSocket = lobbyService.getViewerSocket(lobbyCode)
+    const viewerSocket = socketservice.getViewerSocket(lobbyCode)
 
     if (viewerSocket) io.of('/viewer').to(viewerSocket).emit('user-joined', lobbyService.getParticipants(lobbyCode).length)
     io.of('/queue').to(userSocketID).emit('authorize', {userID: newUserID})
