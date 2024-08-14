@@ -1,10 +1,16 @@
 {
 	"name": "frontend",
 	"private": true,
-	"version": "1.1.2",
+	"version": "1.1.3",
 	"description": "Frontend service for the eLection app",
-	"author": {"name": "Sasha Usoskin", "url": "https://github.com/sonicsasha"},
-	"repository": {"type": "GitHub", "url": "https://github.com/sonicsasha/eLection"},
+	"author": {
+		"name": "Sasha Usoskin",
+		"url": "https://github.com/sonicsasha"
+	},
+	"repository": {
+		"type": "GitHub",
+		"url": "https://github.com/sonicsasha/eLection"
+	},
 	"readme": "https://github.com/sonicsasha/eLection/blob/main/frontend/README.md",
 	"icon": "https://raw.githubusercontent.com/sonicsasha/eLection/main/frontend/public/img/icon.svg",
 	"type": "module",
@@ -51,11 +57,11 @@
 		"@types/jest": "^29.5.12",
 		"@types/lodash": "^4.17.7",
 		"@types/mocha": "^10.0.7",
-		"@types/node": "^20.14.0",
+		"@types/node": "^22.2.0",
 		"@types/react": "^18.3.3",
 		"@types/react-dom": "^18.3.0",
-		"@typescript-eslint/eslint-plugin": "^7.13.0",
-		"@typescript-eslint/parser": "^7.13.0",
+		"@typescript-eslint/eslint-plugin": "^8.1.0",
+		"@typescript-eslint/parser": "^8.1.0",
 		"@vitejs/plugin-react": "^4.2.1",
 		"cross-env": "^7.0.3",
 		"cypress": "^13.13.0",
