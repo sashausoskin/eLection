@@ -12,9 +12,9 @@
     "voteAlreadySubmitted": "You have already submitted your vote!",
     "connecting": "Connecting...",
     "waitingForElection": "Waiting for the next election...",
-    "viewerLoadError": "Could not load the viewer correctly. Please first create a lobby and only then open this window",
+    "viewerLoadError": "Could not load the results screen correctly. Please first create a lobby and only then open this window",
     "serverConnectionError": "Cannot connect to the server. Please check your connection and reload the page!",
-    "viewerKick": "You were disconnected from the server. This is probably because you opened the viewer in another tab!"
+    "viewerKick": "You were disconnected from the server. This is probably because you opened the results in another tab!"
   },
   "welcomeMessage": "Welcome to eLection!",
   "host": "Host an election",
@@ -23,7 +23,8 @@
   "hostInstructions": {
     "closeLobbyConfirm": "Are you sure you want to close this lobby?",
     "closeLobbyConfirmation": "The lobby has been succesfully closed.",
-    "openViewerWindow": "Open the viewer window",
+    "openViewerWindow": "Open the results window",
+    "viewerWindowDesc": "The results window is a separate window that shows information on how to join the lobby, active elections and the results of elections. Place this window on a separate screen where everyone can see it.",
     "closeLobby": "Close lobby",
     "userAuthentication": "Let a user into the lobby by entering their user code below"
   },
