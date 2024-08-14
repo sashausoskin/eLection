@@ -244,8 +244,6 @@ describe('Without an active election', () => {
                 case 'ELECTION_ENDED':
                     done()
                     break
-                default: 
-                    true
             }
         })
     })

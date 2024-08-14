@@ -39,14 +39,14 @@
 import '@4tw/cypress-drag-drop'
 import 'cypress-real-events'
 Cypress.Commands.add('resetServer', () => {
-	cy.request('post', `${Cypress.env('BACKEND_URL')}/testing/reset`);
+	cy.request('post', `${Cypress.env('BACKEND_URL')}/testing/reset`)
 })
 
 Cypress.Commands.add('createLobbyAndUser', () => {
 	cy.request('post', `${Cypress.env('BACKEND_URL')}/testing/createLobbyWithUser`).then((res) => {
-		const lobbyCode = res.body.lobbyCode;
-		const participantID = res.body.participantID;
-		const hostID = res.body.hostID;
+		const lobbyCode = res.body.lobbyCode
+		const participantID = res.body.participantID
+		const hostID = res.body.hostID
 
 		localStorage.setItem('hostLobbyCode', lobbyCode)
 		localStorage.setItem('hostID', hostID)
@@ -56,8 +56,8 @@ Cypress.Commands.add('createLobbyAndUser', () => {
 		cy.wrap(lobbyCode).as('lobbyCode')
 		cy.wrap(hostID).as('hostID')
 		cy.wrap(participantID).as('participantID')
-	});
-});
+	})
+})
 
 Cypress.Commands.add('createElection', (electionInfo) => {
 	cy.get('@lobbyCode').then((lobbyCode) => {
@@ -98,7 +98,7 @@ Cypress.Commands.add('createUser', () => {
 					url: `${Cypress.env('BACKEND_URL')}/host/authenticateUser`,
 					body: {lobbyCode, userCode},
 					headers: {
-						"Authorization": hostID
+						'Authorization': hostID
 					}
 				})
 			})

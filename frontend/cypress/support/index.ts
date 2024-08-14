@@ -1,8 +1,9 @@
 import { ElectionInfo } from '../../src/types'
 
-export {};
+export {}
 
 declare global {
+	// eslint-disable-next-line @typescript-eslint/no-namespace
 	namespace Cypress {
 		interface Chainable {
 			/**
@@ -12,14 +13,14 @@ declare global {
 			createLobbyAndUser(): void;
 			resetServer(): void
 			createElection(electionInfo: ElectionInfo): void
-			createUser(): Cypress.Chainable<Cypress.Response<any>>
+			createUser(): Cypress.Chainable<Cypress.Response<object>>
 			castVote(voteContent: string | string[]): void
 			endElection(): void
-			getElectionResults(): Cypress.Chainable<Cypress.Response<any>>
-			closeLobby(): Cypress.Chainable<Cypress.Response<any>>
-			startCleanup(): Cypress.Chainable<Cypress.Response<any>>
-			setLobbyLastActive(lastActiveTime : number) : Cypress.Chainable<Cypress.Response<any>>
-			getNumberOfLobbies(): Cypress.Chainable<Cypress.Response<any>>
+			getElectionResults(): Cypress.Chainable<Cypress.Response<object>>
+			closeLobby(): Cypress.Chainable<Cypress.Response<object>>
+			startCleanup(): Cypress.Chainable<Cypress.Response<object>>
+			setLobbyLastActive(lastActiveTime : number) : Cypress.Chainable<Cypress.Response<object>>
+			getNumberOfLobbies(): Cypress.Chainable<Cypress.Response<object>>
 		}
 	}
 }

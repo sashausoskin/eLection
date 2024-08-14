@@ -48,10 +48,10 @@ describe('With a lobby created and one authenticated user in lobby', () => {
             lobbySocket = ioc('http://localhost:3001/lobby', {auth: {lobbyCode, participantID}})
             lobbySocket.on('connect_error', () => {
                 if (expectToConnect) expect(1).toBe(2)
-                else done && done()
+                else done?.()
             })
             lobbySocket.on('connect', () => {
-                if (expectToConnect) done && done()
+                if (expectToConnect) done?.()
                 else expect(1).toBe(2)
             })
         }

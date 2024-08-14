@@ -1,7 +1,7 @@
-import { ElectionInfo } from "../../src/types"
+import { ElectionInfo } from '../../src/types'
 import {Globals} from '@react-spring/web'
 
-describe("In participant view", () => {
+describe('In participant view', () => {
     before(() => {
         Globals.assign({
             skipAnimation: true
@@ -14,8 +14,8 @@ describe("In participant view", () => {
         cy.visit('/participant')
     })
 
-    it("Can see when a new election starts", () => {
-        const exampleElection = {type: "FPTP", title: "President 2024", candidates: ["Joe Biden", "Donald Trump"]} as ElectionInfo
+    it('Can see when a new election starts', () => {
+        const exampleElection = {type: 'FPTP', title: 'President 2024', candidates: ['Joe Biden', 'Donald Trump']} as ElectionInfo
 
         cy.createElection(exampleElection)
 
@@ -25,27 +25,27 @@ describe("In participant view", () => {
         })
     })
 
-    describe("with an active FPTP election going on", () => {
+    describe('with an active FPTP election going on', () => {
         beforeEach(() => {
-            cy.createElection({type: "FPTP", title: "Representative 2024", candidates: ["Bob the Builder", "Thomas the Tank Engine"]})
+            cy.createElection({type: 'FPTP', title: 'Representative 2024', candidates: ['Bob the Builder', 'Thomas the Tank Engine']})
         })
 
-        it("can see when a vote has been submitted", () => {
-            cy.get("[data-testid='candidate-radio']").eq(0).click()
-            cy.get("[data-testid='vote-submit'").click()
+        it('can see when a vote has been submitted', () => {
+            cy.get('[data-testid=\'candidate-radio\']').eq(0).click()
+            cy.get('[data-testid=\'vote-submit\'').click()
 
-            cy.get("[data-testid='vote-submitted-header']")
+            cy.get('[data-testid=\'vote-submitted-header\']')
         })
 
-        it("cannot vote again after submitting vote", () => {
-            cy.get("[data-testid='candidate-radio']").eq(0).click()
-            cy.get("[data-testid='vote-submit'").click()
+        it('cannot vote again after submitting vote', () => {
+            cy.get('[data-testid=\'candidate-radio\']').eq(0).click()
+            cy.get('[data-testid=\'vote-submit\'').click()
 
-            cy.get("[data-testid='vote-submitted-header']")
+            cy.get('[data-testid=\'vote-submitted-header\']')
 
-            cy.visit("/participant")
+            cy.visit('/participant')
 
-            cy.get("[data-testid='candidate-radio']").should('not.exist')
+            cy.get('[data-testid=\'candidate-radio\']').should('not.exist')
         })
     })
 
@@ -55,8 +55,8 @@ describe("In participant view", () => {
             cy.createElection(electionInfo)
         })
         it('can submit vote', () => {
-            cy.get("[data-testid='cast-vote']").click()
-            cy.get("[data-testid='vote-submitted-header']").should('exist')
+            cy.get('[data-testid=\'cast-vote\']').click()
+            cy.get('[data-testid=\'vote-submitted-header\']').should('exist')
 
             cy.getElectionResults().then((res) => {
                 expect(res.body[electionInfo.candidates[0]]).equal(2)
@@ -66,12 +66,12 @@ describe("In participant view", () => {
         })
         it.skip('can reorder candidates', () => {
             // Moving the candidates is very inconsistent, and it's up to chance when this test passes. For now, skip this test.
-            cy.get("[data-testid='candidate-drag-0']").first().realMouseDown({position: 'center'})
+            cy.get('[data-testid=\'candidate-drag-0\']').first().realMouseDown({position: 'center'})
                 .realMouseMove(0, 150, {position: 'center'})
                 // This isn't good, but the animations make the tests very unpredictable, so we have to wait a bit until the animations finish
                 .wait(100)
                 .realMouseUp()
-            cy.get("[data-testid='cast-vote']").click()
+            cy.get('[data-testid=\'cast-vote\']').click()
             cy.getElectionResults().then((res) => {
                 expect(res.body[electionInfo.candidates[0]]).equal(1)
                 expect(res.body[electionInfo.candidates[1]]).equal(2)
@@ -79,9 +79,9 @@ describe("In participant view", () => {
             })
         })
         it('can cast empty vote', () => {
-            cy.get("[data-testid='cast-empty-vote']").click()
-            cy.get("[data-testid='confirm-button']").click()
-            cy.get("[data-testid='vote-submitted-header']").should('exist')
+            cy.get('[data-testid=\'cast-empty-vote\']').click()
+            cy.get('[data-testid=\'confirm-button\']').click()
+            cy.get('[data-testid=\'vote-submitted-header\']').should('exist')
 
             cy.getElectionResults().then((res) => {
                 expect(res.body[electionInfo.candidates[0]]).equal(0)
@@ -93,15 +93,15 @@ describe("In participant view", () => {
 
     it('can see when the host closes the lobby', () => {
         //This is to make sure that the test doesn't close the lobby before the user has connected
-        cy.get("[data-testid='lobby-standby-header']")
+        cy.get('[data-testid=\'lobby-standby-header\']')
         cy.closeLobby()
-        cy.get("[data-testid='lobby-close-header']")
+        cy.get('[data-testid=\'lobby-close-header\']')
     })
 
     it('can see when the lobby is closed due to inactivity', () => {
-        cy.get("[data-testid='lobby-standby-header']")
+        cy.get('[data-testid=\'lobby-standby-header\']')
         cy.setLobbyLastActive(Date.now() - 1000*60*60*3)
         cy.startCleanup()
-        cy.get("[data-testid='lobby-close-header']")
+        cy.get('[data-testid=\'lobby-close-header\']')
     })
 })
