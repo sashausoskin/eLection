@@ -13,7 +13,8 @@ module.exports = {
 		'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
 		'eqeqeq': 'error',
 		semi: ['error', 'never'],
-		quotes: ['error', 'single']
+		quotes: ['error', 'single'],
+		indent: ['error', 'tab']
 
 	},
 };

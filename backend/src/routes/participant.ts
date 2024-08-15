@@ -1,6 +1,7 @@
 import express from 'express'
 import { ErrorMessage } from '../types/communicationTypes'
 import * as lobbyService from '../services/lobbyservice'
+import * as socketservice from '../services/socketservice'
 import { io } from '../util/server'
 
 const router = express.Router()
@@ -79,7 +80,7 @@ router.post('/castVote', (req, res) => {
 
     const usersVoted = lobbyService.saveUserVoted(lobbyCode, req.headers.authorization)
 
-    io.of('/viewer').to(lobbyService.getViewerSocket(lobbyCode)).emit('vote-casted', usersVoted)
+    io.of('/viewer').to(socketservice.getViewerSocket(lobbyCode)).emit('vote-casted', usersVoted)
 
     return res.status(200).send()
 })

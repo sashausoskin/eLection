@@ -1,32 +1,8 @@
 import { v4 as uuidv4 } from 'uuid'
 import { ElectionInfo } from '../types/lobbyTypes'
-import { LobbyInfo, LobbyStatusInfo } from '../types/lobbyTypes'
-import { insertToRandomIndex, shuffleArray } from '../util/shuffle'
-
-let lobbyInfo : Record<string, LobbyInfo>  = {}
-let availableLobbyCodes: string[] = []
-
-export class UserNotFound extends Error {
-
-}
-/**
- * @returns An array of all of the possible four-digit from 0000 to 9999 codes in a random order.
- */
-const generateCodes = () : string[] => {
-    return shuffleArray(
-        Array.from(Array(10000).keys()).map((n) => (
-            n.toString().padStart(4, '0')
-    )))
-} 
-
-/**
- * Populates the database with lobby codes.
- */
-const populateDatabaseWithLobbyCodes = () => {
-    availableLobbyCodes = generateCodes()
-}
-
-populateDatabaseWithLobbyCodes()
+import { LobbyStatusInfo } from '../types/lobbyTypes'
+import { insertToRandomIndex } from '../util/shuffle'
+import { availableLobbyCodes, generateCodes, lobbyInfo, resetLobbyInfo, UserNotFound } from './db'
 
 /**
  * Creates a new lobby
@@ -90,50 +66,6 @@ export const getParticipants = (lobbyCode : string) : string[] => {
 } 
 
 /**
- * Saves the socket ID of a queueing user.
- * @param userCode The code of the user.
- * @param lobbyCode The code of the lobby
- * @param socketID The ID given by Socket.IO.
- */
-export const assignSocketIdToQueueingUser = (userCode : string, lobbyCode : string, socketID : string) => {
-    lobbyInfo[lobbyCode]['queuedUsers'][userCode] = socketID
-}
-
-/**
- * Checks if there is a socket instance connected to the queue.
- * @param lobbyCode The code of the lobby
- * @param userCode The code of the user
- * @returns Is a participant connected to the queue socket.
- */
-export const isUserConnectedToQueue = (lobbyCode : string, userCode: string) : boolean => {
-    return (lobbyInfo[lobbyCode].queuedUsers[userCode] !== null)
-}
-/**
- * Save the socket ID of a viewer connected to the viewer socket.
- * @param lobbyCode The code of the lobby.
- * @param socketID The ID of the connected viewer socket.
- */
-export const assignViewerSocket = (lobbyCode : string, socketID : string) => {
-    lobbyInfo[lobbyCode]['viewerSocket'] = socketID
-}
-
-/**
- * @param lobbyCode The code of the lobby.
- * @returns The ID of the connected viewer socket.
- */
-export const getViewerSocket = (lobbyCode : string) => {
-    return lobbyInfo[lobbyCode].viewerSocket
-}
-
-/**
- * Removes the saved ID of the viewer socket.
- * @param lobbyCode The code of the lobby.
- */
-export const removeViewerSocket = (lobbyCode : string) => {
-    lobbyInfo[lobbyCode].viewerSocket = null
-}
-
-/**
  * Creates a new authorization token for a participant and saves it.
  * @param lobbyCode The code of the lobby.
  * @returns The authorization token of the now authenticated user.
@@ -171,15 +103,6 @@ export const removeUserFromQueue = (lobbyCode : string, userCode: string) => {
 }
 
 /**
- * @param lobbyCode The code of the lobby
- * @param userCode The code of the user
- * @returns The socket ID of the user in the queue
- */
-export const getUserSocketID = (lobbyCode : string, userCode : string) => {
-    return lobbyInfo[lobbyCode]['queuedUsers'][userCode]
-}
-
-/**
  * Checks if a user is authorised to be in the lobby.
  * @param lobbyCode The code of the lobby.
  * @param userID The authorisation token of the user.
@@ -206,7 +129,7 @@ export const getNumberOfLobbies = () => {
  * DO NOT USE IN PRODUCTION.
  */
 export const resetLobbies = () => {
-    lobbyInfo = {}
+    resetLobbyInfo()
 }
 
 /**
@@ -277,52 +200,6 @@ export const isElectionActive = (lobbyCode : string) : boolean => {
  */
 export const endElection = (lobbyCode : string) => {
     lobbyInfo[lobbyCode].status = 'ELECTION_ENDED'
-}
-
-/**
- * Checks if an authenticated participant is currently connected to the lobby through a socket.
- * @param lobbyCode The code of the lobby.
- * @param participantID The authorization token of the participant.
- * @returns boolean
- */
-export const isParticipantConnected = (lobbyCode : string, participantID : string) => {
-    return (lobbyInfo[lobbyCode]['participants'][participantID] !== null)
-}
-
-/**
- * Saves the socket ID of a connected authorized participant.
- * @param lobbyCode The code of the lobby.
- * @param participantID The authorization token of the participant.
- * @param socketID The ID of the socket connection.
- */
-export const assignSocketIDToParticipant = (lobbyCode : string, participantID : string, socketID : string) => {
-    lobbyInfo[lobbyCode]['participants'][participantID] = socketID
-}
-
-/**
- * Removes the saved socket ID of an authorized participant.
- * @param lobbyCode The code of the lobby.
- * @param participantID The authorization token of the participant.
- */
-export const removeParticipantSocket = (lobbyCode : string, participantID : string) => {
-    lobbyInfo[lobbyCode]['participants'][participantID] = null
-}
-
-/**
- * @param lobbyCode The code of the lobby.
- * @param participantID The authorization token of the participant.
- * @returns The socket ID of the participant.
- */
-export const getParticipantSocket = (lobbyCode : string, participantID : string) => {
-    return lobbyInfo[lobbyCode].participants[participantID]
-}
-
-/**
- * @param lobbyCode The code of the lobby.
- * @returns The socket ID's of all of the connected participants.
- */
-export const getAllParticipantSockets = (lobbyCode : string) : string[] => {
-    return Object.values(lobbyInfo[lobbyCode]['participants'])
 }
 
 /**

@@ -5,17 +5,17 @@ import { initReactI18next } from 'react-i18next'
 import TranslationFetchBackend from 'i18next-http-backend'
 
 i18n
-    .use(TranslationFetchBackend)
-    .use(LanguageDetector)
-    .use(initReactI18next)
-    .init({
-        debug: process.env.NODE_ENV === 'dev',
-        fallbackLng: ['en', 'fi'],
-        returnNull: false,
-        ns: ['custom', 'translation'],
-        backend: {
-            loadPath: '/locales/{{ns}}/{{lng}}.json'
-        },
-        defaultNS: 'custom',
-        fallbackNS: 'translation'
-    })
+	.use(TranslationFetchBackend)
+	.use(LanguageDetector)
+	.use(initReactI18next)
+	.init({
+		debug: process.env.NODE_ENV === 'dev',
+		fallbackLng: ['en', 'fi'],
+		returnNull: false,
+		ns: ['custom', 'translation'],
+		backend: {
+			loadPath: '/locales/{{ns}}/{{lng}}.json'
+		},
+		defaultNS: 'custom',
+		fallbackNS: 'translation'
+	})

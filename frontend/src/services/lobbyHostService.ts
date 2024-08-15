@@ -120,5 +120,5 @@ export const getElectionStatus = async () => await (
 		params: {lobbyCode},
 		headers: {
 			Authorization: hostID
-	}})
+		}})
 )

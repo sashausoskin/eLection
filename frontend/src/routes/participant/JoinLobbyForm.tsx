@@ -95,11 +95,11 @@ export const JoinLobbyForm = ({
 							<Field name="lobbyCode" data-testid="lobbycode-field" size={4} maxLength={4} inputMode='numeric' className='lobbyCodeInput'/>
 							<br/>
 							{errors.lobbyCode && touched.lobbyCode ? (
-							<a data-testid="lobbycode-field-error" style={{ color: 'red' }}>
-								{errors.lobbyCode}
-							</a>
-						) : null}
-						<br />
+								<a data-testid="lobbycode-field-error" style={{ color: 'red' }}>
+									{errors.lobbyCode}
+								</a>
+							) : null}
+							<br />
 							<button type="submit" data-testid='submit' className='submitLobbyCode' disabled={!isValid}>
 								{t('button.submit')}
 							</button>

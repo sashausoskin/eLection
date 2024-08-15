@@ -32,9 +32,9 @@ function App() {
 
 			<div className='mainContainer'>
 				<Suspense fallback={<Loading>
-						<a>{t('status.loadingFiles')}</a>
-					</Loading>
-					}>
+					<a>{t('status.loadingFiles')}</a>
+				</Loading>
+				}>
 					<Routes>
 						<Route path="/" element={<Home />} />
 						<Route path="/host" element={

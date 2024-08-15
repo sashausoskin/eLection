@@ -30,18 +30,18 @@ export const Authentication = ({
 	const {createPopup} = useContext(PopupContext)
 	const navigate = useNavigate()
 
-    useEffect(() => {
+	useEffect(() => {
 		// When the status message changes, make the message disappear after a certain time.
-        if (!statusMessage) return
+		if (!statusMessage) return
 
-        const timeout = setTimeout(() => {
-            setStatusMessage(null)
-        }, 5000)
+		const timeout = setTimeout(() => {
+			setStatusMessage(null)
+		}, 5000)
 
-        // This clears the timeout when the component is unmounted
-        return () => clearTimeout(timeout)
+		// This clears the timeout when the component is unmounted
+		return () => clearTimeout(timeout)
 
-    }, [statusMessage])
+	}, [statusMessage])
 
 	const userCodeSchema = Yup.object({
 		userCode: Yup.string()
@@ -70,18 +70,18 @@ export const Authentication = ({
 		} catch (e) {
 			if (e instanceof AxiosError) {
 				switch((e.response?.data as ErrorMessage).type) {
-					case 'NOT_FOUND': 
-						setStatusMessage({
-							status: 'error',
-							message: t('status.userNotFound'),
-						})
-						break
-					case 'UNAUTHORIZED':
-						// If the host is no longer authorized, it probably means that the lobby has closed and the lobby is redirected to the main menu.
-						createPopup({type: 'alert', message: t('status.unauthorisedHost'), onConfirm: () => {
-							navigate('/')
-						}})
-						break
+				case 'NOT_FOUND': 
+					setStatusMessage({
+						status: 'error',
+						message: t('status.userNotFound'),
+					})
+					break
+				case 'UNAUTHORIZED':
+					// If the host is no longer authorized, it probably means that the lobby has closed and the lobby is redirected to the main menu.
+					createPopup({type: 'alert', message: t('status.unauthorisedHost'), onConfirm: () => {
+						navigate('/')
+					}})
+					break
 				default:
 					console.error(t('unexpectedError'), e.response)
 				}
@@ -108,26 +108,26 @@ export const Authentication = ({
 			>
 				{({ errors, touched, isValid }) => (
 					<>
-					<div className='userCodeField'>
-						<Form className='userCodeField'>
-							<Field name="userCode" autoComplete='off' size={4} data-testid="usercode-field" />
+						<div className='userCodeField'>
+							<Form className='userCodeField'>
+								<Field name="userCode" autoComplete='off' size={4} data-testid="usercode-field" />
 							
-							<button type="submit" disabled={!isValid} data-testid="submit-authentication">
-								{t('button.submit')}
-							</button>
-						</Form>
-					</div>
-					{errors.userCode && touched.userCode ? (
-								<a data-testid="usercode-field-error">{errors.userCode}</a>
-							) : null}
-					{statusMessage && (
-						<a
-							data-testid={`status-message-${statusMessage.status}`}
-							style={{ color: statusMessageColor }}
-						>
-							{statusMessage.message}
-						</a>
-					)}
+								<button type="submit" disabled={!isValid} data-testid="submit-authentication">
+									{t('button.submit')}
+								</button>
+							</Form>
+						</div>
+						{errors.userCode && touched.userCode ? (
+							<a data-testid="usercode-field-error">{errors.userCode}</a>
+						) : null}
+						{statusMessage && (
+							<a
+								data-testid={`status-message-${statusMessage.status}`}
+								style={{ color: statusMessageColor }}
+							>
+								{statusMessage.message}
+							</a>
+						)}
 					</>
 				)}
 			</Formik>
