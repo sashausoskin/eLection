@@ -80,17 +80,17 @@
 }
 
 .popupContainer .confirmButton {
-    background-color: green;
+    background-color: var(--confirm-button-color);
 }
 
 .popupContainer .confirmButton:hover {
-    border-color: darkgreen;
+    border-color: rgba(1, 1, 1, 0.3);
 }
 
 .popupContainer .cancelButton {
-    background-color: red;
+    background-color: var(--cancel-button-color);
 }
 
 .popupContainer .cancelButton:hover {
-    border-color: darkred;
+    border-color: rgba(1, 1, 1, 0.3);
 }

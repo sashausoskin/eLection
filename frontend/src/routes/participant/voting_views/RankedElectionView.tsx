@@ -127,7 +127,7 @@ const RankedElectionView = ({electionInfo, onSubmitVote, canSubmitVote} : {
 			</div>
 			<div className='submitContainer' >
 				<button type='button' disabled={!canSubmitVote} data-testid='cast-vote' onClick={handleButtonClick}>{t('button.submit')}</button>
-				<button type='button' disabled={!canSubmitVote} data-testid='cast-empty-vote' onClick={handleEmptyVote} style={{backgroundColor: 'red'}}>{t('button.voteEmpty')}</button>
+				<button type='button' disabled={!canSubmitVote} className='emptyVoteButton' data-testid='cast-empty-vote' onClick={handleEmptyVote}>{t('button.voteEmpty')}</button>
 			</div>
 		</>
 	)

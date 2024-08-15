@@ -131,3 +131,11 @@
     align-self: stretch;
     flex: 1;
 }
+
+.emptyVoteButton {
+    background-color: var(--cancel-button-color);
+}
+
+.emptyVoteButton:hover {
+    border-color: rgba(0, 0, 0, 0.2);
+}
