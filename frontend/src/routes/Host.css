@@ -7,10 +7,10 @@
 }
 
 .closeLobby {
-    background-color: red;
+    background-color: var(--cancel-button-color);
     margin: 25px 0px;
 }
 
 .closeLobby:hover {
-    border-color: darkred;
+    border-color: rgba(0, 0, 0, 0.2)
 }
