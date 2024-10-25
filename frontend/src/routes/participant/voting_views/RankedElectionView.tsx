@@ -7,6 +7,8 @@ import { PopupContext } from '../../../Contexts'
 import { useTranslation } from 'react-i18next'
 import { move } from '../../../util/arrayUtil'
 
+import dragIcon from '/img/icons/drag.svg'
+
 // Used React Spring's Draggable List example as base and inspiration: https://codesandbox.io/s/zfy9p
 
 // These would usually be defined in a .css-file, but because they are needed for the animation library, these are defined here
@@ -110,6 +112,7 @@ const RankedElectionView = ({electionInfo, onSubmitVote, canSubmitVote} : {
 								scale,
 							}}
 							children={<>
+								<img src={dragIcon} className={'icon dragIcon'}/>
 								<div className='candidatePosition'>
 									{votes > 0 && <a>{orderPosition + 1}.</a>}
 								</div>

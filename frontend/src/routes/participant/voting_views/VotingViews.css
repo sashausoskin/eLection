@@ -92,6 +92,7 @@
     max-width: 500px;
     min-height: 0;
     cursor: move;
+    overflow: hidden;
 }
 
 .rankedCandidate a {
@@ -101,9 +102,9 @@
 .rankedCandidate .candidatePosition {
     position: absolute;
     left: 10%;
-    font-size: 100px;
+    font-size: 90px;
     filter: opacity(30%);
-    z-index: 0;
+    z-index: -1;
     width: 20%;
 }
 
@@ -138,4 +139,12 @@
 
 .emptyVoteButton:hover {
     border-color: rgba(0, 0, 0, 0.2);
+}
+
+.dragIcon {
+    width: 10%;
+    user-select: none;
+    position: absolute;
+    left: 2%;
+    pointer-events: none;
 }
