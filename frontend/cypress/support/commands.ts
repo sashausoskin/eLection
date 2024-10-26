@@ -50,11 +50,11 @@ Cypress.Commands.add('createLobbyAndUser', () => {
 
 		localStorage.setItem('hostLobbyCode', lobbyCode)
 		localStorage.setItem('hostID', hostID)
-		localStorage.setItem('participantToken', participantToken)
+		localStorage.setItem('participantToken', `Bearer ${participantToken}`)
 
 		cy.wrap(lobbyCode).as('lobbyCode')
 		cy.wrap(hostID).as('hostID')
-		cy.wrap(participantToken).as('participantToken')
+		cy.wrap(`Bearer ${participantToken}`).as('participantToken')
 	})
 })
 
@@ -75,12 +75,12 @@ Cypress.Commands.add('createElection', (electionInfo) => {
 
 Cypress.Commands.add('castVote', (voteContent) => {
 	cy.get('@lobbyCode').then((lobbyCode) => {
-		cy.get('@participantID').then((participantID) => {
+		cy.get('@participantToken').then((participantToken) => {
 			cy.request({
 				method: 'post',
 				url: `${Cypress.env('BACKEND_URL')}/participant/castVote`,
-				headers: {Authorization: participantID},
-				body: {lobbyCode, voteContent}
+				headers: {Authorization: participantToken},
+				body: {voteContent}
 			})
 		})
 	})
