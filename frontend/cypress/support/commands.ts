@@ -74,16 +74,15 @@ Cypress.Commands.add('createElection', (electionInfo) => {
 })
 
 Cypress.Commands.add('castVote', (voteContent) => {
-	cy.get('@lobbyCode').then((lobbyCode) => {
-		cy.get('@participantToken').then((participantToken) => {
-			cy.request({
-				method: 'post',
-				url: `${Cypress.env('BACKEND_URL')}/participant/castVote`,
-				headers: {Authorization: participantToken},
-				body: {voteContent}
-			})
+	cy.get('@participantToken').then((participantToken) => {
+		cy.request({
+			method: 'post',
+			url: `${Cypress.env('BACKEND_URL')}/participant/castVote`,
+			headers: {Authorization: participantToken},
+			body: {voteContent}
 		})
 	})
+
 })
 
 Cypress.Commands.add('createUser', () => {
