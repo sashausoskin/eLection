@@ -3,10 +3,11 @@ import { app, server } from '../util/server'
 import { Socket, io } from 'socket.io-client'
 import * as lobbyService from '../services/lobbyservice'
 import { ElectionInfo, LobbyStatusInfo } from '../types/lobbyTypes'
+import { LobbyWithUserCreationResponse } from '../types/testTypes'
 
 let lobbyCode : string
 let hostID : string
-let participantID : string
+let participantToken : string
 let lobbySocket : Socket
 
 describe('With a created lobby and user', () => {
@@ -19,10 +20,10 @@ describe('With a created lobby and user', () => {
     beforeEach(async () => {
         lobbyService.resetLobbies()
 
-        const lobbyCreationResponse = await request(app).post('/testing/createLobbyWithUser')
-        lobbyCode = lobbyCreationResponse.body.lobbyCode
-        hostID = lobbyCreationResponse.body.hostID
-        participantID = lobbyCreationResponse.body.participantID
+        const lobbyCreationResponse = (await request(app).post('/testing/createLobbyWithUser')).body as LobbyWithUserCreationResponse
+        lobbyCode = lobbyCreationResponse.lobbyCode
+        hostID = lobbyCreationResponse.hostID
+        participantToken = `Bearer ${lobbyCreationResponse.participantToken}`
     })
 
     afterEach(() => {
@@ -51,7 +52,7 @@ describe('With a created lobby and user', () => {
     })
 
     test('cannot connect to the socket without a proper authorization token', (done) => {
-        testSocketConnection(done, lobbyCode, participantID, false)
+        testSocketConnection(done, lobbyCode, participantToken, false)
     })
 
     test('cannot connect to the socket with an invalid lobby code', (done) => {
@@ -122,8 +123,8 @@ describe('With a created lobby and user', () => {
         lobbySocket.on('status-change', (newStatus : LobbyStatusInfo) => {
             if (newStatus.status === 'VOTING') {
                 request(app).post('/participant/castVote')
-                    .set('Authorization', participantID)
-                    .send({lobbyCode, voteContent: 'Yeah'})
+                    .set('Authorization', participantToken)
+                    .send({voteContent: 'Yeah'})
                     .then()
             }
         })

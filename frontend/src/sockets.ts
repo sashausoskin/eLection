@@ -14,10 +14,10 @@ export const createViewerSocket = (lobbyCode : string, hostID : string) : Socket
 		autoConnect: false,
 	})
 
-export const createLobbySocket = (lobbyCode : string, participantID : string) : Socket => 
+export const createLobbySocket = (participantToken : string) : Socket => 
 	io(`${import.meta.env.VITE_SOCKET_URL}/lobby`, {
 		path: import.meta.env.VITE_SOCKET_PATH,
-		auth: {lobbyCode, participantID },
+		auth: {token: participantToken},
 		autoConnect: false,
 	})
 

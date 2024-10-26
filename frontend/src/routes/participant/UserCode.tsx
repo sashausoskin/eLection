@@ -47,8 +47,8 @@ export const UserCode = ({ onAuthenticated }: {
 		lobbySocket.on('connect', () => setIsConnecting(false))
 		lobbySocket.on('connect_error', (err) => console.error(err))
 		lobbySocket.on('error', (error) => console.error('A socket error occurred: ', error))
-		lobbySocket.on('authorize', ({ userID }) => {
-			(onAuthenticated === null ? onAuthenticated : defaultOnAuthenticated)(userID)
+		lobbySocket.on('authorize', (authToken) => {
+			(onAuthenticated === null ? onAuthenticated : defaultOnAuthenticated)(authToken)
 		})
 		lobbySocket.connect()
 

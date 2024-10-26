@@ -2,6 +2,8 @@ import request from 'supertest'
 import * as lobbyService from '../services/lobbyservice'
 import { app, server } from '../util/server'
 import ioc, { Socket as ClientSocket } from 'socket.io-client'
+import { AuthenticationObject } from '../types/communicationTypes'
+import { encodeObject } from '../util/encryption'
 
 beforeEach(() => {
     lobbyService.resetLobbies()
@@ -75,8 +77,10 @@ describe('With one lobby created and one user in queue', () => {
         userCode = userCodeRequest.body.userCode
     })
 
-    const validateUser = async (lobbyCode? : string, userID? : string) => {
-        return await request(app).post('/lobby/validateUserInfo').send({lobbyCode, userID})
+    const validateUser = async (userToken? : string) => {
+        return await request(app).post('/lobby/validateUserInfo')
+        .set('Authorization', userToken)
+        .send()
     }
 
     const validateHost = async (lobbyCode? : string, hostID? : string) => {
@@ -173,8 +177,8 @@ describe('With one lobby created and one user in queue', () => {
         queueSocket.on('connect_error', (error) => {
             console.error(error.message)
         })
-        queueSocket.on('authorize', (userID : string) => {
-            expect(userID).toBeDefined()
+        queueSocket.on('authorize', (userToken : string) => {
+            expect(userToken).toBeDefined()
             done()
         })
         queueSocket.on('connect', async () => {
@@ -195,27 +199,25 @@ describe('With one lobby created and one user in queue', () => {
         })
     })
     test('user validation works', async () => {
-        const userID = lobbyService.createAuthenticatedUser(lobbyCode)
+        const userId = lobbyService.createAuthenticatedUser(lobbyCode)
 
-        const validationRequest = await validateUser(lobbyCode, userID)
+        const userAuth : AuthenticationObject = {
+            lobbyCode,
+            id: userId
+        }
+
+        const userToken = `Bearer ${encodeObject(userAuth)}`
+
+        const validationRequest = await validateUser(userToken)
 
         expect(validationRequest.statusCode).toBe(200)
     })
 
     test('user validation returns error with invalid parameters', async () => {
-        const userID = lobbyService.createAuthenticatedUser(lobbyCode)
+        lobbyService.createAuthenticatedUser(lobbyCode)
 
-        let validationRequest = await validateUser(lobbyCode === '1234' ? '4321' : '1234', userID)
+        const validationRequest = await validateUser('11111111-1111-1111-1111-111111111111')
         expect(validationRequest.statusCode).toBe(403)
-
-        validationRequest = await validateUser(lobbyCode, '11111111-1111-1111-1111-111111111111')
-        expect(validationRequest.statusCode).toBe(403)
-
-        validationRequest = await validateUser(lobbyCode)
-        expect(validationRequest.statusCode).toBe(400)
-
-        validationRequest = await validateUser(undefined, userID)
-        expect(validationRequest.statusCode).toBe(400)
     })
 
     describe('when connecting to the queue socket', () => {

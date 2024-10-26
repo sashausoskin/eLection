@@ -9,7 +9,7 @@ import { LobbyStatusInfo } from '../types/lobbyTypes'
 import { cleanupRoutine } from '../services/cleanupservice'
 
 describe('With a lobby created and one authenticated user in lobby', () => {
-    let participantID : string
+    let participantToken : string
     let hostID : string
     let lobbyCode : string
     let lobbySocket : ClientSocket 
@@ -18,7 +18,7 @@ describe('With a lobby created and one authenticated user in lobby', () => {
         lobbyService.resetLobbies()
         dateMock.advanceTo(new Date(0, 0, 0, 0, 0, 0, 0))
         const createLobbyResponse = (await request(app).post('/testing/createLobbyWithUser')).body as LobbyWithUserCreationResponse
-        participantID = createLobbyResponse.participantID
+        participantToken = `Bearer ${createLobbyResponse.participantToken}`
         lobbyCode = createLobbyResponse.lobbyCode
         hostID = createLobbyResponse.hostID
     })
@@ -44,8 +44,8 @@ describe('With a lobby created and one authenticated user in lobby', () => {
     })
 
     describe('When user is connecting to the lobby socket', () => {
-        const testSocketConnection = (lobbyCode? : string, participantID? : string, done? : jest.DoneCallback, expectToConnect? : boolean) => {
-            lobbySocket = ioc('http://localhost:3001/lobby', {auth: {lobbyCode, participantID}})
+        const testSocketConnection = (participantToken? : string, done? : jest.DoneCallback, expectToConnect? : boolean) => {
+            lobbySocket = ioc('http://localhost:3001/lobby', {auth: {token: participantToken}})
             lobbySocket.on('connect_error', () => {
                 if (expectToConnect) expect(1).toBe(2)
                 else done?.()
@@ -56,28 +56,20 @@ describe('With a lobby created and one authenticated user in lobby', () => {
             })
         }
 
-        test('Cannot connect without entering lobby code', (done) => {
-            testSocketConnection(null, participantID, done)
-        })
-
         test('Cannot connect without entering an auth token', (done) => {
-            testSocketConnection(lobbyCode, null, done)
+            testSocketConnection(null, done)
         })
 
         test('Cannot connect without a proper auth token', (done) => {
-            testSocketConnection(lobbyCode, '123412421412313', done)
-        })
-
-        test('Cannot connect without a proper lobby code', (done) => {
-            testSocketConnection(lobbyCode === '1234' ? '4321' : '1234', participantID, done)
+            testSocketConnection('123412421412313', done)
         })
 
         test('Can connect with proper values', (done) => {
-            testSocketConnection(lobbyCode, participantID, done, true)
+            testSocketConnection(participantToken, done, true)
         })
 
         test('Immediately gets the status-change emit', (done) => {
-            lobbySocket = ioc('http://localhost:3001/lobby', {auth: {lobbyCode, participantID}})
+            lobbySocket = ioc('http://localhost:3001/lobby', {auth: {token: participantToken}})
             lobbySocket.on('connect_error', () => {
                 expect(1).toBe(2)
             })
@@ -87,12 +79,12 @@ describe('With a lobby created and one authenticated user in lobby', () => {
         })
 
         test('Cannot have two connections at the same time', (done) => {
-            lobbySocket = ioc('http://localhost:3001/lobby', {auth: {lobbyCode, participantID}})
+            lobbySocket = ioc('http://localhost:3001/lobby', {auth: {token: participantToken}})
             lobbySocket.on('connect_error', (err) => {
                 throw new Error(err.message)
             })
             lobbySocket.on('connect', () => {
-                const lobbySocket2 = ioc('http://localhost:3001/lobby', {auth: {lobbyCode, participantID}})
+                const lobbySocket2 = ioc('http://localhost:3001/lobby', {auth: {token: participantToken}})
                 lobbySocket2.on('connect', () => {
                     throw new Error('Second socket connected')
                 })
@@ -105,9 +97,9 @@ describe('With a lobby created and one authenticated user in lobby', () => {
         })
 
         test('can reconnect after disconnection', (done) => {
-            testSocketConnection(lobbyCode, participantID, null, true)
+            testSocketConnection(participantToken, null, true)
             lobbySocket.disconnect()
-            testSocketConnection(lobbyCode, participantID, done, true)
+            testSocketConnection(participantToken, done, true)
         })
 
         test('will receive the STANDBY status if has casted a vote', (done) => {
@@ -118,11 +110,11 @@ describe('With a lobby created and one authenticated user in lobby', () => {
                 .then()
             
             request(app).post('/participant/castVote')
-                .set('Authorization', participantID)
-                .send({lobbyCode, voteContent: 'Candidate 1'})
+                .set('Authorization', participantToken)
+                .send({voteContent: 'Candidate 1'})
                 .then()
             
-            testSocketConnection(lobbyCode, participantID, null, true)
+            testSocketConnection(participantToken, null, true)
             lobbySocket.on('status-change', (newStatus : LobbyStatusInfo) => {
                 expect(newStatus.status).toBe('STANDBY')
                 done()

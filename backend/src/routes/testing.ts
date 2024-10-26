@@ -2,6 +2,8 @@ import express from 'express'
 import * as lobbyService from '../services/lobbyservice'
 import { LobbyWithUserCreationResponse } from '../types/testTypes'
 import { cleanupRoutine } from '../services/cleanupservice'
+import { AuthenticationObject } from '../types/communicationTypes'
+import { encodeObject } from '../util/encryption'
 
 const router = express.Router()
 
@@ -27,7 +29,14 @@ router.post<LobbyWithUserCreationResponse>('/createLobbyWithUser', (req, res) =>
     const {lobbyCode, hostID} = lobbyService.createNewLobby()
     const participantID = lobbyService.createAuthenticatedUser(lobbyCode)
 
-    return res.json({lobbyCode, hostID, participantID})
+    const participantAuth : AuthenticationObject = {
+        id: participantID,
+        lobbyCode
+    }
+
+    const participantToken = encodeObject(participantAuth)
+
+    return res.json({lobbyCode, hostID, participantToken})
 })
 
 router.post('/createUser', (req, res) => {

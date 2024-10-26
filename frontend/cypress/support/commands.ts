@@ -45,17 +45,16 @@ Cypress.Commands.add('resetServer', () => {
 Cypress.Commands.add('createLobbyAndUser', () => {
 	cy.request('post', `${Cypress.env('BACKEND_URL')}/testing/createLobbyWithUser`).then((res) => {
 		const lobbyCode = res.body.lobbyCode
-		const participantID = res.body.participantID
+		const participantToken = res.body.participantToken
 		const hostID = res.body.hostID
 
 		localStorage.setItem('hostLobbyCode', lobbyCode)
 		localStorage.setItem('hostID', hostID)
-		localStorage.setItem('participantLobbyCode', lobbyCode)
-		localStorage.setItem('participantID', participantID)
+		localStorage.setItem('participantToken', participantToken)
 
 		cy.wrap(lobbyCode).as('lobbyCode')
 		cy.wrap(hostID).as('hostID')
-		cy.wrap(participantID).as('participantID')
+		cy.wrap(participantToken).as('participantToken')
 	})
 })
 

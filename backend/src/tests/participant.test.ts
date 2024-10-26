@@ -6,9 +6,10 @@ import * as lobbyService from '../services/lobbyservice'
 import { Socket, io as ioc } from 'socket.io-client'
 import * as dateMock from 'jest-date-mock'
 import { cleanupRoutine } from '../services/cleanupservice'
+import { LobbyWithUserCreationResponse } from '../types/testTypes'
 
 let hostID : string
-let participantID : string
+let participantToken : string
 let lobbyCode : string
 let lobbySocket : Socket
 
@@ -49,16 +50,16 @@ const endElection = async () => {
 }
 
 const connectToParticipantSocket = () : Socket => {
-    return ioc('http://localhost:3001/lobby', {auth: {lobbyCode, participantID}})
+    return ioc('http://localhost:3001/lobby', {auth: {token: participantToken}})
 }
 
 beforeEach(async () => {
     lobbyService.resetLobbies()
 
-    const lobbyCreationRequest = await request(app).post('/testing/createLobbyWithUser')
-    hostID = lobbyCreationRequest.body.hostID
-    participantID = lobbyCreationRequest.body.participantID
-    lobbyCode = lobbyCreationRequest.body.lobbyCode
+    const lobbyCreationRequest : LobbyWithUserCreationResponse = (await request(app).post('/testing/createLobbyWithUser')).body
+    hostID = lobbyCreationRequest.hostID
+    participantToken = `Bearer ${lobbyCreationRequest.participantToken}`
+    lobbyCode = lobbyCreationRequest.lobbyCode
 })
 
 describe('With an active FPTP election', () => {
@@ -68,25 +69,16 @@ describe('With an active FPTP election', () => {
 
     test('cannot vote without an authorization token', async () => {
         const voteCastRequest = await request(app).post('/participant/castVote')
-            .send({lobbyCode, voteContent: 'Joe Biden'})
+            .send({voteContent: 'Joe Biden'})
         
         expect(voteCastRequest.status).toBe(401)
         expect(voteCastRequest.body.type).toBe('MISSING_AUTH_TOKEN')
     })
 
-    test('cannot vote without a valid lobby code', async () => {
-       const voteCastRequest = await request(app).post('/participant/castVote')
-            .set('Authorization', hostID)
-            .send({lobbyCode: lobbyCode === '1234' ? '4321' : '1234', voteContent: 'Joe Biden'})
-        
-        expect(voteCastRequest.status).toBe(404)
-        expect(voteCastRequest.body.type).toBe('UNAUTHORIZED') 
-    })
-
     test('cannot vote with an invalid authorization token', async () => {
         const voteCastRequest = await request(app).post('/participant/castVote')
             .set('Authorization', '1111111111-111111')
-            .send({lobbyCode, voteContent: 'Joe Biden'})
+            .send({voteContent: 'Joe Biden'})
         
         expect(voteCastRequest.status).toBe(403)
         expect(voteCastRequest.body.type).toBe('UNAUTHORIZED') 
@@ -94,7 +86,7 @@ describe('With an active FPTP election', () => {
 
     test('cannot vote without vote content', async () => {
         const voteCastRequest = await request(app).post('/participant/castVote')
-            .set('Authorization', participantID)
+            .set('Authorization', participantToken)
             .send({lobbyCode})
         
         expect(voteCastRequest.status).toBe(400)
@@ -103,8 +95,8 @@ describe('With an active FPTP election', () => {
 
     test('cannot vote for a person that isn\'t a candidate', async () => {
         const voteCastRequest = await request(app).post('/participant/castVote')
-            .set('Authorization', participantID)
-            .send({lobbyCode, voteContent: 'Barack Obama'})
+            .set('Authorization', participantToken)
+            .send({voteContent: 'Barack Obama'})
 
         expect(voteCastRequest.status).toBe(400)
         expect(voteCastRequest.body.type).toBe('MALFORMATTED_REQUEST') 
@@ -112,8 +104,8 @@ describe('With an active FPTP election', () => {
 
     test('can vote with valid info', async () => {
         const voteCastRequest = await request(app).post('/participant/castVote')
-            .set('Authorization', participantID)
-            .send({lobbyCode, voteContent: 'Joe Biden'})
+            .set('Authorization', participantToken)
+            .send({voteContent: 'Joe Biden'})
             .then()
 
         expect(voteCastRequest.status).toBe(200)
@@ -121,22 +113,22 @@ describe('With an active FPTP election', () => {
 
     test('can cast an empty vote', async () => {
         const voteCastRequest = await request(app).post('/participant/castVote')
-            .set('Authorization', participantID)
-            .send({lobbyCode, voteContent: null})
+            .set('Authorization', participantToken)
+            .send({voteContent: null})
 
         expect(voteCastRequest.status).toBe(200)
     })
 
     test('cannot vote twice', async () => {
         let voteCastRequest = await request(app).post('/participant/castVote')
-            .set('Authorization', participantID)
-            .send({lobbyCode, voteContent: 'Joe Biden'})
+            .set('Authorization', participantToken)
+            .send({voteContent: 'Joe Biden'})
 
         expect(voteCastRequest.status).toBe(200)
 
         voteCastRequest = await request(app).post('/participant/castVote')
-            .set('Authorization', participantID)
-            .send({lobbyCode, voteContent: 'Joe Biden'})
+            .set('Authorization', participantToken)
+            .send({voteContent: 'Joe Biden'})
 
         expect(voteCastRequest.status).toBe(403)
         expect(voteCastRequest.body.type).toBe('ALREADY_VOTED')
@@ -144,8 +136,8 @@ describe('With an active FPTP election', () => {
 
     test('cannot vote for an array of candidates', async () => {
         const voteCastRequest = await request(app).post('/participant/castVote')
-            .set('Authorization', participantID)
-            .send({lobbyCode, voteContent: ['Joe Biden', 'Donald Trump']})
+            .set('Authorization', participantToken)
+            .send({voteContent: ['Joe Biden', 'Donald Trump']})
 
         expect(voteCastRequest.status).toBe(400)
         expect(voteCastRequest.body.type).toBe('MALFORMATTED_REQUEST')
@@ -159,8 +151,8 @@ describe('With an active ranked election', () => {
 
     const castVote = async (voteContent) => {
         return await request(app).post('/participant/castVote')
-        .set('Authorization', participantID)
-        .send({lobbyCode, voteContent})
+        .set('Authorization', participantToken)
+        .send({voteContent})
     }
 
     test('Cannot cast a vote for a single candidate', async () => {
@@ -206,16 +198,16 @@ describe('Without an active election', () => {
     beforeEach(async () => {
         lobbyService.resetLobbies()
 
-        const lobbyCreationRequest = await request(app).post('/testing/createLobbyWithUser')
-        hostID = lobbyCreationRequest.body.hostID
-        participantID = lobbyCreationRequest.body.participantID
-        lobbyCode = lobbyCreationRequest.body.lobbyCode
+        const lobbyCreationRequest = (await request(app).post('/testing/createLobbyWithUser')).body as LobbyWithUserCreationResponse
+        hostID = lobbyCreationRequest.hostID
+        participantToken = `Bearer ${lobbyCreationRequest.participantToken}`
+        lobbyCode = lobbyCreationRequest.lobbyCode
     })
 
     test('cannot vote',  async () => {
         const voteCastRequest = await request(app).post('/participant/castVote')
-        .set('Authorization', participantID)
-        .send({lobbyCode, voteContent: 'Joe Biden'})
+        .set('Authorization', participantToken)
+        .send({voteContent: 'Joe Biden'})
 
         expect(voteCastRequest.status).toBe(405)
         expect(voteCastRequest.body.type).toBe('NO_ACTIVE_ELECTION')

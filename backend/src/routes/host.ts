@@ -8,6 +8,7 @@ import Ajv from 'ajv'
 import * as electioninfo_schema from '../types/ElectionInfo_schema.json'
 import { io } from '../util/server'
 import * as cleanupService from '../services/cleanupservice'
+import { encodeObject } from '../util/encryption'
 
 const router = express.Router()
 
@@ -123,11 +124,16 @@ router.post('/authenticateUser', async (req, res) => {
     lobbyService.removeUserFromQueue(lobbyCode, userToAuthorize)
 
 
-    const newUserID = lobbyService.createAuthenticatedUser(lobbyCode)
+    const newUserAuth = {
+        id: lobbyService.createAuthenticatedUser(lobbyCode),
+        lobbyCode
+    }
     const viewerSocket = socketservice.getViewerSocket(lobbyCode)
 
+    const encodedUserAuth = encodeObject(newUserAuth)
+
     if (viewerSocket) io.of('/viewer').to(viewerSocket).emit('user-joined', lobbyService.getParticipants(lobbyCode).length)
-    io.of('/queue').to(userSocketID).emit('authorize', {userID: newUserID})
+    io.of('/queue').to(userSocketID).emit('authorize', encodedUserAuth)
 
     return res.status(200).send()
 })
