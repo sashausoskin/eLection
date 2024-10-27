@@ -34,9 +34,15 @@ router.post<LobbyWithUserCreationResponse>('/createLobbyWithUser', (req, res) =>
         lobbyCode
     }
 
-    const participantToken = encodeObject(participantAuth)
+    const hostAuth : AuthenticationObject = {
+        id: hostID,
+        lobbyCode
+    }
 
-    return res.json({lobbyCode, hostID, participantToken})
+    const participantToken = encodeObject(participantAuth)
+    const hostToken = encodeObject(hostAuth)
+
+    return res.json({lobbyCode, hostToken, participantToken})
 })
 
 router.post('/createUser', (req, res) => {

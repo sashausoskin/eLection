@@ -7,9 +7,9 @@ export const createQueueSocket = (userCode: string, lobbyCode: string): Socket =
 		autoConnect: false,
 	})
 
-export const createViewerSocket = (lobbyCode : string, hostID : string) : Socket => 
+export const createViewerSocket = (hostToken : string) : Socket => 
 	io(`${import.meta.env.VITE_SOCKET_URL}/viewer`, {
-		auth: {lobbyCode, hostID },
+		auth: { token: hostToken },
 		path: import.meta.env.VITE_SOCKET_PATH,
 		autoConnect: false,
 	})

@@ -3,7 +3,7 @@
  */
 export interface LobbyCreationResponse {
 	lobbyCode: string;
-	hostID: string;
+	token: string;
 }
 
 export interface StatusMessage {

@@ -66,9 +66,9 @@ export const getParticipants = (lobbyCode : string) : string[] => {
 } 
 
 /**
- * Creates a new authorization token for a participant and saves it.
+ * Creates a new ID for a participant and saves it.
  * @param lobbyCode The code of the lobby.
- * @returns The authorization token of the now authenticated user.
+ * @returns The ID of the now authenticated user.
  */
 export const createAuthenticatedUser = (lobbyCode : string) => {
     const newUserID = uuidv4()

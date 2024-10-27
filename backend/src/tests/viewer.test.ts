@@ -1,11 +1,13 @@
-import request from 'supertest'
-import { app, server } from '../util/server'
+import { server } from '../util/server'
 import { Socket, io } from 'socket.io-client'
 import * as lobbyService from '../services/lobbyservice'
-import { ElectionInfo, LobbyStatusInfo } from '../types/lobbyTypes'
-import { LobbyWithUserCreationResponse } from '../types/testTypes'
+import { LobbyStatusInfo } from '../types/lobbyTypes'
+import { decodeObject, encodeObject } from '../util/encryption'
+import { AuthenticationObject } from '../types/communicationTypes'
+import * as testUtil from './testUtil'
 
 let lobbyCode : string
+let hostToken : string
 let hostID : string
 let participantToken : string
 let lobbySocket : Socket
@@ -20,10 +22,11 @@ describe('With a created lobby and user', () => {
     beforeEach(async () => {
         lobbyService.resetLobbies()
 
-        const lobbyCreationResponse = (await request(app).post('/testing/createLobbyWithUser')).body as LobbyWithUserCreationResponse
+        const lobbyCreationResponse = await testUtil.createLobbyWithUser()
         lobbyCode = lobbyCreationResponse.lobbyCode
-        hostID = lobbyCreationResponse.hostID
-        participantToken = `Bearer ${lobbyCreationResponse.participantToken}`
+        hostToken = lobbyCreationResponse.hostToken
+        hostID = (decodeObject(hostToken) as AuthenticationObject).id
+        participantToken = lobbyCreationResponse.participantToken
     })
 
     afterEach(() => {
@@ -34,8 +37,8 @@ describe('With a created lobby and user', () => {
         server.close()
     })
 
-    const testSocketConnection = (done?: jest.DoneCallback, lobbyCode? : string, hostID? : string, expectToConnect? : boolean) => {
-        lobbySocket = io('http://localhost:3001/viewer', {auth: {lobbyCode, hostID}})
+    const testSocketConnection = (done?: jest.DoneCallback, hostToken? : string, expectToConnect? : boolean) => {
+        lobbySocket = io('http://localhost:3001/viewer', {auth: {token: `Bearer ${hostToken}`}})
 
         lobbySocket.on('connect', () => {
             if (expectToConnect) done?.()
@@ -52,22 +55,27 @@ describe('With a created lobby and user', () => {
     })
 
     test('cannot connect to the socket without a proper authorization token', (done) => {
-        testSocketConnection(done, lobbyCode, participantToken, false)
+        testSocketConnection(done, participantToken, false)
     })
 
     test('cannot connect to the socket with an invalid lobby code', (done) => {
-        testSocketConnection(done, lobbyCode === '1234' ? '4321' : '1234', hostID, false)
+        const fakeAuth = encodeObject({
+            id: hostID,
+            lobbyCode: lobbyCode === '1234' ? '4321' : '1234'
+        } as AuthenticationObject)
+
+        testSocketConnection(done, fakeAuth, false)
     })
 
     test('can connect to the socket with valid info', (done) => {
-        testSocketConnection(done, lobbyCode, hostID, true)
+        testSocketConnection(done, hostToken, true)
     })
 
     test('when a new viewer connects, previous gets disconnected', (done) => {
-        const lobbySocket2 = io('http://localhost:3001/viewer', {auth: {lobbyCode, hostID}})
+        const lobbySocket2 = io('http://localhost:3001/viewer', {auth: {token: `Bearer ${hostToken}`}})
 
         lobbySocket2.on('connect', () => {
-            lobbySocket = io('http://localhost:3001/viewer', {auth: {lobbyCode, hostID}})
+            lobbySocket = io('http://localhost:3001/viewer', {auth: {token: `Bearer ${hostToken}`}})
             lobbySocket.on('connect', () => {
                 expect(lobbySocket2.connected).toBeFalsy()
                 done()
@@ -77,13 +85,10 @@ describe('With a created lobby and user', () => {
     })
 
     test('receives a message when an election is created', (done) => {
-        testSocketConnection(undefined, lobbyCode, hostID, true)
+        testSocketConnection(undefined, hostToken, true)
         lobbySocket.on('status-change', (lobbyStatus : LobbyStatusInfo) => {
             if (lobbyStatus.status === 'STANDBY') {
-                request(app).post('/host/createElection')
-                    .set('Authorization', hostID)
-                    .send({lobbyCode, electionInfo: {type: 'FPTP', title: 'Is the host a cool guy?', candidates: ['Yeah', 'Hell yeah!']} as ElectionInfo})
-                    .then()
+                testUtil.createElection(hostToken, {type: 'FPTP', title: 'Is the host a cool guy?', candidates: ['Yeah', 'Hell yeah!']})
             }
             if (lobbyStatus.status === 'VOTING' && lobbyStatus.electionInfo.title === 'Is the host a cool guy?') {
                 done()
@@ -92,20 +97,14 @@ describe('With a created lobby and user', () => {
     })
 
     test('receives a message when a user joins the lobby', (done) => {
-        testSocketConnection(undefined, lobbyCode, hostID, true)
+        testSocketConnection(undefined, hostToken, true)
 
-        lobbySocket.on('connect', () => {
-            request(app).post('/lobby/joinLobby')
-            .send({lobbyCode})
-            .then((res) => {
-                const userCode = res.body.userCode
+        lobbySocket.on('connect', async () => {
+            const joinLobbyResponse = await testUtil.joinLobby(lobbyCode)
+            const userCode = joinLobbyResponse.body.userCode
 
-                request(app).post('/host/authenticateUser')
-                    .set('Authorization', hostID)
-                    .send({lobbyCode, userCode})
-                    .then()
+            testUtil.authenticateUser(hostToken, userCode)
             })
-        })
 
         lobbySocket.on('user-joined', (newNumberOfUsers) => {
             if (newNumberOfUsers === 2) done()
@@ -113,19 +112,13 @@ describe('With a created lobby and user', () => {
     })
 
     test('receives a message when someone casts a vote', (done) => {
-        request(app).post('/host/createElection')
-                    .set('Authorization', hostID)
-                    .send({lobbyCode, electionInfo: {type: 'FPTP', title: 'Is the host a cool guy?', candidates: ['Yeah', 'Hell yeah!']} as ElectionInfo})
-                    .then()
+        testUtil.createElection(hostToken, {type: 'FPTP', title: 'Is the host a cool guy?', candidates: ['Yeah', 'Hell yeah!']})
         
-        testSocketConnection(undefined, lobbyCode, hostID, true)
+        testSocketConnection(undefined, hostToken, true)
 
         lobbySocket.on('status-change', (newStatus : LobbyStatusInfo) => {
             if (newStatus.status === 'VOTING') {
-                request(app).post('/participant/castVote')
-                    .set('Authorization', participantToken)
-                    .send({voteContent: 'Yeah'})
-                    .then()
+                testUtil.castVote(participantToken, 'Yeah')
             }
         })
 
@@ -135,20 +128,14 @@ describe('With a created lobby and user', () => {
     })
 
     test('receives a message when the election is ended', (done) => {
-        request(app).post('/host/createElection')
-            .set('Authorization', hostID)
-            .send({lobbyCode, electionInfo: {type: 'FPTP', title: 'Is the host a cool guy?', candidates: ['Yeah', 'Hell yeah!']} as ElectionInfo})
-            .then()
+        testUtil.createElection(hostToken, {type: 'FPTP', title: 'Is the host a cool guy?', candidates: ['Yeah', 'Hell yeah!']})
 
-        testSocketConnection(undefined, lobbyCode, hostID, true)
+        testSocketConnection(undefined, hostToken, true)
 
         lobbySocket.on('status-change', (newStatus : LobbyStatusInfo) => {
             switch (newStatus.status) {
                 case 'VOTING':
-                    request(app).post('/host/endElection')
-                    .set('Authorization', hostID)
-                    .send({lobbyCode})
-                    .then()
+                    testUtil.endElection(hostToken)
                     break
                 case 'ELECTION_ENDED':
                     done()
@@ -157,13 +144,10 @@ describe('With a created lobby and user', () => {
     })
 
     test('receives a message when the lobby is closed', (done) => {
-        testSocketConnection(undefined, lobbyCode, hostID, true)
+        testSocketConnection(undefined, hostToken, true)
 
         lobbySocket.on('connect', () => {
-            request(app).post('/host/closeLobby')
-                .set('Authorization', hostID)
-                .send({lobbyCode})
-                .then()
+            testUtil.closeLobby(hostToken)
         })
         lobbySocket.on('status-change', (newStatus : LobbyStatusInfo) => {
             if (newStatus.status === 'CLOSING') {

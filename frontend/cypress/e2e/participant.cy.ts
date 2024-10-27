@@ -14,7 +14,7 @@ describe('In participant view', () => {
 		cy.visit('/participant')
 	})
 
-	it('Can see when a new election starts', () => {
+	it('can see when a new election starts', () => {
 		const exampleElection = {type: 'FPTP', title: 'President 2024', candidates: ['Joe Biden', 'Donald Trump']} as ElectionInfo
 
 		cy.createElection(exampleElection)
@@ -23,6 +23,18 @@ describe('In participant view', () => {
 		exampleElection.candidates.forEach((candidate) => {
 			cy.contains(candidate)
 		})
+	})
+
+	it('can see when an election ends', () => {
+		const exampleElection = {type: 'FPTP', title: 'President 2024', candidates: ['Joe Biden', 'Donald Trump']} as ElectionInfo
+
+		cy.createElection(exampleElection)
+
+		cy.contains(exampleElection.title)
+		
+		cy.endElection()
+
+		cy.get('[data-testid=\'election-end-header\']')
 	})
 
 	describe('with an active FPTP election going on', () => {

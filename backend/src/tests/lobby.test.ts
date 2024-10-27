@@ -2,25 +2,22 @@ import * as lobbyService from '../services/lobbyservice'
 import request from 'supertest'
 import * as dateMock from 'jest-date-mock'
 import { app, server } from '../util/server'
-import { LobbyWithUserCreationResponse } from '../types/testTypes'
 import { io as ioc, Socket as ClientSocket } from 'socket.io-client'
-import { ElectionInfo } from '../types/lobbyTypes'
 import { LobbyStatusInfo } from '../types/lobbyTypes'
 import { cleanupRoutine } from '../services/cleanupservice'
+import * as testUtil from './testUtil'
 
 describe('With a lobby created and one authenticated user in lobby', () => {
     let participantToken : string
-    let hostID : string
-    let lobbyCode : string
+    let hostToken : string
     let lobbySocket : ClientSocket 
 
     beforeEach(async () => {
         lobbyService.resetLobbies()
         dateMock.advanceTo(new Date(0, 0, 0, 0, 0, 0, 0))
-        const createLobbyResponse = (await request(app).post('/testing/createLobbyWithUser')).body as LobbyWithUserCreationResponse
-        participantToken = `Bearer ${createLobbyResponse.participantToken}`
-        lobbyCode = createLobbyResponse.lobbyCode
-        hostID = createLobbyResponse.hostID
+        const createLobbyResponse = await testUtil.createLobbyWithUser()
+        participantToken = createLobbyResponse.participantToken
+        hostToken = createLobbyResponse.hostToken
     })
 
     beforeAll((done) => {
@@ -45,7 +42,7 @@ describe('With a lobby created and one authenticated user in lobby', () => {
 
     describe('When user is connecting to the lobby socket', () => {
         const testSocketConnection = (participantToken? : string, done? : jest.DoneCallback, expectToConnect? : boolean) => {
-            lobbySocket = ioc('http://localhost:3001/lobby', {auth: {token: participantToken}})
+            lobbySocket = ioc('http://localhost:3001/lobby', {auth: {token: `Bearer ${participantToken}`}})
             lobbySocket.on('connect_error', () => {
                 if (expectToConnect) expect(1).toBe(2)
                 else done?.()
@@ -69,7 +66,7 @@ describe('With a lobby created and one authenticated user in lobby', () => {
         })
 
         test('Immediately gets the status-change emit', (done) => {
-            lobbySocket = ioc('http://localhost:3001/lobby', {auth: {token: participantToken}})
+            lobbySocket = ioc('http://localhost:3001/lobby', {auth: {token: `Bearer ${participantToken}`}})
             lobbySocket.on('connect_error', () => {
                 expect(1).toBe(2)
             })
@@ -79,12 +76,12 @@ describe('With a lobby created and one authenticated user in lobby', () => {
         })
 
         test('Cannot have two connections at the same time', (done) => {
-            lobbySocket = ioc('http://localhost:3001/lobby', {auth: {token: participantToken}})
+            lobbySocket = ioc('http://localhost:3001/lobby', {auth: {token: `Bearer ${participantToken}`}})
             lobbySocket.on('connect_error', (err) => {
                 throw new Error(err.message)
             })
             lobbySocket.on('connect', () => {
-                const lobbySocket2 = ioc('http://localhost:3001/lobby', {auth: {token: participantToken}})
+                const lobbySocket2 = ioc('http://localhost:3001/lobby', {auth: {token: `Bearer ${participantToken}`}})
                 lobbySocket2.on('connect', () => {
                     throw new Error('Second socket connected')
                 })
@@ -103,21 +100,12 @@ describe('With a lobby created and one authenticated user in lobby', () => {
         })
 
         test('will receive the STANDBY status if has casted a vote', (done) => {
-            request(app).post('/host/createElection')
-                .set('Authorization', hostID)
-                .send({lobbyCode, electionInfo: {type: 'FPTP', title: 'Test', candidates: ['Candidate 1', 'Candidate 2']} as ElectionInfo})
-                //Without then() Jest gets stuck.
-                .then()
-            
-            request(app).post('/participant/castVote')
-                .set('Authorization', participantToken)
-                .send({voteContent: 'Candidate 1'})
-                .then()
+            testUtil.createElection(hostToken, {type: 'FPTP', title: 'Test', candidates: ['Candidate 1', 'Candidate 2']})
+            testUtil.castVote(participantToken, 'Candidate 1')
             
             testSocketConnection(participantToken, null, true)
             lobbySocket.on('status-change', (newStatus : LobbyStatusInfo) => {
-                expect(newStatus.status).toBe('STANDBY')
-                done()
+                if (newStatus.status === 'STANDBY') done()
             })
         })
     })

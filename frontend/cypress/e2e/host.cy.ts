@@ -4,7 +4,7 @@ describe('In host view', () => {
 		cy.createLobbyAndUser()
 		cy.visit('/host')
 	})
-	it('Can create a FPTP election and end election', () => {
+	it('can create a FPTP election and end election', () => {
 		cy.get('[data-testid=\'fptp-radio\']').click()
 		cy.get('[data-testid=\'title-field\']').type('Language?')
 		cy.get('[data-testid=\'candidate-field\']').eq(0).type('Python')
@@ -51,13 +51,22 @@ describe('In host view', () => {
 		cy.getNumberOfLobbies().then((res) => {
 			expect(res.body.numberOfLobbies).eq(0)
 		})
+	})
 
+	it('retains the same lobby code after reload', () => {
+		// This isn't the best method, but wait until the election status has been fetched. Otherwise would receive an abort error
+		cy.get('[data-testid="create-election-submit"]').should('be.enabled')
+		cy.get('[data-testid=\'lobbycode\']').then((lobbyCode1) => {
+			cy.reload()
+			cy.get('[data-testid=\'lobbycode\']').then((lobbyCode2) => {
+				assert.equal(lobbyCode2.text(), lobbyCode1.text())
+			})
+		})
 	})
 
 	describe('when the lobby is closed', () => {
 		beforeEach(() => {
 			cy.get('[data-testid="create-election-submit"]').should('be.enabled')
-			// This isn't the best method, but wait until the election status has been fetched
 			cy.closeLobby()
 		})
 

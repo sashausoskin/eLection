@@ -1,14 +1,14 @@
 import express from 'express'
 import * as lobbyService from '../services/lobbyservice'
 import * as socketservice from '../services/socketservice'
-import { ErrorMessage } from '../types/communicationTypes'
+import { AuthenticationObject, ErrorMessage } from '../types/communicationTypes'
 import { ElectionInfo } from '../types/lobbyTypes'
 import { LobbyStatusInfo } from '../types/lobbyTypes'
 import Ajv from 'ajv'
 import * as electioninfo_schema from '../types/ElectionInfo_schema.json'
 import { io } from '../util/server'
 import * as cleanupService from '../services/cleanupservice'
-import { encodeObject } from '../util/encryption'
+import { decodeObject, encodeObject } from '../util/encryption'
 
 const router = express.Router()
 
@@ -18,20 +18,28 @@ const ajv = new Ajv()
 router.use((req, res, next) => {
     const authToken = req.headers.authorization
 
-    if (!authToken) return res.status(401).json({type: 'MISSING_AUTH_TOKEN', message: 'Did not receive an authorization token with the request'} as ErrorMessage)
+    if (!authToken) {
+        return res.status(401).json({type: 'MISSING_AUTH_TOKEN', message: 'Did not receive an authorization token with the request'} as ErrorMessage)
+    }
 
-    const lobbyCode = req.body.lobbyCode || req.query.lobbyCode
+    const hostAuth = decodeObject(req.headers.authorization.substring(7)) as AuthenticationObject
+
+    const lobbyCode = hostAuth.lobbyCode
+    const hostID = hostAuth.id
 
     if (!lobbyCode) return res.status(400).json({type: 'MISSING_LOBBY_CODE', message: 'Did not receive a lobby code'} as ErrorMessage)
     if (!lobbyService.isValidLobbyCode(lobbyCode)) return res.status(404).json({type: 'UNAUTHORIZED', message: 'Did not receive a valid lobby code'} as ErrorMessage)
-    if (!lobbyService.isLobbyHost(lobbyCode, authToken)) return res.status(403).json({type: 'UNAUTHORIZED', message: 'You do not have access to this lobby!'} as ErrorMessage)
+    if (!lobbyService.isLobbyHost(lobbyCode, hostID)) return res.status(403).json({type: 'UNAUTHORIZED', message: 'You do not have access to this lobby!'} as ErrorMessage)
+
+    req['lobbyCode'] = lobbyCode
+    req['hostID'] = hostID
 
     next()
 })
 
 router.post('/createElection', (req, res) => {
     const electionInfo = req.body.electionInfo as ElectionInfo
-    const lobbyCode = req.body.lobbyCode
+    const lobbyCode = req['lobbyCode']
 
     const maxCandidateNameLength = 40
 
@@ -70,7 +78,7 @@ router.post('/createElection', (req, res) => {
 })
 
 router.post('/endElection', (req,res) => {
-    const lobbyCode = req.body.lobbyCode
+    const lobbyCode = req['lobbyCode']
 
     if (!lobbyService.isElectionActive(lobbyCode)) {
         return res.status(405).json({type: 'NO_ACTIVE_ELECTION', message: 'There isn\'t currently an active election going on in this lobby!'} as ErrorMessage)
@@ -93,7 +101,7 @@ router.post('/endElection', (req,res) => {
 })
 
 router.post('/closeLobby', (req,res) => {
-    const lobbyCode = req.body.lobbyCode
+    const lobbyCode = req['lobbyCode']
 
     cleanupService.closeLobby(lobbyCode, 'HOST_CLOSED')
 
@@ -101,13 +109,13 @@ router.post('/closeLobby', (req,res) => {
 })
 
 router.get('/getElectionStatus', (req, res) => {
-    const lobbyCode = req.query.lobbyCode as string
+    const lobbyCode = req['lobbyCode']
 
     return res.json({electionActive: lobbyService.isElectionActive(lobbyCode)})
 })
 
 router.post('/authenticateUser', async (req, res) => {
-    const lobbyCode = req.body.lobbyCode
+    const lobbyCode = req['lobbyCode']
     const userToAuthorize = req.body.userCode
 
     if (!userToAuthorize || typeof userToAuthorize !== 'string') {

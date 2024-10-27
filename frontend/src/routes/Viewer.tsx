@@ -22,7 +22,7 @@ const Viewer = () => {
 	const {t} = useTranslation()
 	hostService.loadStoredValues()
 	const lobbyCode = hostService.getLobbyCode()
-	const hostID = hostService.getAuthToken()
+	const hostToken = hostService.getAuthToken()
 	const viewerSocket = useRef<Socket>()
 
 	const handleConnect = () => {
@@ -41,7 +41,6 @@ const Viewer = () => {
 			setErrorText(t('status.serverConnectionError'))
 			break
 		case 'io server disconnect':
-			console.log('Current status:', lobbyStatus?.status)
 			if (lobbyStatus?.status !== 'CLOSING') setErrorText(t('status.viewerKick'))
 		}
 	}, [lobbyStatus?.status, t])
@@ -60,15 +59,15 @@ const Viewer = () => {
 	}
 
 	useEffect(() => {
-		if (!lobbyCode || !hostID) return
+		if (!lobbyCode || !hostToken) return
 
-		viewerSocket.current = createViewerSocket(lobbyCode, hostID)
+		viewerSocket.current = createViewerSocket(hostToken)
 		viewerSocket.current.connect()
 
 		return (() => {
 			if (viewerSocket.current) viewerSocket.current.disconnect()
 		})
-	}, [hostID, lobbyCode])
+	}, [hostToken, lobbyCode])
 
 	useEffect(() => {
 		if (!viewerSocket.current) return
@@ -87,7 +86,7 @@ const Viewer = () => {
 
 	}, [handleConnectError, handleDisconnect])
 
-	if (!lobbyCode || !hostID) return <a>{t('status.viewerLoadError')}</a>
+	if (!lobbyCode || !hostToken) return <a>{t('status.viewerLoadError')}</a>
 	if (errorText) return <a>{errorText}</a>
 	if (!lobbyStatus) return <Loading><a>{t('status.loading')}</a></Loading>
 
