@@ -2,6 +2,10 @@ import request from 'supertest'
 import * as lobbyService from '../services/lobbyservice'
 import { app, server } from '../util/server'
 import ioc, { Socket as ClientSocket } from 'socket.io-client'
+import { AuthenticationObject } from '../types/communicationTypes'
+import { decodeObject, encodeObject } from '../util/encryption'
+import { LobbyCreationResponse } from '../types/testTypes'
+import * as testUtil from './testUtil'
 
 beforeEach(() => {
     lobbyService.resetLobbies()
@@ -19,18 +23,18 @@ describe('With one lobby created', () => {
     let lobbyCode = null
 
     beforeEach(async () => {
-        const lobbyCreationRequest = await request(app).post('/lobby/createLobby')
-        lobbyCode = lobbyCreationRequest.body.lobbyCode
+        const lobbyCreationResponse = (await testUtil.createLobby()).body as LobbyCreationResponse
+        lobbyCode = lobbyCreationResponse.lobbyCode
     })
 
     test('cannot join a lobby without a lobby code', async () => {
-        const userCodeRequest = await request(app).post('/lobby/joinLobby').send()
+        const userCodeRequest = await testUtil.joinLobby(undefined)
         expect(userCodeRequest.statusCode).toBe(400)
     })
 
     test('can join a lobby queue', async () => {
         expect(lobbyService.getUsersInQueue(lobbyCode).length).toBe(0)
-        const userCodeRequest = await request(app).post('/lobby/joinLobby').send({lobbyCode})
+        const userCodeRequest = await testUtil.joinLobby(lobbyCode)
         expect(userCodeRequest.statusCode).toBe(200)
         const userCode = userCodeRequest.body.userCode
         expect(lobbyService.isUserInQueue(userCode, lobbyCode)).toBe(true)
@@ -41,16 +45,17 @@ describe('With one lobby created', () => {
         const testLobbyCode = '1234' === lobbyCode ? '1234' : '4321'
 
         expect(lobbyService.getUsersInQueue(lobbyCode).length).toBe(0)
-        const lobbyRequest = await request(app).post('/lobby/joinLobby').send({lobbyCode: testLobbyCode})
+        const lobbyRequest = await testUtil.joinLobby(testLobbyCode)
         expect(lobbyRequest.statusCode).toBe(404)
         expect(lobbyService.getUsersInQueue(lobbyCode).length).toBe(0)
     })
 })
 
 describe('With one lobby created and one user in queue', () => {
-    let lobbyCode : string | null = null
-    let hostID : string | null = null
-    let userCode : string | null = null
+    let lobbyCode : string
+    let hostToken : string
+    let hostID : string
+    let userCode : string
     let queueSocket : ClientSocket = null
 
     beforeAll((done) => {
@@ -68,103 +73,109 @@ describe('With one lobby created and one user in queue', () => {
     })
 
     beforeEach(async () => {
-        const lobbyCreationRequest = await request(app).post('/lobby/createLobby')
-        lobbyCode = lobbyCreationRequest.body.lobbyCode
-        hostID = lobbyCreationRequest.body.hostID
-        const userCodeRequest = await request(app).post('/lobby/joinLobby').send({lobbyCode})
+        const lobbyCreationResponse = (await testUtil.createLobby()).body as LobbyCreationResponse
+        lobbyCode = lobbyCreationResponse.lobbyCode
+        hostToken = lobbyCreationResponse.token
+        hostID = (decodeObject(lobbyCreationResponse.token) as AuthenticationObject).id
+        const userCodeRequest = await testUtil.joinLobby(lobbyCode)
         userCode = userCodeRequest.body.userCode
     })
-
-    const validateUser = async (lobbyCode? : string, userID? : string) => {
-        return await request(app).post('/lobby/validateUserInfo').send({lobbyCode, userID})
-    }
-
-    const validateHost = async (lobbyCode? : string, hostID? : string) => {
-        return await request(app).post('/lobby/validateHostInfo').send({lobbyCode, hostID})
-    }
     
     test('host can authenticate a user in queue', async () => {
         expect(lobbyService.getParticipants(lobbyCode).length).toBe(0)
 
-        await request(app).post('/host/authenticateUser')
-            .set('Authorization', hostID)
-            .send({lobbyCode, userCode})
+        await testUtil.authenticateUser(hostToken, userCode)
+        
+        expect(lobbyService.getParticipants(lobbyCode).length).toBe(1)
     })
 
     test('host cannot authenticate with missing info', async () => {
         // No auth token
-        const authRequest = await request(app).post('/host/authenticateUser')
-            .send({lobbyCode, userCode})
-        
-        expect(authRequest.status).toBe(401)
-
-        // No lobby code
-        await request(app).post('/host/authenticateUser')
-            .set('Authorization', hostID)
-            .send({ userCode})
+        let authRequest = await testUtil.authenticateUser(undefined, userCode)
         
         expect(authRequest.status).toBe(401)
 
         // No user code
-        await request(app).post('/host/authenticateUser')
-            .set('Authorization', hostID)
-            .send({ lobbyCode })
+        authRequest = await testUtil.authenticateUser(hostToken, undefined)
         
-        expect(authRequest.status).toBe(401)
+        expect(authRequest.status).toBe(400)
     })
 
     test('host cannot authenticate with invalid token', async () => {
         expect(lobbyService.getParticipants(lobbyCode).length).toBe(0)
 
-        const authRequest = await request(app).post('/host/authenticateUser')
-            .set('Authorization', '11111111-1111-1111-1111-111111111111')
-            .send({lobbyCode, userCode})
+        const fakeAuth = encodeObject({
+            id: '11111111-1111-1111-1111-111111111111',
+            lobbyCode: lobbyCode
+        } as AuthenticationObject)
+
+        const authRequest = await testUtil.authenticateUser(fakeAuth, userCode)
         
         expect(authRequest.statusCode).toBe(403)
         expect(lobbyService.getParticipants(lobbyCode).length).toBe(0)
     })
 
     test('host cannot authenticate other lobbies\' users', async () => {
-        const lobby2CreationRequest = await request(app).post('/lobby/createLobby')
-        const host2ID = lobby2CreationRequest.body.hostID
+        const lobby2CreationResponse = (await request(app).post('/lobby/createLobby')).body as LobbyCreationResponse
+        const host2Token = lobby2CreationResponse.token
         
         expect(lobbyService.getParticipants(lobbyCode).length).toBe(0)
-        const authRequest = await request(app).post('/host/authenticateUser')
-            .set('Authorization', host2ID)
-            .send({lobbyCode, userCode})
+        const authRequest = await testUtil.authenticateUser(host2Token, userCode)
         
-        expect(authRequest.statusCode).toBe(403)
+        expect(authRequest.statusCode).toBe(404)
         expect(lobbyService.getParticipants(lobbyCode).length).toBe(0)
     })
 
     test('host cannot authenticate nonexistent user', async () => {
         const invalidUserCode = '1234' === userCode ? '1234' : '4321'
 
-        const authRequest = await request(app).post('/host/authenticateUser')
-            .set('Authorization', hostID)
-            .send({lobbyCode, userCode: invalidUserCode})
+        const authRequest = await testUtil.authenticateUser(hostToken, invalidUserCode)
         
         expect(authRequest.statusCode).toBe(404)
         expect(lobbyService.getParticipants(lobbyCode).length).toBe(0)
     })
 
     test('host validation works', async () => {
-        const hostValidationRequest = await validateHost(lobbyCode, hostID)
+        const hostValidationRequest = await testUtil.validateHost(hostToken)
 
         expect(hostValidationRequest.statusCode).toBe(200)
     })
 
     test('host validation throws error with invalid info', async () => {
-        let hostValidationRequest = await validateHost(lobbyCode === '1234' ? '4321' : '1234', hostID)
+        // Invalid lobby code
+        let fakeAuth = encodeObject({
+            id: hostID,
+            lobbyCode: lobbyCode === '1234' ? '4321' : '1234'
+        } as AuthenticationObject)
+
+        let hostValidationRequest = await testUtil.validateHost(fakeAuth)
         expect(hostValidationRequest.statusCode).toBe(404)
 
-        hostValidationRequest = await validateHost(lobbyCode, '11111111-1111-1111-1111-111111111111')
+        // Invalid ID
+        fakeAuth = encodeObject({
+            id: '11111111-1111-1111-1111-111111111111',
+            lobbyCode
+        } as AuthenticationObject)
+
+        hostValidationRequest = await testUtil.validateHost(fakeAuth)
         expect(hostValidationRequest.statusCode).toBe(403)
 
-        hostValidationRequest = await validateHost(lobbyCode)
+        // No ID
+        fakeAuth = encodeObject({
+            id: null,
+            lobbyCode
+        } as AuthenticationObject)
+
+        hostValidationRequest = await testUtil.validateHost(fakeAuth)
         expect(hostValidationRequest.statusCode).toBe(400)
 
-        hostValidationRequest = await validateHost(undefined, hostID)
+        // No lobby code
+        fakeAuth = encodeObject({
+            id: hostID,
+            lobbyCode: null
+        } as AuthenticationObject)
+
+        hostValidationRequest = await testUtil.validateHost(fakeAuth)
         expect(hostValidationRequest.statusCode).toBe(400)
     })
 
@@ -173,14 +184,12 @@ describe('With one lobby created and one user in queue', () => {
         queueSocket.on('connect_error', (error) => {
             console.error(error.message)
         })
-        queueSocket.on('authorize', (userID : string) => {
-            expect(userID).toBeDefined()
+        queueSocket.on('authorize', (userToken : string) => {
+            expect(userToken).toBeDefined()
             done()
         })
         queueSocket.on('connect', async () => {
-            await request(app).post('/host/authenticateUser')
-                .set('Authorization', hostID)
-                .send({lobbyCode, userCode})
+            testUtil.authenticateUser(hostToken, userCode)
         })
     })
 
@@ -195,9 +204,16 @@ describe('With one lobby created and one user in queue', () => {
         })
     })
     test('user validation works', async () => {
-        const userID = lobbyService.createAuthenticatedUser(lobbyCode)
+        const userId = lobbyService.createAuthenticatedUser(lobbyCode)
 
-        const validationRequest = await validateUser(lobbyCode, userID)
+        const userAuth : AuthenticationObject = {
+            lobbyCode,
+            id: userId
+        }
+
+        const userToken = encodeObject(userAuth)
+
+        const validationRequest = await testUtil.validateUser(userToken)
 
         expect(validationRequest.statusCode).toBe(200)
     })
@@ -205,17 +221,43 @@ describe('With one lobby created and one user in queue', () => {
     test('user validation returns error with invalid parameters', async () => {
         const userID = lobbyService.createAuthenticatedUser(lobbyCode)
 
-        let validationRequest = await validateUser(lobbyCode === '1234' ? '4321' : '1234', userID)
+        //Made-up token
+        let validationRequest = await testUtil.validateUser('11111111-1111-1111-1111-111111111111')
         expect(validationRequest.statusCode).toBe(403)
 
-        validationRequest = await validateUser(lobbyCode, '11111111-1111-1111-1111-111111111111')
-        expect(validationRequest.statusCode).toBe(403)
+        //Incorrect lobby code
+        let fakeAuth = encodeObject({
+            id: userID,
+            lobbyCode: lobbyCode === '1234' ? '4321' : '1234'
+        } as AuthenticationObject)
 
-        validationRequest = await validateUser(lobbyCode)
-        expect(validationRequest.statusCode).toBe(400)
+        validationRequest = await testUtil.validateUser(fakeAuth)
+        expect(validationRequest.statusCode).toBe(401)
 
-        validationRequest = await validateUser(undefined, userID)
-        expect(validationRequest.statusCode).toBe(400)
+        //Incorrect user ID
+        fakeAuth = encodeObject({
+            id: '11111111-1111-1111-1111-111111111111',
+            lobbyCode
+        } as AuthenticationObject)
+
+        validationRequest = await testUtil.validateUser(fakeAuth)
+        expect(validationRequest.statusCode).toBe(401)
+
+        //Missing ID
+        fakeAuth = encodeObject({
+            lobbyCode
+        })
+
+        validationRequest = await testUtil.validateUser(fakeAuth)
+        expect(validationRequest.statusCode).toBe(401)
+
+        //Missing lobby code
+        fakeAuth = encodeObject({
+            id: userID
+        })
+
+        validationRequest = await testUtil.validateUser(fakeAuth)
+        expect(validationRequest.statusCode).toBe(401)
     })
 
     describe('when connecting to the queue socket', () => {

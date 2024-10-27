@@ -138,54 +138,43 @@ describe('Joining a lobby', () => {
 	})
 
 	it('shows a message when authenticated', () => {
-		cy.request('post', `${Cypress.env('BACKEND_URL')}/lobby/createLobby`).then((res) => {
-			cy.get('[data-testid="lobby-header"]').should('not.exist')
-			const lobbyCode: string = res.body.lobbyCode
-			const hostID: string = res.body.hostID
-
-			cy.get('[data-testid="lobbycode-field"]').type(lobbyCode)
+		cy.createLobbyAndUser(false)
+		cy.get('[data-testid="lobby-header"]').should('not.exist')
+		cy.get('@lobbyCode').then((lobbyCode) => {
+			//This looks bad, but the type conversion is added to avoid TypeScript errors
+			cy.get('[data-testid="lobbycode-field"]').type(lobbyCode as unknown as string)
 			cy.get('button').click()
 
 			cy.get('[data-testid="lobby-header"]').should('not.exist')
 			cy.get('[data-testid="usercode"]').then((value) => {
 				const userCode: string = value.text()
 
-				cy.request({
-					method: 'POST',
-					url: `${Cypress.env('BACKEND_URL')}/host/authenticateUser`,
-					body: { userCode, lobbyCode },
-					headers: {
-						Authorization: hostID,
-					},
-				})
+				cy.authenticateUser(userCode)
 				cy.get('[data-testid="lobby-header"]')
 			})
 		})
+
+		
+
 	})
 
 	it('is still authenticated after reload', () => {
-		cy.request('post', `${Cypress.env('BACKEND_URL')}/lobby/createLobby`).then((res) => {
-			const lobbyCode: string = res.body.lobbyCode
-			const hostID: string = res.body.hostID
+		cy.createLobbyAndUser(false)
 
-			cy.get('[data-testid="lobbycode-field"]').type(lobbyCode)
+		cy.get('@lobbyCode').then((lobbyCode) => {
+			cy.get('[data-testid="lobbycode-field"]').type(lobbyCode as unknown as string)
 			cy.get('button').click()
 
 			cy.get('[data-testid="usercode"]').then((value) => {
 				const userCode: string = value.text()
 
-				cy.request({
-					method: 'POST',
-					url: `${Cypress.env('BACKEND_URL')}/host/authenticateUser`,
-					body: { userCode, lobbyCode },
-					headers: {
-						Authorization: hostID,
-					},
-				})
+				cy.authenticateUser(userCode)
 				cy.get('[data-testid="lobby-header"]')
 				cy.visit('/participant')
 				cy.get('[data-testid="lobby-header"]')
 			})
+
 		})
+		
 	})
 })

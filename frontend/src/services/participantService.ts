@@ -2,7 +2,7 @@ import { apiClient } from '../util/apiClient'
 
 let lobbyCode: string | null = null
 let userCode: string | null = null
-let participantID: string | null = null
+let participantToken: string | null = null
 
 /**
  * Saves the user code in memory.
@@ -23,7 +23,6 @@ export const getUserCode = () => {
  * @param newLobbyCode The lobby code to save.
  */
 export const setLobbyCode = (newLobbyCode: string) => {
-	window.localStorage.setItem('participantLobbyCode', newLobbyCode)
 	lobbyCode = newLobbyCode
 }
 
@@ -40,15 +39,15 @@ export const getLobbyCode = () => {
  * @param newToken The token to store.
  */
 export const setAuthToken = (newToken: string) => {
-	window.localStorage.setItem('participantID', newToken)
-	participantID = newToken
+	window.localStorage.setItem('participantToken', `Bearer ${newToken}`)
+	participantToken = `Bearer ${newToken}`
 }
 
 /**
  * Gets the authorization token stored in memory
  */
 export const getAuthToken = () => {
-	return participantID
+	return participantToken
 }
 
 /**
@@ -57,10 +56,9 @@ export const getAuthToken = () => {
 export const clearValues = () => {
 	userCode = null
 	lobbyCode = null
-	participantID = null
+	participantToken = null
 
-	window.localStorage.removeItem('participantLobbyCode')
-	window.localStorage.removeItem('participantID')
+	window.localStorage.removeItem('participantToken')
 }
 
 /**
@@ -84,16 +82,16 @@ export const joinQueue = async (lobbyCode: string): Promise<string | null> => {
  * Loads the values stored in storage and checks with the backend if they are valid.
  */
 export const validateStoredUserValues = async () => {
-	lobbyCode = window.localStorage.getItem('participantLobbyCode')
-	participantID = window.localStorage.getItem('participantID')
+	participantToken = window.localStorage.getItem('participantToken')
 
-	if (lobbyCode === null || participantID === null) {
+	if (participantToken === null) {
 		throw new Error('Did not find values in local storage')
 	}
 
-	await apiClient.post('/lobby/validateUserInfo', {
-		lobbyCode,
-		userID: participantID,
+	await apiClient.post('/lobby/validateUserInfo', undefined, {
+		headers: {
+			Authorization: participantToken
+		}
 	})
 }
 /**
@@ -102,10 +100,10 @@ export const validateStoredUserValues = async () => {
  */
 export const castVote = async (voteContent: string | string[] | null) => {
 	await apiClient.post('/participant/castVote', {
-		lobbyCode, voteContent
+		voteContent
 	}, {
 		headers: {
-			Authorization: participantID
+			Authorization: participantToken
 		}
 	})
 }

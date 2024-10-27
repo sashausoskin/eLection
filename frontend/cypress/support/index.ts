@@ -10,7 +10,7 @@ declare global {
 			 * Custom command to create a lobby with an authenticated user.
 			 * @example cy.dataCy('greeting')
 			 */
-			createLobbyAndUser(): void;
+			createLobbyAndUser(saveToStorage? : boolean): void;
 			resetServer(): void
 			createElection(electionInfo: ElectionInfo): void
 			createUser(): Cypress.Chainable<Cypress.Response<object>>
@@ -21,6 +21,7 @@ declare global {
 			startCleanup(): Cypress.Chainable<Cypress.Response<object>>
 			setLobbyLastActive(lastActiveTime : number) : Cypress.Chainable<Cypress.Response<object>>
 			getNumberOfLobbies(): Cypress.Chainable<Cypress.Response<object>>
+			authenticateUser(userCode : string): Cypress.Chainable<Cypress.Response<object>>
 		}
 	}
 }

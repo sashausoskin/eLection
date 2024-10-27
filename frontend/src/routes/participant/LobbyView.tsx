@@ -25,7 +25,6 @@ const LobbyView = () : JSX.Element => {
 
 	const lobbySocket = useRef<Socket>()
 
-	const lobbyCode = participantService.getLobbyCode()
 	const participantToken = participantService.getAuthToken()
 
 	const onStatusChange = (newStatus : LobbyStatusInfo) => {
@@ -56,12 +55,12 @@ const LobbyView = () : JSX.Element => {
 	// This is a bit of a hacky solution. This is to avoid dependency issues with useEffect()
 	// Handles the connection to the socket.
 	useEffect(() => {
-		if (!lobbyCode || !participantToken) {
+		if (!participantToken) {
 			setViewTab('joinLobby')
 			return
 		}
 
-		lobbySocket.current = createLobbySocket(lobbyCode, participantToken)
+		lobbySocket.current = createLobbySocket(participantToken)
 
 		lobbySocket.current?.connect()
 
@@ -70,7 +69,7 @@ const LobbyView = () : JSX.Element => {
 		}
         
 		return handleUnmount
-	}, [lobbyCode, participantToken, setViewTab])
+	}, [participantToken, setViewTab])
 
 	// Assigns functions to socket events. This is done separately from the socket connection to make sure that the socket doesn't try to connect multiple times.
 	useEffect(() => {

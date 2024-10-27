@@ -1,13 +1,22 @@
 import express from 'express'
 import * as lobbyService from '../services/lobbyservice'
-import { ErrorMessage } from '../types/communicationTypes'
+import { AuthenticationObject, ErrorMessage } from '../types/communicationTypes'
+import { decodeObject, encodeObject } from '../util/encryption'
+import { LobbyCreationResponse } from '../types/testTypes'
 
 
 const router = express.Router()
 
-router.post('/createLobby', async (_req, res) => {
+router.post<LobbyCreationResponse>('/createLobby', async (_req, res) => {
     const {lobbyCode, hostID} = lobbyService.createNewLobby()
-    res.send({lobbyCode, hostID})
+    const hostAuth : AuthenticationObject = {
+        id: hostID,
+        lobbyCode
+    }
+
+    const hostAuthToken = encodeObject(hostAuth)
+
+    return res.send({token: hostAuthToken, lobbyCode})
 })
 
 router.post('/joinLobby', async (req, res) => {
@@ -29,29 +38,43 @@ router.post('/joinLobby', async (req, res) => {
 })
 
 router.post('/validateUserInfo', async (req, res) => {
-    const lobbyCode = req.body.lobbyCode
-    const userID = req.body.userID
-
-    if (!lobbyCode) {
-        return res.status(400).json({error: 'The request is missing field lobbyCode'})
+    const authToken = req.headers.authorization
+    if (!authToken) return res.status(400).json({error: 'No authentication header'})
+    let decodedAuthToken
+    try {
+        decodedAuthToken = decodeObject(authToken.substring(7)) as AuthenticationObject
+    } catch {
+        return res.status(403).json({error: 'Invalid authentication token'})
     }
 
-    if (!userID) {
-        return res.status(400).json({error: 'The request is missing field userID'})
-    }
+
+    const lobbyCode = decodedAuthToken.lobbyCode
+    const userID = decodedAuthToken.id
 
     const userIsValid = lobbyService.isParticipant(lobbyCode, userID)
 
     if (!userIsValid) {
-        return res.status(403).json({error: 'The given information is not valid'})
+        return res.status(401).json({error: 'The given information is not valid'})
     }
 
     return res.status(200).send()
 })
 
 router.post('/validateHostInfo', async (req, res) => {
-    const lobbyCode = req.body.lobbyCode
-    const hostID = req.body.hostID
+    const authToken = req.headers.authorization
+
+    if (!authToken) return res.status(400).json({type: 'MISSING_AUTH_TOKEN', message: 'Did not receive an authentication token'} as ErrorMessage)
+
+    let decodedAuth
+    try {
+        decodedAuth = decodeObject(authToken.substring(7)) as AuthenticationObject
+    } catch {
+        return res.status(403).json({type: 'UNAUTHORIZED', message: 'Received an invalid authentication token'} as ErrorMessage)
+    }
+    
+
+    const lobbyCode = decodedAuth.lobbyCode
+    const hostID = decodedAuth.id
 
     if (!lobbyCode) return res.status(400).json({type: 'MALFORMATTED_REQUEST',message: 'Request is missing field lobbyCode'} as ErrorMessage)
     if (!hostID) return res.status(400).json({type: 'MALFORMATTED_REQUEST', message: 'Request is missing field hostID'} as ErrorMessage)

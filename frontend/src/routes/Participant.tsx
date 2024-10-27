@@ -20,6 +20,7 @@ const ParticipantView: () => JSX.Element = () => {
 		const validateStoredValues = async () => {
 			setIsLoading(true)
 			participantService.validateStoredUserValues().then(() => {
+				console.log('Token valid')
 				setViewTab('inLobby')
 			})
 				.catch((error) => {

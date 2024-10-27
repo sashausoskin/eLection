@@ -1,7 +1,7 @@
 import { ElectionActivityResponse, ElectionInfo, LobbyCreationResponse } from '../types'
 import { apiClient } from '../util/apiClient'
 
-let hostID: string | null = null
+let hostToken: string | null = null
 let lobbyCode: string | null = null
 
 /**
@@ -10,9 +10,10 @@ let lobbyCode: string | null = null
 export const createLobby = async () => {
 	await apiClient.post<LobbyCreationResponse>('/lobby/createLobby').then((response) => {
 		lobbyCode = response.data.lobbyCode
-		window.localStorage.setItem('hostID', response.data.hostID)
+		hostToken = `Bearer ${response.data.token}`
+		window.localStorage.setItem('hostToken', hostToken)
 		window.localStorage.setItem('hostLobbyCode', lobbyCode)
-		hostID = response.data.hostID
+
 	})
 }
 
@@ -28,7 +29,7 @@ export const auhtenticateUserWithCode = async (userCode: string) => {
 			lobbyCode,
 		},
 		{
-			headers: { Authorization: hostID },
+			headers: { Authorization: hostToken },
 		}
 	)
 }
@@ -44,15 +45,15 @@ export const getLobbyCode = (): string | null => {
  * @returns The token of the host
  */
 export const getAuthToken = (): string | null => {
-	return hostID
+	return hostToken
 }
 
 /**
  * Loads the lobby information stored locally.
  */
 export const loadStoredValues = () =>{
+	hostToken = window.localStorage.getItem('hostToken')
 	lobbyCode = window.localStorage.getItem('hostLobbyCode')
-	hostID = window.localStorage.getItem('hostID')
 }
 
 /**
@@ -61,22 +62,23 @@ export const loadStoredValues = () =>{
 export const validateStoredValues = async () => {
 	loadStoredValues()
 
-	if (lobbyCode === undefined || hostID === undefined) {
+	if (lobbyCode === undefined || hostToken === undefined) {
 		throw new Error('Did not find values in local storage')
 	}
 
-	await apiClient.post('/lobby/validateHostInfo', {
-		lobbyCode,
-		hostID,
+	await apiClient.post('/lobby/validateHostInfo', {}, {
+		headers: {
+			Authorization: hostToken
+		}
 	})
 }
 /**
  * Clears all of the stored values relating to the host's lobby information.
  */
 export const clearSavedInfo = () => {
+	window.localStorage.removeItem('hostToken')
 	window.localStorage.removeItem('hostLobbyCode')
-	window.localStorage.removeItem('hostID')
-	hostID = null
+	hostToken = null
 	lobbyCode = null
 }
 
@@ -86,9 +88,9 @@ export const clearSavedInfo = () => {
  */
 export const createElection = async (electionInfo : ElectionInfo) => {
 	await apiClient.post('/host/createElection',
-		{lobbyCode, electionInfo},
+		{electionInfo},
 		{headers: {
-			Authorization: hostID
+			Authorization: hostToken
 		}}
 	)
 }
@@ -97,8 +99,8 @@ export const createElection = async (electionInfo : ElectionInfo) => {
  * Sends a request to the backend to end an active election.
  */
 export const endElection = async () => {
-	await apiClient.post('/host/endElection', {lobbyCode}, {headers: {
-		Authorization: hostID
+	await apiClient.post('/host/endElection', {}, {headers: {
+		Authorization: hostToken
 	}})
 }
 
@@ -106,8 +108,8 @@ export const endElection = async () => {
  * Sends a request to the backend to close the current lobby.
  */
 export const closeLobby = async () => {
-	await apiClient.post('/host/closeLobby', {lobbyCode}, {headers: {
-		Authorization: hostID
+	await apiClient.post('/host/closeLobby', {}, {headers: {
+		Authorization: hostToken
 	}})
 }
 
@@ -117,8 +119,7 @@ export const closeLobby = async () => {
  */
 export const getElectionStatus = async () => await (
 	apiClient.get<ElectionActivityResponse>('/host/getElectionStatus', {
-		params: {lobbyCode},
 		headers: {
-			Authorization: hostID
+			Authorization: hostToken
 		}})
 )

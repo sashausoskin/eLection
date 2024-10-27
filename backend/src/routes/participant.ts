@@ -1,8 +1,9 @@
 import express from 'express'
-import { ErrorMessage } from '../types/communicationTypes'
+import { AuthenticationObject, ErrorMessage } from '../types/communicationTypes'
 import * as lobbyService from '../services/lobbyservice'
 import * as socketservice from '../services/socketservice'
 import { io } from '../util/server'
+import { decodeObject } from '../util/encryption'
 
 const router = express.Router()
 
@@ -13,25 +14,38 @@ router.use((req, res, next) => {
     if (!authToken) {
         return res.status(401).json({type: 'MISSING_AUTH_TOKEN', message: 'Did not receive an authorization token with the request'} as ErrorMessage)
     }
+    let decodedAuthToken
+    const codedAuthToken = authToken.substring(7)
+    try {
+        decodedAuthToken = decodeObject(codedAuthToken) as AuthenticationObject
+    } catch {
+        return res.status(403).json({type: 'UNAUTHORIZED', message: 'Invalid authentication token'} as ErrorMessage)
+    }
 
-    const lobbyCode = req.body.lobbyCode
+
+    const lobbyCode = decodedAuthToken.lobbyCode
+    const userID = decodedAuthToken.id
 
     if (!lobbyCode) return res.status(400).json({type: 'MISSING_LOBBY_CODE', message: 'Did not receive a lobby code'} as ErrorMessage)
     if (!lobbyService.isValidLobbyCode(lobbyCode)) return res.status(404).json({type: 'UNAUTHORIZED', message: 'Did not receive a valid lobby token'} as ErrorMessage)
-    if (!lobbyService.isParticipant(lobbyCode, authToken)) return res.status(403).json({type: 'UNAUTHORIZED', message: 'You are not a participant in this lobby!'} as ErrorMessage)
+    if (!lobbyService.isParticipant(lobbyCode, userID)) return res.status(403).json({type: 'UNAUTHORIZED', message: 'You are not a participant in this lobby!'} as ErrorMessage)
+
+    req['lobbyCode'] = lobbyCode
+    req['userID'] = userID
     
     next()
 })
 
 router.post('/castVote', (req, res) => {
-    const lobbyCode = req.body.lobbyCode
+    const lobbyCode = req['lobbyCode']
+    const userID = req['userID']
     const currentLobbyStatus = lobbyService.getLobbyStatus(lobbyCode, false)
 
     if (currentLobbyStatus.status !== 'VOTING') {
         return res.status(405).json({type: 'NO_ACTIVE_ELECTION', message: 'You casted a vote even though there isn\'t an election going on.'} as ErrorMessage)
     }
 
-    if (lobbyService.hasUserVoted(lobbyCode, req.headers.authorization)) {
+    if (lobbyService.hasUserVoted(lobbyCode, userID)) {
         return res.status(403).json({type: 'ALREADY_VOTED', message: 'You have already casted a vote in this election'} as ErrorMessage)
     }
 
@@ -78,7 +92,7 @@ router.post('/castVote', (req, res) => {
     }
     else lobbyService.castVotes(lobbyCode, null, 1)
 
-    const usersVoted = lobbyService.saveUserVoted(lobbyCode, req.headers.authorization)
+    const usersVoted = lobbyService.saveUserVoted(lobbyCode, userID)
 
     io.of('/viewer').to(socketservice.getViewerSocket(lobbyCode)).emit('vote-casted', usersVoted)
 
