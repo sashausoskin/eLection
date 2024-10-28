@@ -1,7 +1,7 @@
 import { AxiosError } from 'axios'
 import { ErrorMessage, Field, FieldArray, Form, Formik, FormikHelpers } from 'formik'
 import * as Yup from 'yup'
-import { createElection, endElection, getElectionStatus } from '../../services/lobbyHostService'
+import { createElection, endElection, getElectionResults, getElectionStatus } from '../../services/lobbyHostService'
 import { Fragment, useContext, useEffect, useState } from 'react'
 import { ElectionInfo,  ElectionType,  ErrorMessage as ResponseErrorMessage, StatusMessage } from '../../types'
 import './CreateElectionForm.css'
@@ -142,6 +142,19 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
 					handleUnauthorizedRequest()
 				}
 				setIsRequestPending(false)
+			}
+		}
+	}
+
+	const handleDownloadResults = async () => {
+		let electionResults
+		try {
+			electionResults = await getElectionResults()
+		} catch (e) {
+			if (e instanceof AxiosError) {
+				if ((e.response?.data as ResponseErrorMessage).type === 'NO_ACTIVE_ELECTION') {
+					createPopup({type: 'alert', message: 'There are no elections to fetch results for'})
+				}
 			}
 		}
 	}
@@ -289,6 +302,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
 			</Formik>
         
 			{statusMessage && <a data-testid={`status-${statusMessage.status}`}style={{color: statusMessage.status === 'success' ? 'green' : 'red'}}>{statusMessage.message}</a>}
+			<button
 		</div>
 	)
 }

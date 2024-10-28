@@ -100,6 +100,18 @@ router.post('/endElection', (req,res) => {
     return res.send()
 })
 
+router.get('/getElectionResults', (req, res) => {
+    const lobbyCode = req['lobbyCode']
+
+    const lobbyStatus = lobbyService.getLobbyStatus(lobbyCode, true)
+
+    if (lobbyStatus.status !== "ELECTION_ENDED") {
+        return res.status(400).json({type: 'NO_ACTIVE_ELECTION', message: 'There was no election to fetch results for'} as ErrorMessage)
+    }
+
+    return res.json(lobbyStatus.results)
+})
+
 router.post('/closeLobby', (req,res) => {
     const lobbyCode = req['lobbyCode']
 

@@ -72,6 +72,8 @@ export const JoinLobbyForm = ({
 			.max(4, t('fieldError.notValidLobbyCode')),
 	})
 
+
+
 	return (
 		<>
 			<Formik

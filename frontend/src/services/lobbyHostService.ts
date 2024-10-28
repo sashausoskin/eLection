@@ -123,3 +123,13 @@ export const getElectionStatus = async () => await (
 			Authorization: hostToken
 		}})
 )
+
+/**
+ * Requests the election results from the backend.
+ * @returns Results of the election, if there are any
+ */
+export const getElectionResults = async () => (
+	await apiClient.get('/host/getElectionResults', {headers: {
+		Authorization: hostToken
+	}})
+)
