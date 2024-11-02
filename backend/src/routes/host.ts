@@ -22,7 +22,13 @@ router.use((req, res, next) => {
         return res.status(401).json({type: 'MISSING_AUTH_TOKEN', message: 'Did not receive an authorization token with the request'} as ErrorMessage)
     }
 
-    const hostAuth = decodeObject(req.headers.authorization.substring(7)) as AuthenticationObject
+    let hostAuth
+    try {
+        hostAuth = decodeObject(req.headers.authorization.substring(7)) as AuthenticationObject
+    } catch {
+        return res.status(403).json({type: 'UNAUTHORIZED', message: 'Received an invalid authentication token'} as ErrorMessage)
+    }
+    
 
     const lobbyCode = hostAuth.lobbyCode
     const hostID = hostAuth.id
@@ -105,7 +111,7 @@ router.get('/getElectionResults', (req, res) => {
 
     const lobbyStatus = lobbyService.getLobbyStatus(lobbyCode, true)
 
-    if (lobbyStatus.status !== "ELECTION_ENDED") {
+    if (lobbyStatus.status !== 'ELECTION_ENDED') {
         return res.status(400).json({type: 'NO_ACTIVE_ELECTION', message: 'There was no election to fetch results for'} as ErrorMessage)
     }
 
@@ -123,7 +129,7 @@ router.post('/closeLobby', (req,res) => {
 router.get('/getElectionStatus', (req, res) => {
     const lobbyCode = req['lobbyCode']
 
-    return res.json({electionActive: lobbyService.isElectionActive(lobbyCode)})
+    return res.json({electionActive: lobbyService.isElectionActive(lobbyCode), resultsAvailable: lobbyService.areResultsAvailable(lobbyCode)})
 })
 
 router.post('/authenticateUser', async (req, res) => {

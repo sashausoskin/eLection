@@ -1,4 +1,4 @@
-import { ElectionActivityResponse, ElectionInfo, LobbyCreationResponse } from '../types'
+import { LobbyStatusResponse, ElectionInfo, LobbyCreationResponse } from '../types'
 import { apiClient } from '../util/apiClient'
 
 let hostToken: string | null = null
@@ -117,8 +117,8 @@ export const closeLobby = async () => {
  * Asks the backend if there is an active election going on in the host's lobby
  * @returns An object with information on if the election is active.
  */
-export const getElectionStatus = async () => await (
-	apiClient.get<ElectionActivityResponse>('/host/getElectionStatus', {
+export const getLobbyStatus = async () => await (
+	apiClient.get<LobbyStatusResponse>('/host/getElectionStatus', {
 		headers: {
 			Authorization: hostToken
 		}})

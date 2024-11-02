@@ -13,7 +13,7 @@ export interface LobbyInfo {
         results: ElectionResults
     } | null
 }
-type LobbyStatus = 'STANDBY' | 'VOTING' | 'ELECTION_ENDED' | 'CLOSING'
+export type LobbyStatus = 'STANDBY' | 'VOTING' | 'ELECTION_ENDED' | 'CLOSING'
 
 export type LobbyStatusInfo = {
     status: 'STANDBY'

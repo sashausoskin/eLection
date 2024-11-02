@@ -14,6 +14,8 @@ describe('With a lobby created and one authenticated user in lobby', () => {
     let lobbyCode : string
     let lobbySocket : Socket
 
+    const exampleElectionInfo : ElectionInfo = {type: 'FPTP', title: 'Which language should we use?', candidates: ['Python', 'JavaScript']}
+
     beforeEach(async () => {
         lobbyService.resetLobbies()
         const createLobbyResponse = (await request(app).post('/testing/createLobbyWithUser')).body as LobbyWithUserCreationResponse
@@ -34,8 +36,6 @@ describe('With a lobby created and one authenticated user in lobby', () => {
     }
 
     describe('When creating an election', () => {
-        const exampleElectionInfo : ElectionInfo = {type: 'FPTP', title: 'Which language should we use?', candidates: ['Python', 'JavaScript']}
-
         test('Cannot create an election without a valid lobby code', async () => {
             const fakeAuth = encodeObject({
                 lobbyCode: lobbyCode === '1234' ? '4321' : '1234',
@@ -187,6 +187,29 @@ describe('With a lobby created and one authenticated user in lobby', () => {
 
             const closeLobbyResponse = await testUtil.closeLobby(fakeAuth)
             expect(closeLobbyResponse.status).toBe(403)
+        })
+    })
+
+    describe('getElectionStatus returns correct value', () => {
+        test('when lobby is on standby', async () => {
+            const lobbyStatusResponse = await testUtil.getElectionStatus(hostToken)
+            expect(lobbyStatusResponse.status).toBe(200)
+            expect(lobbyStatusResponse.body).toEqual({electionActive: false, resultsAvailable: false})
+        })
+
+        test('when an election is active', async () => {
+            testUtil.createElection(hostToken, exampleElectionInfo)
+
+            const lobbyStatusResponse = await testUtil.getElectionStatus(hostToken)
+            expect(lobbyStatusResponse.body).toEqual({electionActive: true, resultsAvailable: false})
+        })
+
+        test('when an election has ended', async () => {
+            testUtil.createElection(hostToken, exampleElectionInfo)
+            testUtil.endElection(hostToken)
+
+            const lobbyStatusResponse = await testUtil.getElectionStatus(hostToken)
+            expect(lobbyStatusResponse.body).toEqual({electionActive: false, resultsAvailable: true})
         })
     })
 })

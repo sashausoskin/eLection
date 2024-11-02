@@ -38,6 +38,7 @@
 
 import '@4tw/cypress-drag-drop'
 import 'cypress-real-events'
+
 Cypress.Commands.add('resetServer', () => {
 	cy.request('post', `${Cypress.env('BACKEND_URL')}/testing/reset`)
 })
