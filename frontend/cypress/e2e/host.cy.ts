@@ -89,7 +89,7 @@ describe('In host view', () => {
 	//Note that this test may create a false positive if there was already a file downloaded.
 	//The headless mode of Cypress should clear the downloads folder before tests.
 	//However, this shouldn't affect the CI/CD pipeline
-	it.only('downloads election results correctly', () => {
+	it('downloads election results correctly', () => {
 		cy.get('[data-testid=\'create-election-submit\']').should('be.enabled')
 
 		cy.createElection({type: 'ranked', title: 'Board of office software', candidates: ['Microsoft 365', 'Apple\'s office software', 'OpenOffice', 'LibreOffice'], candidatesToRank: 3})

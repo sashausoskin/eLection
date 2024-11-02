@@ -1,4 +1,4 @@
-import { ElectionResultsInfo } from '../types'
+import { ElectionResultsInfo, ResultCandidateInfo } from '../types'
 import ExcelJS from 'exceljs'
 import {saveAs} from 'file-saver'
 import { t } from 'i18next'
@@ -31,8 +31,16 @@ export const generateResultsSpreadsheet = async (results : ElectionResultsInfo) 
 		state: 'frozen', ySplit: ws.rowCount, xSplit: 0
 	}]
 
-	Object.keys(results.votes).forEach((key) => {
-		ws.addRow([key, results.votes[key]])
+	const orderedResults : ResultCandidateInfo[] = []
+
+	Object.entries(results.votes).forEach((resultInfo, index) => {
+		orderedResults.push({name: resultInfo[0], votes: resultInfo[1], position: index})
+	})
+
+	orderedResults.sort((a,b) => b.votes - a.votes)
+
+	orderedResults.forEach((result) => {
+		ws.addRow([result.name, result.votes])
 	})
 
 	ws.getRow(ws.rowCount).border = {
