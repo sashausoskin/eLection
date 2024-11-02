@@ -85,3 +85,22 @@
 .electionControl button:enabled {
     background-color: var(--primary-color);
 }
+
+.downloadButton {
+    width: 50%;
+}
+
+
+
+.downloadButton div {
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    gap: 5%;
+    width: 100%;
+}
+
+.downloadButton p {
+    align-items: center;
+    flex-grow: 1;
+}

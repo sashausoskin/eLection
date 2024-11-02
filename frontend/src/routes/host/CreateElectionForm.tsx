@@ -1,16 +1,18 @@
 import { AxiosError } from 'axios'
 import { ErrorMessage, Field, FieldArray, Form, Formik, FormikHelpers } from 'formik'
 import * as Yup from 'yup'
-import { createElection, endElection, getElectionStatus } from '../../services/lobbyHostService'
+import { createElection, endElection, getElectionResults, getLobbyStatus } from '../../services/lobbyHostService'
 import { Fragment, useContext, useEffect, useState } from 'react'
 import { ElectionInfo,  ElectionType,  ErrorMessage as ResponseErrorMessage, StatusMessage } from '../../types'
 import './CreateElectionForm.css'
 import InfoTooltip from '../../elements/Tooltip'
 import trashIcon from '/img/icons/trash.svg'
 import addIcon from '/img/icons/add.svg'
+import downloadIcon from '/img/icons/download.svg'
 import { PopupContext } from '../../context/Contexts'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
+import { generateResultsSpreadsheet } from '../../util/spreadsheetTools'
 
 const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} : 
     {
@@ -30,6 +32,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
 	const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
 	const [electionType, setElectionType] = useState<ElectionType>('FPTP')
 	const [isElectionActive, setIsElectionActive] = useState<boolean>(false)
+	const [areResultsAvailable, setAreResultsAvailable] = useState<boolean>(false)
 	const [isRequestPending, setIsRequestPending] = useState<boolean>(!skipStatusCheck)
 	const {createPopup} = useContext(PopupContext)
 	const {t} = useTranslation()
@@ -60,8 +63,9 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
 
 		setIsRequestPending(true)
 
-		getElectionStatus().then((res) => {
+		getLobbyStatus().then((res) => {
 			setIsElectionActive(res.data.electionActive)
+			setAreResultsAvailable(res.data.resultsAvailable)
 			setIsRequestPending(false)
 		})
 	}, [skipStatusCheck])
@@ -127,6 +131,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
 			setIsRequestPending(true)
 			await endElection()
 			setIsElectionActive(false)
+			setAreResultsAvailable(true)
 			setStatusMessage({status: 'success', message: t('status.electionEndSuccess')})
 			setIsRequestPending(false)
 		}
@@ -142,6 +147,24 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
 					handleUnauthorizedRequest()
 				}
 				setIsRequestPending(false)
+			}
+		}
+	}
+
+	const handleDownloadResults = async () => {
+		try {
+			const electionResults = await getElectionResults()
+			generateResultsSpreadsheet(electionResults.data)
+		} catch (e) {
+			if (e instanceof AxiosError) {
+				if ((e.response?.data as ResponseErrorMessage).type === 'NO_ACTIVE_ELECTION') {
+					createPopup({type: 'alert', message: 'There are no elections to fetch results for'})
+				}
+				else if ((e.response?.data as ResponseErrorMessage).type === 'UNAUTHORIZED'){
+					handleUnauthorizedRequest()
+				}
+			} else {
+				console.error(e)
 			}
 		}
 	}
@@ -289,6 +312,12 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
 			</Formik>
         
 			{statusMessage && <a data-testid={`status-${statusMessage.status}`}style={{color: statusMessage.status === 'success' ? 'green' : 'red'}}>{statusMessage.message}</a>}
+			<button className='downloadButton' data-testid='download-results-button' onClick={handleDownloadResults} disabled={!areResultsAvailable || isRequestPending}>
+				<div>
+					<img style={{opacity: areResultsAvailable ? '100%' : '50%'}} className='icon' width={35} src={downloadIcon} />
+					<p>{t('fieldInfo.downloadResults')}</p>
+				</div>
+			</button>
 		</div>
 	)
 }

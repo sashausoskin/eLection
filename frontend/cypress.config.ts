@@ -11,7 +11,8 @@ export default defineConfig({
 				...process.env,
 				...config.env,
 			}
-			return
+			config.trashAssetsBeforeRuns = true
+			return 
 			// implement node event listeners here
 		},
 	},

@@ -60,7 +60,8 @@
     "candidates": "Ehdokkaat",
     "namePlaceholder": "Paavo Väyrynen",
     "createElection": "Aloita vaalit",
-    "endElection": "Päätä vaalit"
+    "endElection": "Päätä vaalit",
+    "downloadResults": "Lataa tulokset (.xlsx)"
   },
   "electionType": {
     "fptp": {
@@ -117,5 +118,11 @@
     "lobbyStats_other": "<0>{{count}}<0/> <1>osallistujaa aulassa<1/>"
   },
   "emptyVotes_one": "1 tyhjä ääni",
-  "emptyVotes_other": "{{count}} tyhjää ääntä"
+  "emptyVotes_other": "{{count}} tyhjää ääntä",
+  "spreadsheet": {
+    "resultHeader": "{{electionTitle}} - Tulokset",
+    "candidate": "Ehdokas",
+    "votes": "Äänet",
+    "emptyVotes": "Tyhjät äänet"
+  }
 }

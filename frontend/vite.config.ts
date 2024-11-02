@@ -9,4 +9,14 @@ export default defineConfig({
 		globals: true,
 		setupFiles: ['./src/__test__/setupTests.ts']
 	},
+	build: {
+		rollupOptions: {
+			output: {
+				manualChunks: {
+					exceljs: ['exceljs']
+				}
+			}
+		},
+		chunkSizeWarningLimit: 1000
+	}
 })

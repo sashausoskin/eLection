@@ -60,7 +60,8 @@
     "candidates": "Candidates",
     "namePlaceholder": "Barack Obama",
     "createElection": "Start election",
-    "endElection": "End election"
+    "endElection": "End election",
+    "downloadResults": "Download results (.xlsx)"
   },
   "electionType": {
     "fptp": {
@@ -117,5 +118,11 @@
     "lobbyStats_other": "<0>{{count}}<0/> <1>participants in lobby<1/>"
   },
   "emptyVotes_one": "1 empty vote",
-  "emptyVotes_other": "{{count}} empty votes"
+  "emptyVotes_other": "{{count}} empty votes",
+  "spreadsheet": {
+    "resultHeader": "{{electionTitle}} - Results",
+    "candidate": "Candidate",
+    "votes": "Votes",
+    "emptyVotes": "Empty votes"
+  }
 }

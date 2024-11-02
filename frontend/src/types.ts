@@ -84,8 +84,9 @@ export interface ElectionResults {
 
 export type ElectionResultsInfo = Omit<ElectionResults, 'usersVoted'> & Pick<ElectionInfo, 'type' | 'title'>
 
-export type ElectionActivityResponse = {
-    electionActive: boolean
+export type LobbyStatusResponse = {
+    electionActive: boolean,
+    resultsAvailable: boolean
 }
 
 export interface ResultCandidateInfo {

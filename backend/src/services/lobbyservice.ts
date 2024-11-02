@@ -194,6 +194,10 @@ export const isElectionActive = (lobbyCode : string) : boolean => {
     return lobbyInfo[lobbyCode].status === 'VOTING'
 }
 
+export const areResultsAvailable = (lobbyCode : string) : boolean => {
+    return lobbyInfo[lobbyCode].status === 'ELECTION_ENDED'
+}
+
 /**
  * Sets the lobby's status as having ended an election
  * @param lobbyCode The code of the lobby.

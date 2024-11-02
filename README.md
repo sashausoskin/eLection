@@ -17,7 +17,7 @@ The idea for this project arose when a general meeting with several elections to
 This app is:
 - **Easy to use**:  There are no logins and accounts. Start the server and you are ready to host elections. 😎
 - **Easy to deploy**: Have a server with Docker installed? Great! Just download the template, place your SSL certificates and with one command your server is up running! 🏃‍♂️💨
-- **Secure**: The voting process is anonymous, while also being secure. Only those who are deemed eligible to vote are able to participate. 🔒
+- **Secure**: The voting process is anonymous, while also being secure. Only those who are deemed eligible to vote are able to participate. Authentication is done using JWT encryption 🔒
 - **Highly customisable**: When deploying this app, you can customize the app with your branding, color palette and even customize the app's strings, for example, to add additional instructions. ✍️
 - **Multilingual**: Right now this app only has official support for English and Finnish, but it is easy to add more languages 🌐
 
@@ -27,7 +27,7 @@ Right now you can organize two types of elections:
 
 You can check the demo version of eLection here: https://election-frontend-4vqy.onrender.com. **NOTE!** The server is running in Oregon and it is using the free version of Render, so it may be a bit slow.
 
-This app is only meant to be used as a tool to organise elections or other kinds of voting. It does not store any data permanently and any possible bookkeeping is expected to be the host's responsibility.
+This app is only meant to be used as a tool to organise elections or other kinds of voting. You can download election results as an Excel spreadsheet after an election has ended, but the results are not stored on the server.
 
 ## Table of contents
 1. [Maintentance](#maintenance)
