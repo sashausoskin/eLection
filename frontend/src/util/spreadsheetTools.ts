@@ -31,13 +31,13 @@ export const generateResultsSpreadsheet = async (results : ElectionResultsInfo) 
 		state: 'frozen', ySplit: ws.rowCount, xSplit: 0
 	}]
 
-    const orderedResults : ResultCandidateInfo[] = []
+	const orderedResults : ResultCandidateInfo[] = []
 
 	Object.entries(results.votes).forEach((resultInfo, index) => {
 		orderedResults.push({name: resultInfo[0], votes: resultInfo[1], position: index})
 	})
 
-    orderedResults.sort((a,b) => b.votes - a.votes)
+	orderedResults.sort((a,b) => b.votes - a.votes)
 
 	orderedResults.forEach((result) => {
 		ws.addRow([result.name, result.votes])
