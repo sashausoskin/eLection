@@ -3,6 +3,7 @@ This is the backend of eLection. This was created using [TypeScript](https://www
 - [Socket.IO](https://socket.io/) for handling socket connections.
 - [ajv](https://ajv.js.org/) for validating data.
 - [jest](https://jestjs.io/) for running unit tests.
+- [jsrsasign](https://github.com/kjur/jsrsasign) for encrpyting and decrypting authentication tokens.
 - [ESLint](https://eslint.org/) for linting.
 
 ## Table of contents

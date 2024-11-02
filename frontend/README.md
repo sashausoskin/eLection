@@ -8,6 +8,7 @@ This is the frontend of eLection. The frontend was developed using [TypeScript](
 - [React Spring](https://www.react-spring.dev/) and [@use-gesture](https://github.com/pmndrs/use-gesture) for some animations.
 - [Formik](https://formik.org/) for handling forms.
 - [Yup](https://github.com/jquense/yup) for form validation.
+- [ExcelJS](https://github.com/exceljs/exceljs) for spreadsheet generation.
 - [React Tooltip](https://react-tooltip.com/) for creating tooltips.
 - [ESLint](https://eslint.org/) for linting.
 
