@@ -240,12 +240,12 @@ describe('With a lobby created and one authenticated user in lobby', () => {
 
             expect(res.status).toBe(200)
             expect(res.body).toEqual({
-                "emptyVotes": 0,
-                "title": "Which language should we use?",
-                "type": "FPTP",
-                "votes": {
-                    "JavaScript": 1,
-                    "Python": 0,
+                'emptyVotes': 0,
+                'title': 'Which language should we use?',
+                'type': 'FPTP',
+                'votes': {
+                    'JavaScript': 1,
+                    'Python': 0,
                 },
             })
         })
