@@ -8,9 +8,12 @@ import * as dateMock from 'jest-date-mock'
 import { cleanupRoutine } from '../services/cleanupservice'
 import { LobbyWithUserCreationResponse } from '../types/testTypes'
 import * as testUtil from './testUtil'
+import { encodeObject } from '../util/encryption'
+import { AuthenticationObject } from '../types/communicationTypes'
 
 let hostToken : string
 let participantToken : string
+let participantID : string
 let lobbyCode : string
 let lobbySocket : Socket
 
@@ -60,6 +63,7 @@ beforeEach(async () => {
     hostToken = lobbyCreationResponse.hostToken
     participantToken = lobbyCreationResponse.participantToken
     lobbyCode = lobbyCreationResponse.lobbyCode
+    participantID = lobbyCreationResponse.participantID
 })
 
 describe('With an active FPTP election', () => {
@@ -76,6 +80,33 @@ describe('With an active FPTP election', () => {
 
     test('cannot vote with an invalid authorization token', async () => {
         const voteCastRequest = await testUtil.castVote('1111111111-111111', 'Joe Biden')
+        
+        expect(voteCastRequest.status).toBe(403)
+        expect(voteCastRequest.body.type).toBe('UNAUTHORIZED') 
+    })
+
+    test('cannot vote without a lobby code', async () => {
+        const fakeAuth = encodeObject({lobbyCode: null, id: participantID} as AuthenticationObject)
+
+        const voteCastRequest = await testUtil.castVote(fakeAuth, 'Joe Biden')
+        
+        expect(voteCastRequest.status).toBe(400)
+        expect(voteCastRequest.body.type).toBe('MISSING_LOBBY_CODE') 
+    })
+
+    test('cannot vote without a valid lobby code', async () => {
+        const fakeAuth = encodeObject({lobbyCode: lobbyCode === '1234' ? '4321' : '1234', id: participantID} as AuthenticationObject)
+
+        const voteCastRequest = await testUtil.castVote(fakeAuth, 'Joe Biden')
+        
+        expect(voteCastRequest.status).toBe(404)
+        expect(voteCastRequest.body.type).toBe('UNAUTHORIZED') 
+    })
+
+    test('cannot vote with an invalid ID', async () => {
+        const fakeAuth = encodeObject({lobbyCode, id: '11111111-1111-1111-1111-111111111111'} as AuthenticationObject)
+
+        const voteCastRequest = await testUtil.castVote(fakeAuth, 'Joe Biden')
         
         expect(voteCastRequest.status).toBe(403)
         expect(voteCastRequest.body.type).toBe('UNAUTHORIZED') 

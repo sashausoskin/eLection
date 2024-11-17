@@ -177,6 +177,14 @@ describe('With one lobby created and one user in queue', () => {
 
         hostValidationRequest = await testUtil.validateHost(fakeAuth)
         expect(hostValidationRequest.statusCode).toBe(400)
+
+        // No authentication token
+        hostValidationRequest = await testUtil.validateHost(undefined)
+        expect(hostValidationRequest.statusCode).toBe(400)
+
+        // Invalid authentication token
+        hostValidationRequest = await testUtil.validateHost('11111111-1111-1111-1111-11111111111')
+        expect(hostValidationRequest.statusCode).toBe(403)
     })
 
     test('authenticated user gets a socket message when authenticated', (done) => {
@@ -258,6 +266,10 @@ describe('With one lobby created and one user in queue', () => {
 
         validationRequest = await testUtil.validateUser(fakeAuth)
         expect(validationRequest.statusCode).toBe(401)
+
+        //No authentication token
+        validationRequest = await testUtil.validateUser(undefined)
+        expect(validationRequest.statusCode).toBe(400)
     })
 
     describe('when connecting to the queue socket', () => {

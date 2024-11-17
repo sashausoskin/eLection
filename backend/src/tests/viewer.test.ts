@@ -38,7 +38,7 @@ describe('With a created lobby and user', () => {
     })
 
     const testSocketConnection = (done?: jest.DoneCallback, hostToken? : string, expectToConnect? : boolean) => {
-        lobbySocket = io('http://localhost:3001/viewer', {auth: {token: `Bearer ${hostToken}`}})
+        lobbySocket = io('http://localhost:3001/viewer', {auth: {token: hostToken ? `Bearer ${hostToken}` : null}})
 
         lobbySocket.on('connect', () => {
             if (expectToConnect) done?.()
@@ -54,6 +54,10 @@ describe('With a created lobby and user', () => {
         testSocketConnection(done)
     })
 
+    test('cannot connect to the socket without a valid token', (done) => {
+        testSocketConnection(done, '11111111-1111-1111-1111-11111111111', false)
+    })
+
     test('cannot connect to the socket without a proper authorization token', (done) => {
         testSocketConnection(done, participantToken, false)
     })
@@ -62,6 +66,24 @@ describe('With a created lobby and user', () => {
         const fakeAuth = encodeObject({
             id: hostID,
             lobbyCode: lobbyCode === '1234' ? '4321' : '1234'
+        } as AuthenticationObject)
+
+        testSocketConnection(done, fakeAuth, false)
+    })
+
+    test('cannot connect to the socket without a lobby code', (done) => {
+        const fakeAuth = encodeObject({
+            id: hostID,
+            lobbyCode: null
+        } as AuthenticationObject)
+
+        testSocketConnection(done, fakeAuth, false)
+    })
+
+    test('cannot connect to the socket without an ID', (done) => {
+        const fakeAuth = encodeObject({
+            id: null,
+            lobbyCode
         } as AuthenticationObject)
 
         testSocketConnection(done, fakeAuth, false)
