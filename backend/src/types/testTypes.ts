@@ -1,7 +1,9 @@
 export interface LobbyWithUserCreationResponse {
     participantToken : string,
     hostToken : string,
-    lobbyCode : string
+    lobbyCode : string,
+    participantID: string,
+    hostID: string
 }
 
 export interface LobbyCreationResponse {

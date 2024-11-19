@@ -6,18 +6,24 @@ import { io as ioc, Socket as ClientSocket } from 'socket.io-client'
 import { LobbyStatusInfo } from '../types/lobbyTypes'
 import { cleanupRoutine } from '../services/cleanupservice'
 import * as testUtil from './testUtil'
+import { encodeObject } from '../util/encryption'
+import { AuthenticationObject } from '../types/communicationTypes'
 
 describe('With a lobby created and one authenticated user in lobby', () => {
     let participantToken : string
+    let participantID : string
     let hostToken : string
     let lobbySocket : ClientSocket 
+    let lobbyCode : string
 
     beforeEach(async () => {
         lobbyService.resetLobbies()
         dateMock.advanceTo(new Date(0, 0, 0, 0, 0, 0, 0))
         const createLobbyResponse = await testUtil.createLobbyWithUser()
         participantToken = createLobbyResponse.participantToken
+        participantID = createLobbyResponse.participantID
         hostToken = createLobbyResponse.hostToken
+        lobbyCode = createLobbyResponse.lobbyCode
     })
 
     beforeAll((done) => {
@@ -42,7 +48,7 @@ describe('With a lobby created and one authenticated user in lobby', () => {
 
     describe('When user is connecting to the lobby socket', () => {
         const testSocketConnection = (participantToken? : string, done? : jest.DoneCallback, expectToConnect? : boolean) => {
-            lobbySocket = ioc('http://localhost:3001/lobby', {auth: {token: `Bearer ${participantToken}`}})
+            lobbySocket = ioc('http://localhost:3001/lobby', {auth: {token: participantToken ? `Bearer ${participantToken}` : null}})
             lobbySocket.on('connect_error', () => {
                 if (expectToConnect) expect(1).toBe(2)
                 else done?.()
@@ -59,6 +65,42 @@ describe('With a lobby created and one authenticated user in lobby', () => {
 
         test('Cannot connect without a proper auth token', (done) => {
             testSocketConnection('123412421412313', done)
+        })
+
+        test('Cannot connect with an invalid lobby code', (done) => {
+            const testToken = encodeObject({
+                lobbyCode: lobbyCode === '1234' ? '4321' : '1234',
+                id: participantID
+            } as AuthenticationObject)
+
+            testSocketConnection(testToken, done, false)
+        })
+
+        test('Cannot connect with an invalid ID', (done) => {
+            const testToken = encodeObject({
+                lobbyCode,
+                id: '11111111-1111-1111-1111-111111111111'
+            } as AuthenticationObject)
+
+            testSocketConnection(testToken, done, false)
+        })
+
+        test('Cannot connect without a lobby code', (done) => {
+            const testToken = encodeObject({
+                lobbyCode: null,
+                id: participantID
+            } as AuthenticationObject)
+
+            testSocketConnection(testToken, done, false)
+        })
+
+        test('Cannot connect without an ID', (done) => {
+            const testToken = encodeObject({
+                lobbyCode,
+                id: null
+            } as AuthenticationObject)
+
+            testSocketConnection(testToken, done, false)
         })
 
         test('Can connect with proper values', (done) => {

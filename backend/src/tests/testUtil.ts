@@ -125,3 +125,14 @@ export const getElectionStatus = async (hostToken? : string) => {
     .set(hostToken !== undefined ? 'Authorization' : 'sink', `Bearer ${hostToken}`)
     .send()
 }
+
+/**
+ * A helper function that gets the election results
+ * @param hostToken The token of the lobby host
+ * @returns 
+ */
+export const getElectionResults = async (hostToken? : string) => {
+    return await request(app).get('/host/getElectionResults')
+    .set(hostToken !== undefined ? 'Authorization' : 'sink', `Bearer ${hostToken}`)
+    .send()
+}

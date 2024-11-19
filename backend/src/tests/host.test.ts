@@ -13,6 +13,7 @@ describe('With a lobby created and one authenticated user in lobby', () => {
     let hostID : string
     let lobbyCode : string
     let lobbySocket : Socket
+    let participantToken : string
 
     const exampleElectionInfo : ElectionInfo = {type: 'FPTP', title: 'Which language should we use?', candidates: ['Python', 'JavaScript']}
 
@@ -21,6 +22,7 @@ describe('With a lobby created and one authenticated user in lobby', () => {
         const createLobbyResponse = (await request(app).post('/testing/createLobbyWithUser')).body as LobbyWithUserCreationResponse
         hostToken = createLobbyResponse.hostToken
         lobbyCode = createLobbyResponse.lobbyCode
+        participantToken = createLobbyResponse.participantToken
         hostID = (decodeObject(hostToken) as AuthenticationObject).id
     })
 
@@ -210,6 +212,42 @@ describe('With a lobby created and one authenticated user in lobby', () => {
 
             const lobbyStatusResponse = await testUtil.getElectionStatus(hostToken)
             expect(lobbyStatusResponse.body).toEqual({electionActive: false, resultsAvailable: true})
+        })
+    })
+
+    describe('getElectionResults returns correct value', () => {
+        test('when no election has been created', async () => {
+            const res = await testUtil.getElectionResults(hostToken)
+
+            expect(res.status).toBe(400)
+            expect((res.body as ErrorMessage).type === 'NO_ACTIVE_ELECTION').toBeTruthy()
+        })
+
+        test('when an election is active', async () => {
+            await testUtil.createElection(hostToken, exampleElectionInfo)
+            const res = await testUtil.getElectionResults(hostToken)
+
+            expect(res.status).toBe(400)
+            expect((res.body as ErrorMessage).type === 'NO_ACTIVE_ELECTION').toBeTruthy()
+        })
+
+        test('when an election has ended', async () => {
+            await testUtil.createElection(hostToken, exampleElectionInfo)
+            await testUtil.castVote(participantToken, 'JavaScript')
+            await testUtil.endElection(hostToken)
+
+            const res = await testUtil.getElectionResults(hostToken)
+
+            expect(res.status).toBe(200)
+            expect(res.body).toEqual({
+                'emptyVotes': 0,
+                'title': 'Which language should we use?',
+                'type': 'FPTP',
+                'votes': {
+                    'JavaScript': 1,
+                    'Python': 0,
+                },
+            })
         })
     })
 })
