@@ -21,7 +21,7 @@ export const Home = (): JSX.Element => {
 						{t('participate')}
 					</button>
 				</Link>
-				<Link to='https://github.com/sonicsasha/eLection' target='_blank'>
+				<Link to='https://github.com/sashausoskin/eLection' target='_blank'>
 					{t('viewSource')}
 				</Link>
 			</div>
