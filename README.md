@@ -1,11 +1,11 @@
 <div align="center">
   <img src="https://github.com/user-attachments/assets/4ba1a8ad-981f-4154-bd27-190feb6ae791"/>
   <h1>eLection</h1>
-  <a href=https://github.com/sonicsasha/eLection/actions/workflows/test.yml><img src=https://github.com/sonicsasha/eLection/actions/workflows/test.yml/badge.svg /></a>
+  <a href=https://github.com/sashausoskin/eLection/actions/workflows/test.yml><img src=https://github.com/sashausoskin/eLection/actions/workflows/test.yml/badge.svg /></a>
   <br />
   Backend unit test coverage:
   <br />
-  <a href=https://codecov.io/github/sonicsasha/eLection><img src=https://codecov.io/github/sonicsasha/eLection/graph/badge.svg?token=X4JKDW6CF6 href=https://codecov.io/github/sonicsasha/eLection /></a>
+  <a href=https://codecov.io/github/sashausoskin/eLection><img src=https://codecov.io/github/sashausoskin/eLection/graph/badge.svg?token=X4JKDW6CF6 href=https://codecov.io/github/sashausoskin/eLection /></a>
 </div>
 
 Welcome to eLection!
@@ -66,7 +66,7 @@ First, clone this repository. Then check out the READMEs for both [the backend](
 This guide will show you how to install the app on your server. 
 1. [Install Docker](https://docs.docker.com/engine/install/)
 2. Create a directory for the application
-3. Download the [eLection Docker template](https://github.com/sonicsasha/eLection/releases/latest/download/docker-template.zip) and extract the contents to the newly created folder.
+3. Download the [eLection Docker template](https://github.com/sashausoskin/eLection/releases/latest/download/docker-template.zip) and extract the contents to the newly created folder.
 4. It is highly recommended to use SSL certificates for your server. If you have them, place them in the `sslcert` folder and name them `domain.pem` and `domain-key.pem` respectively. If you do not want to protect your traffic, open `nginx.conf` and follow the instructions in the comments.
 5. Open the directory in your terminal and run `docker compose up -d`. Now the server should be running on port 443 (or 80 if you disabled SSL).
 
