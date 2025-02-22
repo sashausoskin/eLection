@@ -9,11 +9,12 @@
     "electionCreateSuccess": "Succesfully created the election",
     "electionEndSuccess": "Succesfully ended the election",
     "noActiveElection": "There is currently no ongoing election!",
+    "serverConnectionError": "Cannot connect to the server. Please check your connection and reload the page!",
     "voteAlreadySubmitted": "You have already submitted your vote!",
     "connecting": "Connecting...",
+    "reconnecting": "Failed to connect to the server. Retrying... {{currentAttempt}}/{{maxAttempts}}",
     "waitingForElection": "Waiting for the next election...",
     "viewerLoadError": "Could not load the results screen correctly. Please first create a lobby and only then open this window",
-    "serverConnectionError": "Cannot connect to the server. Please check your connection and reload the page!",
     "viewerKick": "You were disconnected from the server. This is probably because you opened the results in another tab!"
   },
   "welcomeMessage": "Welcome to eLection!",

@@ -37,6 +37,20 @@ describe('In participant view', () => {
 		cy.get('[data-testid=\'election-end-header\']')
 	})
 
+	// At least for now, Socket.IO doesn't work well with the Chrome Devtools network emulation
+	it.skip('attempts to reconnect after losing connection', () => {
+		cy.visit('/participant')
+		cy.get('[data-testid="lobby-standby-header"]')
+
+		cy.goOffline()
+		cy.get('[data-testid=\'lobby-standby-header\']').should('not.exist')
+		cy.contains('[data-testid=\'lobby-reconnect\']')
+
+		cy.goOnline()
+		cy.contains('[data-testid=\'lobby-standby-header\']')
+		cy.get('[data-testid=\'lobby-reconnect\']').should('not.exist')
+	})
+
 	describe('with an active FPTP election going on', () => {
 		beforeEach(() => {
 			cy.createElection({type: 'FPTP', title: 'Representative 2024', candidates: ['Bob the Builder', 'Thomas the Tank Engine']})

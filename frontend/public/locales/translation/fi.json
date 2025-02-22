@@ -9,11 +9,12 @@
     "electionCreateSuccess": "Vaalit luotu onnistuneesti",
     "electionEndSuccess": "Vaalit päätetty onnistuneesti",
     "noActiveElection": "Tällä hetkellä ei ole vaaleja meneillään!",
+    "serverConnectionError": "Palvelimelle yhdistäminen epäonnistui. Varmista, että olet yhteydessä internettiin ja yritä uudelleen!",
     "voteAlreadySubmitted": "Olet jo äänestänyt näissä vaaleissa!",
     "connecting": "Yhdistetään...",
+    "reconnecting": "Palvelimelle yhdistäminen epäonnistui. Yritetään uudelleen... {{currentAttempt}}/{{maxAttempts}}",
     "waitingForElection": "Odotetaan seuraavia vaaleja...",
     "viewerLoadError": "Tulosikkunaa ei pystytty lataamaan oikein. Luo ensin aula ja avaa tämä ikkuna vasta sen jälkeen",
-    "serverConnectionError": "Palvelimelle yhdistäminen epäonnistui. Varmista, että olet yhteydessä internettiin ja yritä uudelleen!",
     "viewerKick": "Yhteytesi palvelimelle katkaistiin. Tämä todennäköisesti johtuu siitä, että avasit tulosikkunan toiselle välilehdelle"
   },
   "welcomeMessage": "Tervetuloa eLection-palveluun!",

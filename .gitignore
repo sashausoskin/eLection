@@ -3,3 +3,4 @@
 
 frontend/.env
 /dockerTemplate
+frontend/cypress/downloads/

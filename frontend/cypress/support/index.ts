@@ -22,6 +22,8 @@ declare global {
 			setLobbyLastActive(lastActiveTime : number) : Cypress.Chainable<Cypress.Response<object>>
 			getNumberOfLobbies(): Cypress.Chainable<Cypress.Response<object>>
 			authenticateUser(userCode : string): Cypress.Chainable<Cypress.Response<object>>
+			goOffline(): void
+			goOnline(): void
 		}
 	}
 }

@@ -161,3 +161,47 @@ Cypress.Commands.add('authenticateUser', function (userCode) {
 		}
 	})
 })
+
+Cypress.Commands.add('goOffline', function () {
+	cy.log('**go offline**')
+		.then(() => {
+			return Cypress.automation('remote:debugger:protocol',
+				{
+					command: 'Network.enable',
+				})
+		})
+		.then(() => {
+			return Cypress.automation('remote:debugger:protocol',
+				{
+					command: 'Network.emulateNetworkConditions',
+					params: {
+						offline: true,
+						latency: -1,
+						downloadThroughput: 5000000,
+						uploadThroughput: 5000000,
+					},
+				})
+		})
+})
+
+Cypress.Commands.add('goOnline', function () {
+	cy.log('**go online**')
+		.then(() => {
+			return Cypress.automation('remote:debugger:protocol',
+				{
+					command: 'Network.emulateNetworkConditions',
+					params: {
+						offline: false,
+						latency: -1,
+						downloadThroughput: -1,
+						uploadThroughput: -1,
+					},
+				})
+		})
+		.then(() => {
+			return Cypress.automation('remote:debugger:protocol',
+				{
+					command: 'Network.disable',
+				})
+		})
+})
