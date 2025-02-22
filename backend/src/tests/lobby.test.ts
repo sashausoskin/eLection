@@ -125,11 +125,8 @@ describe('With a lobby created and one authenticated user in lobby', () => {
             lobbySocket.on('connect', () => {
                 const lobbySocket2 = ioc('http://localhost:3001/lobby', {auth: {token: `Bearer ${participantToken}`}})
                 lobbySocket2.on('connect', () => {
-                    throw new Error('Second socket connected')
-                })
-                lobbySocket2.on('connect_error', () => {
-                    lobbySocket.disconnect()
-                    lobbySocket2.disconnect()
+                    expect(lobbySocket.connected).toBe(false)
+                    expect(lobbySocket2.connected).toBe(true)
                     done()
                 })
             })

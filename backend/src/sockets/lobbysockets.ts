@@ -5,6 +5,7 @@ import * as socketservice from '../services/socketservice'
 import { LobbyStatusInfo } from '../types/lobbyTypes'
 import { decodeObject } from '../util/encryption'
 import { AuthenticationObject } from '../types/communicationTypes'
+import { io } from '../util/server'
 
 /**
  * Checks if the user connecting to the socket is actually a participant.
@@ -47,9 +48,7 @@ export const isParticipantMiddleware = async (socket : Socket, next: (err?: Exte
     const existingParticipantSocket = socketservice.getParticipantSocket(lobbyCode, userID)
 
     if (existingParticipantSocket !== null) {
-        const err = new Error('You are already connected to this lobby, probably in another tab. Please open that tab!')
-        next(err)
-        return
+        io.of('/lobby').in(existingParticipantSocket).disconnectSockets()
     }
 
 
