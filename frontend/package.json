@@ -68,7 +68,7 @@
 		"@typescript-eslint/parser": "^8.1.0",
 		"@vitejs/plugin-react": "^4.2.1",
 		"cross-env": "^7.0.3",
-		"cypress": "^13.13.0",
+		"cypress": "^14.0.3",
 		"cypress-delete-downloads-folder": "^0.0.6",
 		"eslint": "^8.57.0",
 		"eslint-plugin-react-hooks": "^4.6.0",

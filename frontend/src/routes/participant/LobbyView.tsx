@@ -15,6 +15,8 @@ import { Navigate, useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 
 const LobbyView = () : JSX.Element => {
+	const [connectionAttempts, setConnectionAttempts] = useState<number>(0)
+	const [connectionFailed, setConnectionFailed] = useState<boolean>(false)
 	const [lobbyStatus, setLobbyStatus] = useState<LobbyStatusInfo | null>(null)
 	const [canSubmitVote, setCanSubmitVote] = useState<boolean>(true)
 	const [hasVoted, setHasVoted] = useState<boolean>(false)
@@ -22,6 +24,8 @@ const LobbyView = () : JSX.Element => {
 	const { createPopup } = useContext(PopupContext)
 	const { t } = useTranslation()
 	const navigate = useNavigate()
+
+	const maxConnectionAttempts = 5
 
 	const lobbySocket = useRef<Socket>()
 
@@ -33,9 +37,24 @@ const LobbyView = () : JSX.Element => {
 		setLobbyStatus(newStatus)
 	}
 
-	const onConnectError = useCallback((err : Error) => {
-		createPopup({type: 'alert', message: t('unexpectedError', {errorMessage: err.message}), onConfirm: () => {navigate('/')}})
-	}, [createPopup, navigate, t])
+	const onConnectError = useCallback(() => {
+		if (connectionAttempts >= maxConnectionAttempts) {
+			navigate('/')
+			createPopup({type: 'alert', message: t('status.serverConnectionError')})
+			lobbySocket.current?.disconnect()
+			return
+		}
+
+		setConnectionFailed(true)
+		setConnectionAttempts(connectionAttempts + 1)
+		
+		
+	}, [createPopup, navigate, t, connectionAttempts])
+
+	const onConnect = () => {
+		setConnectionFailed(false)
+		setConnectionAttempts(0)
+	}
 
 	const onDisconnect = useCallback((reason : Socket.DisconnectReason) => {
 		if (reason === 'io server disconnect') {
@@ -45,11 +64,15 @@ const LobbyView = () : JSX.Element => {
 				}})
 			}
 		}
-		if (reason === 'ping timeout') {
+		else if (reason === 'ping timeout') {
 			createPopup({type: 'alert', message: t('disconnectReason.lostConnection'), onConfirm: () => {
 				window.location.reload()
 			}})
 		}
+		else if (reason === 'transport close') {
+			window.location.reload()
+		}
+
 	}, [createPopup, lobbyStatus?.status, t, navigate])
 
 	// This is a bit of a hacky solution. This is to avoid dependency issues with useEffect()
@@ -72,15 +95,18 @@ const LobbyView = () : JSX.Element => {
 	}, [participantToken, setViewTab])
 
 	// Assigns functions to socket events. This is done separately from the socket connection to make sure that the socket doesn't try to connect multiple times.
+	// When a client socket connects to the backend, the server sends a status-change event.
 	useEffect(() => {
 		lobbySocket.current?.on('status-change', onStatusChange)
 		lobbySocket.current?.on('connect_error', onConnectError)
 		lobbySocket.current?.on('disconnect', onDisconnect)
+		lobbySocket.current?.on('connect', onConnect)
 
 		return () => {
 			lobbySocket.current?.off('status-change', onStatusChange)
 			lobbySocket.current?.off('connect_error', onConnectError)
 			lobbySocket.current?.off('disconnect', onDisconnect)
+			lobbySocket.current?.off('connect', onConnect)
 		}
 	}, [onDisconnect, onConnectError])
 
@@ -122,10 +148,17 @@ const LobbyView = () : JSX.Element => {
 		return <Loading><a>{t('status.connecting')}</a></Loading>
 	}
 
+	if (connectionFailed) {
+		return <>
+			<span data-testid = 'lobby-reconnect'/>
+			<Loading><a>{t('status.reconnecting', {currentAttempt: connectionAttempts, maxAttempts: maxConnectionAttempts})}</a></Loading>
+		</>
+	}
+
 	switch (lobbyStatus.status) {
 	case 'STANDBY' :
 		return <>
-			<h2  data-testid='lobby-standby-header'>{t('joinLobby.authenticated')}</h2>
+			<h2 data-testid='lobby-standby-header'>{t('joinLobby.authenticated')}</h2>
 			<a>{t('status.waitingForElection')}</a>
 		</> 
         
