@@ -110,6 +110,13 @@ const LobbyView = () : JSX.Element => {
 		}
 	}, [onDisconnect, onConnectError])
 
+	// This adds a vibration to the user whenever a new election starts.
+	useEffect(() => {
+		if (lobbyStatus?.status === 'VOTING'){
+			navigator.vibrate([200, 50, 200])
+		}
+	}, [lobbyStatus])
+
     
 	/**
      * Handles the submission of a vote. Tries to send the vote data to the backend. If unsuccesful, triest to act according to the error message.
