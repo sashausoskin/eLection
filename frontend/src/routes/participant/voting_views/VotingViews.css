@@ -37,6 +37,10 @@
     margin-left: 10%;
     color: var(--secondary-text-color);
     font-weight: 500;
+    overflow: scroll;
+    white-space: wrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .selectedCandidate {
