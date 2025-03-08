@@ -41,7 +41,8 @@
     "noCandidates": "Ole hyvä ja lisää vähintään kaksi ehdokasta.",
     "tooManyCandidates": "Ehdokkaita ei voi olla enempää kuin {{candidateLimit}}",
     "fewCandidatesToRank": "Osallistujien täytyy asetella vähintään kaksi ehdokasta. Muussa tapauksessa järjestä äänienemmistö-vaalit.",
-    "lobbyNotFound": "Kyseisellä aulakoodilla ei löytynyt aulaa. Ole hyvä ja yritä uudelleen.",
+    "tooManyCandidatesToRank": "Varmista, että järjesteltäviä ehdokkaita ei ole enempää kuin ehdokkaita ylipäätään.",
+    "lobbyNotFound": "Kyseisellä aulakoodilla ei löytynyt aulaa. Ole hyvä, ja yritä uudelleen.",
     "notValidLobbyCode": "Ole hyvä, ja syötä käypä aulatunnus."
   },
   "lobbyCode": "Aulatunnus",

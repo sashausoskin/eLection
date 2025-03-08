@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import CreateElectionForm from '../routes/host/CreateElectionForm'
 
@@ -88,5 +88,17 @@ describe('When creating a FTPT election', () => {
 			})
 		}
 		expect(screen.getByTestId('add-candidate-button')).toBeDisabled()
+	})
+
+	test('cannot have more candidates to rank than there are candidates', async () => {
+		expect(() => screen.getByTestId('popup-text')).toThrow()
+
+		const rankedButton = screen.getByTestId('ranked-radio')
+		fireEvent.click(rankedButton)
+		expect(screen.getByTestId('ranked-radio')).toBeChecked()
+		userEvent.type(screen.getByTestId('candidates-to-rank'), '4')
+		userEvent.click(submitButton)
+
+		expect(mockFn).not.toHaveBeenCalled()
 	})
 })

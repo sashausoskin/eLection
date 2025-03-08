@@ -87,7 +87,15 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
         
 		candidatesToRank: Yup.number()
 			.min(2, t('fieldError.fewCandidatesToRank'))
-	})
+	}).test(
+		'clampCandidatesToRank',
+		t('fieldError.tooManyCandidatesToRank'),
+		(obj) => {
+			if (!obj.candidates || !obj.candidatesToRank) return false
+
+			return obj.candidatesToRank <= obj.candidates.length
+		}
+	)
 	/**
      * This is called if the host receives the UNAUTHORIZED error message when creating elections or ending elections. Show an alert to the user and kick them out from the lobby.
      */
@@ -248,7 +256,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
 										disabled={isElectionActive}
 										type="number"
 										min={2}
-										max={values.candidates.length}
+										max={candidateLimit}
 									/>
 								</div>
 								<div className='rightAlign'>
