@@ -41,6 +41,7 @@
     "noCandidates": "Please enter at least two candidates",
     "tooManyCandidates": "There cannot be more than {{candidateLimit}} candidates",
     "fewCandidatesToRank": "You have to rank at least 2 candidates. Otherwise, select FPTP election.",
+    "tooManyCandidatesToRank": "You cannot rank more candidates than there are candidates. Either reduce the number of candidates to rank or add more candidates.",
     "lobbyNotFound": "Could not find a lobby with the given code. Please try again!",
     "notValidLobbyCode": "Please enter a valid lobby code"
   },
