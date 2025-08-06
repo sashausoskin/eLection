@@ -42,13 +42,13 @@ export const authenticateUser = async (hostToken : string, userCode : string) =>
  * @param voteContent What the user is voting for
  * @returns 
  */
-export const castVote = async (participantToken : string, voteContent : string | string[] | null) => {
+export const castVote = async (participantToken : string, voteContent : string | string[] | null | undefined) => {
     return request(app).post('/participant/castVote')
         //Only set the Authorization header if the token is defined
         .set(participantToken !== undefined ? 'Authorization' : 'sink', `Bearer ${participantToken}`)
 
         //Same for voteContent
-        .send(voteContent !== undefined ? {voteContent} : null)
+        .send(voteContent !== undefined ? {voteContent} : {})
         .then()
 }
 

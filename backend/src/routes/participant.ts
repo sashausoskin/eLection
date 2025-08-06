@@ -48,10 +48,11 @@ router.post('/castVote', (req, res) => {
     if (lobbyService.hasUserVoted(lobbyCode, userID)) {
         return res.status(403).json({type: 'ALREADY_VOTED', message: 'You have already casted a vote in this election'} as ErrorMessage)
     }
+    const voteContent : string | string[] | undefined = req.body.voteContent
 
-    const voteContent : string | string[] = req.body.voteContent
-
-    if (voteContent === undefined) return res.status(400).json({type: 'MALFORMATTED_REQUEST', message: 'Did not receive voteContent with the request'} as ErrorMessage)
+    if (voteContent === undefined) {
+        return res.status(400).json({type: 'MALFORMATTED_REQUEST', message: 'Did not receive voteContent with the request'} as ErrorMessage)
+    }
 
     const currentElectionType = currentLobbyStatus.electionInfo.type
 

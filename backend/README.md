@@ -73,7 +73,7 @@ Checks the linting. Can be run with `-- --fix` at the end to fix common linting 
 <br></br>
 
 ```bash
-npm run lint build:schema
+npm run build:schema
 ```
 Builds the validation schema based on the values given in the TypeScript type definitions.
 

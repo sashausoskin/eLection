@@ -114,7 +114,7 @@ describe('With an active FPTP election', () => {
 
     test('cannot vote without vote content', async () => {
         const voteCastRequest = await testUtil.castVote(participantToken, undefined)
-        
+
         expect(voteCastRequest.status).toBe(400)
         expect(voteCastRequest.body.type).toBe('MALFORMATTED_REQUEST') 
     })
