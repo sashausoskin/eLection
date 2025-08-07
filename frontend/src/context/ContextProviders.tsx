@@ -13,9 +13,9 @@ export const SetParticipantViewContextProvider = (props: React.PropsWithChildren
 	const [viewTab, setViewTab] = useState<ParticipantViewTab>('joinLobby')
 
 	return (
-		<SetParticipantViewContext.Provider value={{ viewTab, setViewTab }}>
+		<SetParticipantViewContext value={{ viewTab, setViewTab }}>
 			{props.children}
-		</SetParticipantViewContext.Provider>
+		</SetParticipantViewContext>
 	)
 };export const PopupContextProvider = (props: React.PropsWithChildren) => {
 	const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null)
@@ -29,9 +29,9 @@ export const SetParticipantViewContextProvider = (props: React.PropsWithChildren
 	}
 
 	return (
-		<PopupContext.Provider value={{ popupInfo, createPopup, clearPopup }}>
+		<PopupContext value={{ popupInfo, createPopup, clearPopup }}>
 			{props.children}
-		</PopupContext.Provider>
+		</PopupContext>
 	)
 }
 

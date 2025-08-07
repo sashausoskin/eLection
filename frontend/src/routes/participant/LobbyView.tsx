@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { useCallback, use, useEffect, useRef, useState } from 'react'
 import { ErrorMessage, LobbyStatusInfo } from '../../types'
 import { createLobbySocket } from '../../sockets'
 import * as participantService from '../../services/participantService'
@@ -20,8 +20,8 @@ const LobbyView = () : JSX.Element => {
 	const [lobbyStatus, setLobbyStatus] = useState<LobbyStatusInfo | null>(null)
 	const [canSubmitVote, setCanSubmitVote] = useState<boolean>(true)
 	const [hasVoted, setHasVoted] = useState<boolean>(false)
-	const { setViewTab } = useContext(SetParticipantViewContext)
-	const { createPopup } = useContext(PopupContext)
+	const { setViewTab } = use(SetParticipantViewContext)
+	const { createPopup } = use(PopupContext)
 	const { t } = useTranslation()
 	const navigate = useNavigate()
 
@@ -133,18 +133,18 @@ const LobbyView = () : JSX.Element => {
 		catch (e) {
 			if (e instanceof AxiosError) {
 				switch ((e.response?.data as ErrorMessage).type) {
-				case 'ALREADY_VOTED':
-					createPopup({type: 'alert', message: t('status.voteAlreadySubmitted'), onConfirm: () => {
-						setHasVoted(true)
-					}})
-					break
-				case 'NO_ACTIVE_ELECTION':
-					setLobbyStatus({status: 'STANDBY'})
-					break
-				default:
-					createPopup({type: 'alert', message: `${t('unexpectedError')}: ${e.response?.data.message}`, onConfirm: () => {
-						setCanSubmitVote(true)
-					}})
+					case 'ALREADY_VOTED':
+						createPopup({type: 'alert', message: t('status.voteAlreadySubmitted'), onConfirm: () => {
+							setHasVoted(true)
+						}})
+						break
+					case 'NO_ACTIVE_ELECTION':
+						setLobbyStatus({status: 'STANDBY'})
+						break
+					default:
+						createPopup({type: 'alert', message: `${t('unexpectedError')}: ${e.response?.data.message}`, onConfirm: () => {
+							setCanSubmitVote(true)
+						}})
 				}
 			}
 		}
@@ -163,31 +163,31 @@ const LobbyView = () : JSX.Element => {
 	}
 
 	switch (lobbyStatus.status) {
-	case 'STANDBY' :
-		return <>
-			<h2 data-testid='lobby-standby-header'>{t('joinLobby.authenticated')}</h2>
-			<a>{t('status.waitingForElection')}</a>
-		</> 
+		case 'STANDBY' :
+			return <>
+				<h2 data-testid='lobby-standby-header'>{t('joinLobby.authenticated')}</h2>
+				<a>{t('status.waitingForElection')}</a>
+			</> 
         
     
-	case 'VOTING':
-		if (hasVoted) {
-			return <VoteSubmitted />
-		}
+		case 'VOTING':
+			if (hasVoted) {
+				return <VoteSubmitted />
+			}
     
-		if (lobbyStatus.electionInfo.type === 'FPTP') {
-			return <FPTPVotingView electionInfo={lobbyStatus.electionInfo} canSubmitVote={canSubmitVote} onSubmitVote={onSubmitVote}/>
-		}
-		else if (lobbyStatus.electionInfo.type === 'ranked') {
-			return <RankedElectionView electionInfo={lobbyStatus.electionInfo} canSubmitVote={canSubmitVote} onSubmitVote={onSubmitVote}/>
-		}
-		break
+			if (lobbyStatus.electionInfo.type === 'FPTP') {
+				return <FPTPVotingView electionInfo={lobbyStatus.electionInfo} canSubmitVote={canSubmitVote} onSubmitVote={onSubmitVote}/>
+			}
+			else if (lobbyStatus.electionInfo.type === 'ranked') {
+				return <RankedElectionView electionInfo={lobbyStatus.electionInfo} canSubmitVote={canSubmitVote} onSubmitVote={onSubmitVote}/>
+			}
+			break
 
-	case 'ELECTION_ENDED': 
-		return <ElectionEnded />
-	case 'CLOSING':
-		lobbySocket.current?.disconnect()
-		return <LobbyClose lobbyInfo={lobbyStatus} />
+		case 'ELECTION_ENDED': 
+			return <ElectionEnded />
+		case 'CLOSING':
+			lobbySocket.current?.disconnect()
+			return <LobbyClose lobbyInfo={lobbyStatus} />
 	}
 
 	// If none of these views can be shown, then a weird error occurred and the user is redirected to the main menu.
