@@ -23,7 +23,7 @@ const Viewer = () => {
 	hostService.loadStoredValues()
 	const lobbyCode = hostService.getLobbyCode()
 	const hostToken = hostService.getAuthToken()
-	const viewerSocket = useRef<Socket>()
+	const viewerSocket = useRef<Socket | null>(null)
 
 	const handleConnect = () => {
 		setErrorText(null)

@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { JSX } from 'react'
 
 /**
  * What the participant sees when they succesfully submitted a vote.

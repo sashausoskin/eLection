@@ -56,6 +56,7 @@ const Host = () => {
 			} catch {
 				lobbyService.clearSavedInfo()
 				lobbyService.createLobby().then(() => {
+					console.log('Created lobby')
 					setLobbyCode(lobbyService.getLobbyCode())
 				}).catch((reason) => {
 					if (reason instanceof AxiosError) {

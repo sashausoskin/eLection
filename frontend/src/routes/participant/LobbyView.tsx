@@ -1,4 +1,4 @@
-import { useCallback, use, useEffect, useRef, useState } from 'react'
+import { useCallback, use, useEffect, useRef, useState, JSX } from 'react'
 import { ErrorMessage, LobbyStatusInfo } from '../../types'
 import { createLobbySocket } from '../../sockets'
 import * as participantService from '../../services/participantService'
@@ -27,7 +27,7 @@ const LobbyView = () : JSX.Element => {
 
 	const maxConnectionAttempts = 5
 
-	const lobbySocket = useRef<Socket>()
+	const lobbySocket = useRef<Socket | null>(null)
 
 	const participantToken = participantService.getAuthToken()
 

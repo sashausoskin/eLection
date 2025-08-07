@@ -6,7 +6,7 @@ describe('In host view', () => {
 	})
 	it('can create a FPTP election and end election', () => {
 		cy.get('[data-testid=\'fptp-radio\']').click()
-		cy.get('[data-testid=\'title-field\']').type('Language?')
+		cy.get('[data-testid=\'title-field\']').type('Language?').blur()
 		cy.get('[data-testid=\'candidate-field\']').eq(0).type('Python')
 		cy.get('[data-testid=\'candidate-field\']').eq(1).type('JavaScript')
 

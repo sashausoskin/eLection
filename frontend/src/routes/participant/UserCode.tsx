@@ -41,8 +41,6 @@ export const UserCode = ({ onAuthenticated }: {
 			return
 		}
 
-		setIsConnecting(true)
-
 		const lobbySocket: Socket = createQueueSocket(userCode, lobbyCode)
 		lobbySocket.on('connect', () => setIsConnecting(false))
 		lobbySocket.on('connect_error', (err) => console.error(err))

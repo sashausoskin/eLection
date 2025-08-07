@@ -2,7 +2,7 @@ import { AxiosError } from 'axios'
 import { ErrorMessage, Field, FieldArray, Form, Formik, FormikHelpers } from 'formik'
 import * as Yup from 'yup'
 import { createElection, endElection, getElectionResults, getLobbyStatus } from '../../services/lobbyHostService'
-import { Fragment, use, useEffect, useState } from 'react'
+import { Fragment, use, useEffect, useState, useTransition } from 'react'
 import { ElectionInfo,  ElectionType,  ErrorMessage as ResponseErrorMessage, StatusMessage } from '../../types'
 import './CreateElectionForm.css'
 import InfoTooltip from '../../elements/Tooltip'
@@ -33,7 +33,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
 	const [electionType, setElectionType] = useState<ElectionType>('FPTP')
 	const [isElectionActive, setIsElectionActive] = useState<boolean>(false)
 	const [areResultsAvailable, setAreResultsAvailable] = useState<boolean>(false)
-	const [isRequestPending, setIsRequestPending] = useState<boolean>(!skipStatusCheck)
+	const [isRequestPending, startRequest] = useTransition()
 	const {createPopup} = use(PopupContext)
 	const {t} = useTranslation()
 	const navigate = useNavigate()
@@ -55,20 +55,19 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
 	}, [statusMessage])
 
 	useEffect(() => {
-		// This is to make sure that if the host reloads the page, their election control buttons will still be up-to-date.
-		if (skipStatusCheck) {
-			setIsRequestPending(false)
-			return
-		}
+		startRequest(async() => {
+			console.log('Fetching data')
+			if (skipStatusCheck) {
+				return
+			}
 
-		setIsRequestPending(true)
+			const lobbyStatus = await getLobbyStatus()
 
-		getLobbyStatus().then((res) => {
-			setIsElectionActive(res.data.electionActive)
-			setAreResultsAvailable(res.data.resultsAvailable)
-			setIsRequestPending(false)
+			setIsElectionActive(lobbyStatus.data.electionActive)
+			setAreResultsAvailable(lobbyStatus.data.resultsAvailable)
 		})
-	}, [skipStatusCheck])
+	}, [])
+	
 
 	const ElectionCreationSchema = Yup.object().shape({
 		type: Yup.string()
@@ -110,53 +109,51 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
      * @param formikHelpers - Helper functions provided by {@link Formik}
      */
 	const defaultOnSubmit = async (values: ElectionInfo, formikHelpers: FormikHelpers<ElectionInfo>) => {
-		try {
-			setIsRequestPending(true)
-			await createElection(values)
-			formikHelpers.resetForm()
-			setStatusMessage({status: 'success', message: t('status.electionCreateSuccess')})
-			setIsElectionActive(true)
-			setIsRequestPending(false)
-		}
-		catch(e) {
-			if (e instanceof AxiosError) {
-				if ((e.response?.data as ResponseErrorMessage).type === 'UNAUTHORIZED') {
-					handleUnauthorizedRequest()
-				}
-				else {
-					createPopup({type: 'alert', message: t('unexpectedError', {errorMessage: e.response?.data.message})})
-					setIsRequestPending(false)
+		startRequest(async () => {
+			try {
+				await createElection(values)
+				formikHelpers.resetForm()
+				setStatusMessage({status: 'success', message: t('status.electionCreateSuccess')})
+				setIsElectionActive(true)
+			}
+			catch(e) {
+				if (e instanceof AxiosError) {
+					if ((e.response?.data as ResponseErrorMessage).type === 'UNAUTHORIZED') {
+						handleUnauthorizedRequest()
+					}
+					else {
+						createPopup({type: 'alert', message: t('unexpectedError', {errorMessage: e.response?.data.message})})
+					}
 				}
 			}
-		}
+
+		})
 	}
 	/**
      * This is called when the user tries to end an election and there was no {@link onEndElectionClick} provided.
      * Tries to send an election ending request to the backend server.
      */
 	const defaultOnEndElectionClick = async () => {
-		try {
-			setIsRequestPending(true)
-			await endElection()
-			setIsElectionActive(false)
-			setAreResultsAvailable(true)
-			setStatusMessage({status: 'success', message: t('status.electionEndSuccess')})
-			setIsRequestPending(false)
-		}
-		catch (e) {
-			if (e instanceof AxiosError) {
-				switch((e.response?.data as ResponseErrorMessage).type) {
-					case 'NO_ACTIVE_ELECTION':
-						createPopup({type: 'alert', message: t('status.noActiveElection'), onConfirm: () => {
-							setIsElectionActive(false)
-						}})
-						break
-					case 'UNAUTHORIZED':
-						handleUnauthorizedRequest()
-				}
-				setIsRequestPending(false)
+		startRequest(async () => {
+			try {
+				await endElection()
+				setIsElectionActive(false)
+				setAreResultsAvailable(true)
+				setStatusMessage({status: 'success', message: t('status.electionEndSuccess')})
 			}
-		}
+			catch(e) {
+				if (e instanceof AxiosError) {
+					switch((e.response?.data as ResponseErrorMessage).type) {
+						case 'NO_ACTIVE_ELECTION':
+							createPopup({type: 'alert', message: t('status.noActiveElection'), onConfirm: () => {
+								setIsElectionActive(false)
+							}})
+							break
+						case 'UNAUTHORIZED':
+							handleUnauthorizedRequest()
+					}
+				}
+			}})
 	}
 
 	const handleDownloadResults = async () => {
@@ -189,6 +186,8 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
 		candidates: ['', ''],
 		candidatesToRank: 2
 	}
+
+	console.log('Rerendering')
 
 	return (
 		<div>
@@ -275,8 +274,14 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
 								return <>
 									{values.candidates.length > 0 &&
 									values.candidates.map((_candidate, index) => (
-										<Fragment key={`candidate_${_candidate}`}>
-											<div className='inputRow' key={`candidate_${_candidate}`}>
+										// Even though this is bad practice in React, we have no other choice but to use
+										// the index in the key.
+										// eslint-disable-next-line @eslint-react/no-array-index-key
+										<Fragment key={`candidate_${index}`}>
+											<div className='inputRow' 
+												//eslint-disable-next-line @eslint-react/no-array-index-key
+												key={`candidateRow_${index}`}
+											>
 												<div className='leftAlign'>
 													<label htmlFor={`candidates.${index}`}>{t('name')}</label>
 												</div>

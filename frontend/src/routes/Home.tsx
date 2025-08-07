@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
+import { JSX } from 'react'
 
 /**
  * The main menu of the app.
