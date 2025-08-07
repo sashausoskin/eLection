@@ -51,7 +51,15 @@ router.post('/createElection', (req, res) => {
 
     const valid = ajv.validate(electioninfo_schema, electionInfo)
 
-    if (!valid) return res.status(400).send({type: 'MALFORMATTED_REQUEST', message: ajv.errors.toString()} as ErrorMessage)
+    if (!valid) {
+        let errors = ''
+
+        ajv.errors.forEach((error) => {
+            errors += error.message
+        })
+
+        return res.status(400).send({type: 'MALFORMATTED_REQUEST', message: errors} as ErrorMessage)
+    }
 
     // This cannot be done with a JSON schema, so make sure that all of the candidate names aren't too long
     electionInfo.candidates.forEach((candidate) => {

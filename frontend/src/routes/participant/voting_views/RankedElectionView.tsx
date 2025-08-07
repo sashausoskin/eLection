@@ -1,4 +1,4 @@
-import { Fragment, useContext, useState } from 'react'
+import { Fragment, use, useState } from 'react'
 import { RankedElectionInfo } from '../../../types'
 import { useSprings, animated } from '@react-spring/web'
 import { useDrag } from '@use-gesture/react'
@@ -40,22 +40,22 @@ const animateFn = (order: number[], active = false, originalIndex = 0, curIndex 
  * @param onSubmitVote - 
  */
 const RankedElectionView = ({electionInfo, onSubmitVote, canSubmitVote} : {
-    /**
+	/**
      * Information on the election
      */
-    electionInfo : RankedElectionInfo,
-    /**
+	electionInfo : RankedElectionInfo,
+	/**
      * Called when the user submits a vote.
      * @param voteContent What the participant voted for
      * @returns null
      */
-    onSubmitVote: (voteContent: string[] | string | null) => Promise<void> | void,
-    /**
+	onSubmitVote: (voteContent: string[] | string | null) => Promise<void> | void,
+	/**
      * If the participant can submit a vote.
      */
-    canSubmitVote: boolean
-    }) => {
-	const {createPopup} = useContext(PopupContext)
+	canSubmitVote: boolean
+}) => {
+	const {createPopup} = use(PopupContext)
 	const {t} = useTranslation()
 
 	const [candidateOrder, setCandidateOrder] = useState(electionInfo.candidates.map((_,index) => index))
@@ -94,10 +94,10 @@ const RankedElectionView = ({electionInfo, onSubmitVote, canSubmitVote} : {
 				{springs.map(({ zIndex, shadow, y, scale }, i) => {
 					const orderPosition = candidateOrder.indexOf(i)
 					const votes = electionInfo.candidatesToRank - orderPosition
-					return <Fragment key={`candidateFragment_${i}`}>
+					return <Fragment key={`candidateFragment_${electionInfo.candidates[i]}`}>
 						<animated.div
+							key={`dragCandidate_${electionInfo.candidates[i]}`}
 							{...bind(i)}
-							key={`dragCandidate_${i}`}
 							data-testid={`candidate-drag-${i}`}
 							className={'candidateContainer rankedCandidate'}
 							style={{

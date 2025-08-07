@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react'
+import { use, useEffect, useRef, useState } from 'react'
 import * as lobbyService from '../services/lobbyHostService'
 import { Authentication } from './host/Authentication'
 import CreateElectionForm from './host/CreateElectionForm'
@@ -16,7 +16,7 @@ import { AxiosError } from 'axios'
 const Host = () => {
 	const [lobbyCode, setLobbyCode] = useState<string | null>(null)
 	const navigate = useNavigate()
-	const {createPopup} = useContext(PopupContext)
+	const {createPopup} = use(PopupContext)
 	const lobbyInitialised = useRef<boolean>(false)
 
 	const {t} = useTranslation()
@@ -56,6 +56,7 @@ const Host = () => {
 			} catch {
 				lobbyService.clearSavedInfo()
 				lobbyService.createLobby().then(() => {
+					console.log('Created lobby')
 					setLobbyCode(lobbyService.getLobbyCode())
 				}).catch((reason) => {
 					if (reason instanceof AxiosError) {
@@ -72,7 +73,7 @@ const Host = () => {
 	return ( 
 		<>
 			<Authentication lobbyCode={lobbyCode} />
-			<button className='viewerOpen'onClick={() => window.open('/viewer', '_blank', 'popup=true')}>
+			<button type='button' className='viewerOpen'onClick={() => window.open('/viewer', '_blank', 'popup=true')}>
 				<img src={linkIcon} className='icon' height={20} />{t('hostInstructions.openViewerWindow')}
 			</button>
 			<a>{t('hostInstructions.viewerWindowDesc')}</a>
@@ -80,7 +81,7 @@ const Host = () => {
 			<CreateElectionForm />
 			<br />
 			<hr style={{width: '100%'}}/>
-			<button className='closeLobby' onClick={handleCloseLobbyClick} data-testid='close-lobby'>{t('hostInstructions.closeLobby')}</button>
+			<button type='button' className='closeLobby' onClick={handleCloseLobbyClick} data-testid='close-lobby'>{t('hostInstructions.closeLobby')}</button>
 		</>
 	)
 }

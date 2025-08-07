@@ -177,8 +177,8 @@ Cypress.Commands.add('goOffline', function () {
 					params: {
 						offline: true,
 						latency: -1,
-						downloadThroughput: 5000000,
-						uploadThroughput: 5000000,
+						downloadThroughput: -1,
+						uploadThroughput: -1,
 					},
 				})
 		})

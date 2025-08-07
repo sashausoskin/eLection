@@ -5,10 +5,10 @@ import { LobbyStatusInfo } from '../../types'
  * What the viewer sees when the lobby is closed.
  */
 const LobbyCloseViewer = ({lobbyStatus} : {
-    /**
+	/**
      * The lobby's status, including information on why the lobby closed.
      */
-    lobbyStatus : LobbyStatusInfo}) => {
+	lobbyStatus : LobbyStatusInfo}) => {
 	const {t} = useTranslation()
 
 	// This shouldn't be possible, but just to make sure and to comply with TypeScript.

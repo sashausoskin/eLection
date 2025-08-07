@@ -10,19 +10,19 @@ import { useTranslation } from 'react-i18next'
  * @param onSubmitVote - 
  */
 const FPTPVotingView = ({electionInfo, canSubmitVote, onSubmitVote} : {
-    /**
+	/**
      * The information for the election
      */
-    electionInfo : FPTPElectionInfo,
-    /**
+	electionInfo : FPTPElectionInfo,
+	/**
      * If the user is allowed to submit a vote. Usually disabled when the vote is being handled by the backend.
      */
-    canSubmitVote : boolean,
-    /**
+	canSubmitVote : boolean,
+	/**
      * Called when the user presses 'Submit'.
      * @param voteContent What the user voted for
      */
-    onSubmitVote : (voteContent: string | null) => Promise<void>}) => {
+	onSubmitVote : (voteContent: string | null) => Promise<void>}) => {
 	const [selectedCandidate, setSelectedCandidate] = useState<string | null>(null)
 	const {t} = useTranslation()
 

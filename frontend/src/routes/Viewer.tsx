@@ -23,7 +23,7 @@ const Viewer = () => {
 	hostService.loadStoredValues()
 	const lobbyCode = hostService.getLobbyCode()
 	const hostToken = hostService.getAuthToken()
-	const viewerSocket = useRef<Socket>()
+	const viewerSocket = useRef<Socket | null>(null)
 
 	const handleConnect = () => {
 		setErrorText(null)
@@ -37,11 +37,11 @@ const Viewer = () => {
 
 	const handleDisconnect = useCallback((reason : Socket.DisconnectReason) => {
 		switch(reason) {
-		case 'ping timeout':
-			setErrorText(t('status.serverConnectionError'))
-			break
-		case 'io server disconnect':
-			if (lobbyStatus?.status !== 'CLOSING') setErrorText(t('status.viewerKick'))
+			case 'ping timeout':
+				setErrorText(t('status.serverConnectionError'))
+				break
+			case 'io server disconnect':
+				if (lobbyStatus?.status !== 'CLOSING') setErrorText(t('status.viewerKick'))
 		}
 	}, [lobbyStatus?.status, t])
 
@@ -91,14 +91,14 @@ const Viewer = () => {
 	if (!lobbyStatus) return <Loading><a>{t('status.loading')}</a></Loading>
 
 	switch (lobbyStatus.status) {
-	case 'STANDBY':
-		return <LobbyInfo lobbyCode={lobbyCode} usersInLobby={usersInLobby} />
-	case 'VOTING':
-		return <ElectionInfoView electionInfo={lobbyStatus.electionInfo} votesCasted={votesCasted} participantAmount={usersInLobby}/>
-	case 'ELECTION_ENDED':
-		return <ElectionResults results={lobbyStatus.results} />
-	case 'CLOSING':
-		return <LobbyCloseViewer lobbyStatus={lobbyStatus} />
+		case 'STANDBY':
+			return <LobbyInfo lobbyCode={lobbyCode} usersInLobby={usersInLobby} />
+		case 'VOTING':
+			return <ElectionInfoView electionInfo={lobbyStatus.electionInfo} votesCasted={votesCasted} participantAmount={usersInLobby}/>
+		case 'ELECTION_ENDED':
+			return <ElectionResults results={lobbyStatus.results} />
+		case 'CLOSING':
+			return <LobbyCloseViewer lobbyStatus={lobbyStatus} />
 	}
 }
 

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { use, useEffect, useState, JSX } from 'react'
 import { JoinLobbyForm } from './participant/JoinLobbyForm'
 import { UserCode } from './participant/UserCode'
 import { SetParticipantViewContext } from '../context/Contexts'
@@ -10,7 +10,7 @@ import Loading from '../elements/Loading'
  * The participant's view.
  */
 const ParticipantView: () => JSX.Element = () => {
-	const { viewTab, setViewTab } = useContext(SetParticipantViewContext)
+	const { viewTab, setViewTab } = use(SetParticipantViewContext)
 	const [isLoading, setIsLoading] = useState<boolean>(true)
 
 	useEffect(() => {

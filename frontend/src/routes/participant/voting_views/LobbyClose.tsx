@@ -20,7 +20,7 @@ const LobbyClose = ({lobbyInfo} : {lobbyInfo : LobbyStatusInfo}) => {
 		{lobbyInfo.reason === 'INACTIVITY' && <a>{t('lobbyClose.inactivity')}</a>}
 		<a>{t('lobbyClose.footer')}</a>
 
-		<button onClick={() => navigate('/')}>{t('button.returnToMainMenu')}</button>
+		<button type='button' onClick={() => navigate('/')}>{t('button.returnToMainMenu')}</button>
 	</>
 }
 

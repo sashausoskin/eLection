@@ -5,10 +5,10 @@ import { ElectionResultsInfo, ResultCandidateInfo } from '../../types'
  * Shows the results of an election after it has ended.
  */
 const ElectionResults = ({results} : {
-    /**
+	/**
      * The results of the ended election.
      */
-    results: ElectionResultsInfo}) => {
+	results: ElectionResultsInfo}) => {
 	/**
          * This controls how long the reveal animation is.
          */

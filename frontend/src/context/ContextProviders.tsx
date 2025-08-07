@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { ParticipantViewTab, PopupInfo } from '../types'
 import { PopupContext, SetParticipantViewContext } from './Contexts'
 
@@ -11,11 +11,12 @@ import { PopupContext, SetParticipantViewContext } from './Contexts'
 
 export const SetParticipantViewContextProvider = (props: React.PropsWithChildren) => {
 	const [viewTab, setViewTab] = useState<ParticipantViewTab>('joinLobby')
+	const contextValue = useMemo(() => ({viewTab, setViewTab}), [viewTab])
 
 	return (
-		<SetParticipantViewContext.Provider value={{ viewTab, setViewTab }}>
+		<SetParticipantViewContext value={contextValue}>
 			{props.children}
-		</SetParticipantViewContext.Provider>
+		</SetParticipantViewContext>
 	)
 };export const PopupContextProvider = (props: React.PropsWithChildren) => {
 	const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null)
@@ -28,10 +29,12 @@ export const SetParticipantViewContextProvider = (props: React.PropsWithChildren
 		setPopupInfo(null)
 	}
 
+	const contextValue = useMemo(() => ({popupInfo, createPopup, clearPopup}), [popupInfo])
+
 	return (
-		<PopupContext.Provider value={{ popupInfo, createPopup, clearPopup }}>
+		<PopupContext value={contextValue}>
 			{props.children}
-		</PopupContext.Provider>
+		</PopupContext>
 	)
 }
 

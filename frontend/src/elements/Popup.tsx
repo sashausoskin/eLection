@@ -1,6 +1,6 @@
 import confirmIcon from '/img/icons/confirm.svg'
 import cancelIcon from '/img/icons/cancel.svg'
-import { useContext } from 'react'
+import { use } from 'react'
 import { PopupContext } from '../context/Contexts'
 import { useTransition, animated } from '@react-spring/web'
 
@@ -8,7 +8,7 @@ import { useTransition, animated } from '@react-spring/web'
  * A popup that covers the entire screen. Uses {@link PopupContext} to get information on what to show.
  */
 const Popup = () => {
-	const {popupInfo, clearPopup} = useContext(PopupContext)
+	const {popupInfo, clearPopup} = use(PopupContext)
 
 	const popupBackgroundAnimation = useTransition(popupInfo, {
 		from: {opacity: 0},
@@ -27,11 +27,11 @@ const Popup = () => {
 			{popupAnimation((style, item) => (item && <animated.div style={style} className='popupContainer'>
 				<a className='popupText' data-testid='popup-text'>{item?.message}</a>
 				<div className='buttonsContainer'>
-					<button className='confirmButton' data-testid='confirm-button' onClick={() => {item?.onConfirm?.(); clearPopup()}}>
+					<button type='button' className='confirmButton' data-testid='confirm-button' onClick={() => {item?.onConfirm?.(); clearPopup()}}>
 						<img src={confirmIcon} />
 					</button>
 					{item?.type === 'confirm' && <>
-						<button className='cancelButton' data-testid='cancel-button' onClick={() => {item?.onCancel?.(); clearPopup()}}>
+						<button type='button' className='cancelButton' data-testid='cancel-button' onClick={() => {item?.onCancel?.(); clearPopup()}}>
 							<img src={cancelIcon} />
 						</button>
 					</>

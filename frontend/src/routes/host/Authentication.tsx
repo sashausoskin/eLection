@@ -1,7 +1,7 @@
 import { Field, Form, Formik, FormikHelpers } from 'formik'
 import { auhtenticateUserWithCode } from '../../services/lobbyHostService'
 import * as Yup from 'yup'
-import { useContext, useEffect, useState } from 'react'
+import { use, useEffect, useState } from 'react'
 import { ErrorMessage, StatusMessage } from '../../types'
 import { AxiosError } from 'axios'
 import { Mock } from 'vitest'
@@ -27,7 +27,7 @@ export const Authentication = ({
 	const statusMessageColor = statusMessage?.status === 'success' ? 'green' : 'red'
 
 	const {t} = useTranslation()
-	const {createPopup} = useContext(PopupContext)
+	const {createPopup} = use(PopupContext)
 	const navigate = useNavigate()
 
 	useEffect(() => {
@@ -70,20 +70,20 @@ export const Authentication = ({
 		} catch (e) {
 			if (e instanceof AxiosError) {
 				switch((e.response?.data as ErrorMessage).type) {
-				case 'NOT_FOUND': 
-					setStatusMessage({
-						status: 'error',
-						message: t('status.userNotFound'),
-					})
-					break
-				case 'UNAUTHORIZED':
+					case 'NOT_FOUND': 
+						setStatusMessage({
+							status: 'error',
+							message: t('status.userNotFound'),
+						})
+						break
+					case 'UNAUTHORIZED':
 					// If the host is no longer authorized, it probably means that the lobby has closed and the lobby is redirected to the main menu.
-					createPopup({type: 'alert', message: t('status.unauthorisedHost'), onConfirm: () => {
-						navigate('/')
-					}})
-					break
-				default:
-					console.error(t('unexpectedError'), e.response)
+						createPopup({type: 'alert', message: t('status.unauthorisedHost'), onConfirm: () => {
+							navigate('/')
+						}})
+						break
+					default:
+						console.error(t('unexpectedError'), e.response)
 				}
 			}
 		}

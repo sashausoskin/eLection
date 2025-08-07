@@ -6,6 +6,7 @@ import { Mock, vi } from 'vitest'
 
 
 vi.mock('react-router', () => ({
+	// eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-prefix
 	useNavigate: () => vi.fn()
 }))
 

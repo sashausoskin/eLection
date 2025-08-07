@@ -2,7 +2,7 @@ import { AxiosError } from 'axios'
 import { Field, Form, Formik, FormikHelpers } from 'formik'
 import * as Yup from 'yup'
 import * as participantService from '../../services/participantService'
-import { useContext } from 'react'
+import { use } from 'react'
 import { SetParticipantViewContext } from '../../context/Contexts'
 import { Mock } from 'vitest'
 import './JoinLobbyForm.css'
@@ -20,7 +20,7 @@ export const JoinLobbyForm = ({
 	 */
 	handleSubmitLobbyCode?: (lobbyCode: string) => never | Mock;
 }): React.ReactElement => {
-	const { setViewTab } = useContext(SetParticipantViewContext)
+	const { setViewTab } = use(SetParticipantViewContext)
 	const {t} = useTranslation()
 
 	/**

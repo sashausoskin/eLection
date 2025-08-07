@@ -5,14 +5,14 @@ import { Trans, useTranslation } from 'react-i18next'
  * This is shown when a new lobby has been created.
  */
 const LobbyInfo = ({lobbyCode, usersInLobby} : {
-    /**
+	/**
      * The code of the lobby.
      */
-    lobbyCode : string,
-    /**
+	lobbyCode : string,
+	/**
      * How many users there are in the lobby.
      */
-    usersInLobby : number}) => {
+	usersInLobby : number}) => {
 	const {t} = useTranslation()
 
 	return <div className="lobbyInfoContainer">
@@ -20,14 +20,14 @@ const LobbyInfo = ({lobbyCode, usersInLobby} : {
 		<Trans
 			i18nKey={'viewer.joiningInformation'}
 			values={{lobbyCode, domain: window.location.host}}
-			components={[<a/>, <a className='codeDisplay' data-testid='lobbycode'/>]}
+			components={[<a key='regular-text'/>, <a key='lobby-code' className='codeDisplay' data-testid='lobbycode'/>]}
 		>
 			{'<0>Go to {{domain}}, select "Participate" and enter the lobby code</0><1>{{lobbyCode}}</1><0>on your device</0>'}
 		</Trans>
 		<div style={{marginTop: '5%'}}>
 			<Trans
 				i18nKey={'viewer.lobbyStats'}
-				components={[<a className='secondaryColor' data-testid='users-joined'/>, <a />]}
+				components={[<a key='participant-amount' className='secondaryColor' data-testid='users-joined'/>, <a key='regular-text'/>]}
 				count={usersInLobby}>
 				{'<0>{{count}}<0/> <1>participants in lobby<1/>'}
 			</Trans>
