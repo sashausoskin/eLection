@@ -1,0 +1,1 @@
+export const LOBBY_CODE_LENGTH = import.meta.env.LOBBY_CODE_LENGTH ? parseInt(import.meta.env.LOBBY_CODE_LENGTH) : 4

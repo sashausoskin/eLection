@@ -6,6 +6,7 @@ import { Globals } from '@react-spring/web'
 import { PopupContextProvider } from './context/ContextProviders.tsx'
 import './index.css'
 import './i18n.ts'
+import { PrimeReactProvider } from 'primereact/api'
 
 if (import.meta.env.VITE_SKIP_ANIMATIONS) {
 	console.log('Skipping animations...')
@@ -16,9 +17,11 @@ if (import.meta.env.VITE_SKIP_ANIMATIONS) {
 ReactDOM.createRoot(document.getElementById('root')!).render(
 	<React.StrictMode>
 		<BrowserRouter>
-			<PopupContextProvider>
-				<App />
-			</PopupContextProvider>
+			<PrimeReactProvider>
+				<PopupContextProvider>
+					<App />
+				</PopupContextProvider>
+			</PrimeReactProvider>
 		</BrowserRouter>
 	</React.StrictMode>
 )

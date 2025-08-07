@@ -1,13 +1,12 @@
 import { AxiosError } from 'axios'
-import { Field, Form, Formik, FormikHelpers } from 'formik'
-import * as Yup from 'yup'
 import * as participantService from '../../services/participantService'
-import { use } from 'react'
+import { use, useEffect, useState, useTransition } from 'react'
 import { SetParticipantViewContext } from '../../context/Contexts'
 import { Mock } from 'vitest'
 import './JoinLobbyForm.css'
 import { useTranslation } from 'react-i18next'
-
+import { LOBBY_CODE_LENGTH } from '../../util/config'
+import {InputOtp} from 'primereact/inputotp'
 /**
  * The participant's view when they want to join a lobby
  */
@@ -21,6 +20,9 @@ export const JoinLobbyForm = ({
 	handleSubmitLobbyCode?: (lobbyCode: string) => never | Mock;
 }): React.ReactElement => {
 	const { setViewTab } = use(SetParticipantViewContext)
+	const [error, setError] = useState<string | null>(null)
+	const [inputtedLobbyCode, setInputtedLobbyCode] = useState<string>('')
+	const [isCheckingLobbyCode, startLobbyCodeCheck] = useTransition()
 	const {t} = useTranslation()
 
 	/**
@@ -32,83 +34,77 @@ export const JoinLobbyForm = ({
 	 * @returns null
 	 */
 	const defaultHandleSubmitLobbyCode = async (
-		values: { lobbyCode: string },
-		{ setErrors }: FormikHelpers<{ lobbyCode: string }>
+		lobbyCode: string,
 	) => {
-		try {
-			const lobbyCode = values.lobbyCode
+		startLobbyCodeCheck(async () => {
+			try {
+				if (lobbyCode === null) return
 
-			if (lobbyCode === null) return
+				const userCode = await participantService.joinQueue(lobbyCode)
 
-			const userCode = await participantService.joinQueue(lobbyCode)
+				if (!userCode) {
+					console.error('Got response for lobby code but did not receive a user code!')
+					return
+				}
 
-			if (!userCode) {
-				console.error('Got response for lobby code but did not receive a user code!')
-				return
-			}
-
-			participantService.setUserCode(userCode)
-			participantService.setLobbyCode(lobbyCode)
-			setViewTab('inQueue')
-		} catch (e) {
-			if (e instanceof AxiosError) {
-				console.log(e.code)
-				if (e.response?.status === 404) {
-					setErrors({
-						lobbyCode: t('fieldError.lobbyNotFound'),
-					})
-				} else {
-					console.error(e.response?.data)
+				participantService.setUserCode(userCode)
+				participantService.setLobbyCode(lobbyCode)
+				setViewTab('inQueue')
+			} catch (e) {
+				if (e instanceof AxiosError) {
+					console.log(e.code)
+					if (e.response?.status === 404) {
+						setError(t('fieldError.lobbyNotFound'))
+						setInputtedLobbyCode('')
+					} else {
+						console.error(e.response?.data)
+					}
 				}
 			}
-		}
+		})
+		
 	}
 
-	const lobbyFormSchema = Yup.object({
-		lobbyCode: Yup.string()
-			.required(t('fieldError.notValidLobbyCode'))
-			.matches(/^[0-9]+$/, t('fieldError.onlyDigits'))
-			.min(4, t('fieldError.notValidLobbyCode'))
-			.max(4, t('fieldError.notValidLobbyCode')),
-	})
+	useEffect(() => {
+		console.log('Got input code', inputtedLobbyCode)
+		if (inputtedLobbyCode.length !== LOBBY_CODE_LENGTH) return
 
-
+		startLobbyCodeCheck(async() =>{
+			await (handleSubmitLobbyCode ? handleSubmitLobbyCode : defaultHandleSubmitLobbyCode)(inputtedLobbyCode)
+		})
+	}, [inputtedLobbyCode])
 
 	return (
 		<>
-			<Formik
-				initialValues={{ lobbyCode: '' }}
-				validationSchema={lobbyFormSchema}
-				onSubmit={(values, formikHelpers) => {
-					if (handleSubmitLobbyCode !== undefined) {
-						handleSubmitLobbyCode(values.lobbyCode)
-					}
-					else {
-						defaultHandleSubmitLobbyCode(values, formikHelpers)
-					}
-				}}
-			>
-				{({ errors, touched, isValid }) => (
-					<>
-						<Form autoComplete='off'>
-							<h2 data-testid="lobby-form-header">{t('welcome')}</h2>
-							<a>{t('joinLobby.lobbyCodeInstructions')}</a>
-							<br/>
-							<Field name="lobbyCode" data-testid="lobbycode-field" size={4} maxLength={4} inputMode='numeric' className='lobbyCodeInput'/>
-							<br/>
-							{errors.lobbyCode && touched.lobbyCode ? (
-								<a data-testid="lobbycode-field-error" style={{ color: 'red' }}>
-									{errors.lobbyCode}
-								</a>
-							) : null}
-							<br />
-							<button type="submit" data-testid='submit' className='submitLobbyCode' disabled={!isValid}>
-								{t('button.submit')}
-							</button>
-						</Form>
-					</>
-				)}
-			</Formik>
+			<h2 data-testid="lobby-form-header">{t('welcome')}</h2>
+			<a>{t('joinLobby.lobbyCodeInstructions')}</a>
+			<br/>
+			<div className='lobbyCodeInput'>
+				<InputOtp
+					name="lobbyCode"
+					invalid={error !== null}
+					value={inputtedLobbyCode}
+					data-testid="lobbycode-field"
+					length={LOBBY_CODE_LENGTH}
+					integerOnly={true}
+					className='lobbyCodeInput'
+					onChange={(event) => {
+						setError(null)
+
+						if (!event.value) return
+						if (typeof event.value !== 'string') return
+						setInputtedLobbyCode(event.value)
+					}}
+					disabled={isCheckingLobbyCode}
+				/>
+			</div>
+			<br/>
+			{error && (
+				<a data-testid="lobbycode-field-error" style={{ color: 'red' }}>
+					{error}
+				</a>
+			)}
+			<br />		
 		</>
 	)
 }

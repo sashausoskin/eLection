@@ -2,6 +2,35 @@
     font-size: x-large;
     margin: 1%;
     text-align: center;
+    display: flex;
+    flex-direction: row;
+    flex-shrink: 1;
+    align-content: space-between;
+}
+
+.lobbyCodeInput .p-inputotp {
+    width: 250px;
+
+}
+
+.lobbyCodeInput .p-inputotp-input {
+    background-color: #46464646;
+    border-color: var(--primary-color);
+    border-width: 2px;
+    color: var(--secondary-text-color);
+    font-size: xx-large;
+    width: 40px;
+    border-radius: 15px;
+    height: 60px;
+    margin-left: 5px;
+    margin-right: 5px;
+    border-style: groove;
+    text-align: center;
+}
+
+.lobbyCodeInput .p-invalid {
+    color: red;
+    border-color: red;
 }
 
 .submitLobbyCode {
