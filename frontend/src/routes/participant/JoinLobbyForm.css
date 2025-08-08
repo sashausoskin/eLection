@@ -2,6 +2,10 @@
     font-size: x-large;
     margin: 1%;
     text-align: center;
+    display: flex;
+    flex-direction: row;
+    flex-shrink: 1;
+    align-content: space-between;
 }
 
 .submitLobbyCode {

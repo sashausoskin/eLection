@@ -1,7 +1,7 @@
 :root {
     --primary-color: rgb(103, 28, 103);
     --secondary-color: rgb(79, 24, 72);
-    --primary-text-color: rgb(187, 38, 184);
+    --primary-text-color: rgb(224, 96, 222);
     --secondary-text-color: rgb(255, 255, 255);
     --code-background-color: white;
     --code-text-color: black;
@@ -14,4 +14,5 @@
     --color-scheme: dark; /* The color scheme the browser should use when displaying this page. See https://developer.mozilla.org/en-US/docs/Web/CSS/color-scheme */
     --cancel-button-color: rgb(164, 0, 0); /*The color of cancel or otherwise important buttons*/
     --confirm-button-color: rgb(21, 158, 21); /*The color of the confirm buttons*/
+    --code-input-background: rgba(51, 51, 51, 0.339);
 }

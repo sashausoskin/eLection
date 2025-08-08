@@ -110,8 +110,7 @@ describe('In host view', () => {
 		})
 
 		it('host is kicked when trying to authenticate a user', () => {
-			cy.get('[data-testid="usercode-field"]').type('1234')
-			cy.get('[data-testid="submit-authentication"]').click()
+			cy.get('[data-testid="usercode-field"]').children().last().type('1234')
 
 			cy.get('[data-testid="popup-text"]')
 			cy.get('[data-testid="confirm-button"]').click()

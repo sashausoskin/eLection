@@ -64,7 +64,6 @@ html {
 .codeDisplay {
     background-color: var(--code-background-color);
     padding: 3%;
-    color: var(--code-text-color);
     margin: 5% auto;
     flex-shrink: 1;
     justify-self: center;
@@ -111,6 +110,36 @@ html {
 
 .languageSelectionContainer select {
     flex-shrink: 1;
+}
+
+/* The classes below belong to the ReactPrime OTP input elements*/
+
+.p-inputotp {
+    width: 250px;
+}
+
+.p-inputotp-input {
+    background-color: var(--code-input-background);
+    border-color: var(--primary-color);
+    border-width: 2px;
+    color: var(--secondary-text-color);
+    font-size: xx-large;
+    width: 40px;
+    border-radius: 15px;
+    height: 60px;
+    margin-left: 5px;
+    margin-right: 5px;
+    border-style: groove;
+    text-align: center;
+}
+
+.p-invalid {
+    color: var(--cancel-button-color);
+    border-color: var(--cancel-button-color);
+}
+
+.p-disabled {
+    filter: brightness(30%);
 }
 
 
