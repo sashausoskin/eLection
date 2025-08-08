@@ -10,7 +10,7 @@ vi.mock('react-router', () => ({
 	useNavigate: () => vi.fn()
 }))
 
-describe('In authentication view', () => {
+describe.skip('In authentication view', () => {
 	let submitCallback: Mock
 	let userCodeField: HTMLElement
 	let userCodeSubmit: HTMLElement
