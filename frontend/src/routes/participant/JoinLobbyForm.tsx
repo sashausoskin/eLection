@@ -88,6 +88,7 @@ export const JoinLobbyForm = ({
 					length={LOBBY_CODE_LENGTH}
 					integerOnly={true}
 					className='lobbyCodeInput'
+					pt={{root: {'data-testid': 'lobbycode-field'}}}
 					onChange={(event) => {
 						setError(null)
 

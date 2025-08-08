@@ -7,27 +7,25 @@ import { JoinLobbyForm } from '../routes/participant/JoinLobbyForm'
 describe('In join lobby view', () => {
 	const submitCallback= vi.fn()
 	let lobbyCodeField: HTMLElement
-	let lobbyCodeSubmit: HTMLElement
 
 	beforeEach(() => {
 		submitCallback.mockReset()
 		render(<JoinLobbyForm handleSubmitLobbyCode={submitCallback} />)
 
-		lobbyCodeField = screen.getByTestId('lobbycode-field')
-		lobbyCodeSubmit = screen.getByTestId('submit')
+		lobbyCodeField = screen.getByTestId('lobbycode-field') as HTMLDivElement
 	})
 
 	afterEach(() => {
-		userEvent.clear(lobbyCodeField as HTMLElement)
+		for (const child of lobbyCodeField.children) {
+			userEvent.clear(child)
+		}
 	})
 
 	test('Cannot submit with invalid code', async () => {
 		expect(() => screen.getAllByTestId('lobbycode-field-error')).toThrow()
 		await userEvent.type(lobbyCodeField, '123')
-		await userEvent.click(lobbyCodeSubmit)
 
 		waitFor(() => {
-			expect(screen.getByTestId('lobbycode-field-error')).toBeDefined()
 			expect(submitCallback.mock.calls).toHaveLength(0)
 		})
 	})
@@ -36,10 +34,8 @@ describe('In join lobby view', () => {
 		expect(submitCallback.mock.calls).toHaveLength(0)
 
 		await userEvent.type(lobbyCodeField, '1234')
-		await userEvent.click(lobbyCodeSubmit)
 
 		await waitFor(() => {
-			expect(() => screen.getByTestId('lobbycode-field-error')).toThrow()
 			expect(submitCallback.mock.calls).toHaveLength(1)
 			expect(submitCallback.mock.lastCall).toHaveLength(1)
 		})

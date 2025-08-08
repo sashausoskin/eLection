@@ -122,8 +122,8 @@ describe('Joining a lobby', () => {
 	})
 	it('displays an error message when typing an invalid code', () => {
 		cy.get('[data-testid="lobbycode-field-error"]').should('not.exist')
-		cy.get('[data-testid="lobbycode-field"]').type('1234')
-		cy.get('button').click()
+		// You always have to start typing from the last input element, for some reason...
+		cy.get('[data-testid="lobbycode-field"]').find('input').last().type('1234')
 		cy.get('[data-testid="lobbycode-field-error"]').should('exist')
 	})
 
@@ -131,8 +131,7 @@ describe('Joining a lobby', () => {
 		cy.request('post', `${Cypress.env('BACKEND_URL')}/lobby/createLobby`).then((res) => {
 			const lobbyCode: string = res.body.lobbyCode
 
-			cy.get('[data-testid="lobbycode-field"]').type(lobbyCode)
-			cy.get('button').click()
+			cy.get('[data-testid="lobbycode-field"]').find('input').last().type(lobbyCode)
 			cy.get('[data-testid="usercode"]')
 		})
 	})
@@ -142,8 +141,7 @@ describe('Joining a lobby', () => {
 		cy.get('[data-testid="lobby-header"]').should('not.exist')
 		cy.get('@lobbyCode').then((lobbyCode) => {
 			//This looks bad, but the type conversion is added to avoid TypeScript errors
-			cy.get('[data-testid="lobbycode-field"]').type(lobbyCode as unknown as string)
-			cy.get('button').click()
+			cy.get('[data-testid="lobbycode-field"]').find('input').last().type(lobbyCode as unknown as string)
 
 			cy.get('[data-testid="lobby-header"]').should('not.exist')
 			cy.get('[data-testid="usercode"]').then((value) => {
@@ -162,8 +160,7 @@ describe('Joining a lobby', () => {
 		cy.createLobbyAndUser(false)
 
 		cy.get('@lobbyCode').then((lobbyCode) => {
-			cy.get('[data-testid="lobbycode-field"]').type(lobbyCode as unknown as string)
-			cy.get('button').click()
+			cy.get('[data-testid="lobbycode-field"]').find('input').last().type(lobbyCode as unknown as string)
 
 			cy.get('[data-testid="usercode"]').then((value) => {
 				const userCode: string = value.text()
