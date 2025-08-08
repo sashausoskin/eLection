@@ -57,7 +57,7 @@ export const JoinLobbyForm = ({
 						setError(t('fieldError.lobbyNotFound'))
 						setInputtedLobbyCode('')
 					} else {
-						console.error(e.response?.data)
+						setError(t('unexpectedError', {errorMessage: e.message}))
 					}
 				}
 			}
