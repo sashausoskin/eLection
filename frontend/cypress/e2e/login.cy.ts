@@ -50,8 +50,7 @@ describe('Host view', () => {
 
 	it('should display an error when authenticating an invalid user', () => {
 		cy.get('[data-testid="status-message-error"]').should('not.exist')
-		cy.get('[data-testid="usercode-field"]').type('1234')
-		cy.get('[data-testid="submit-authentication"]').click()
+		cy.get('[data-testid="usercode-field"]').children().last().type('1234')
 		cy.get('[data-testid="status-message-error"]')
 	})
 
@@ -68,8 +67,7 @@ describe('Host view', () => {
 			}).then((response) => {
 				const userCode = response.body.userCode
 
-				cy.get('[data-testid="usercode-field"]').type(userCode)
-				cy.get('[data-testid="submit-authentication"]').click()
+				cy.get('[data-testid="usercode-field"]').children().last().type(userCode)
 				cy.get('[data-testid="status-message-success"]').should('exist')
 			})
 		})
@@ -89,8 +87,7 @@ describe('Host view', () => {
 				lobbyCode,
 			}).then((response) => {
 				const userCode = response.body.userCode
-				cy.get('[data-testid="usercode-field"]').type(userCode)
-				cy.get('[data-testid="submit-authentication"]').click()
+				cy.get('[data-testid="usercode-field"]').children().last().type(userCode)
 
 				cy.request(`${Cypress.env('BACKEND_URL')}/testing/getParticipants`, {
 					lobbyCode,
