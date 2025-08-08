@@ -42,10 +42,10 @@ export const PopupContext = createContext<{
 	 */
 	clearPopup: () => void 
 }>(
-		{} as {
-			popupInfo: PopupInfo,
-			createPopup: (popupInfo : PopupInfo) => void,
-			clearPopup: () => void
-		}
-		)
+	{} as {
+		popupInfo: PopupInfo,
+		createPopup: (popupInfo : PopupInfo) => void,
+		clearPopup: () => void
+	}
+)
 
