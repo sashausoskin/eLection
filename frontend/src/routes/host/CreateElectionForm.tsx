@@ -3,13 +3,13 @@ import { ErrorMessage, Field, FieldArray, Form, Formik, FormikHelpers } from 'fo
 import * as Yup from 'yup'
 import { createElection, endElection, getElectionResults, getLobbyStatus } from '../../services/lobbyHostService'
 import { Fragment, use, useEffect, useState, useTransition } from 'react'
-import { ElectionInfo,  ElectionType,  ErrorMessage as ResponseErrorMessage, StatusMessage } from '../../types'
+import { ElectionInfo,  ElectionType,  ErrorMessage as ResponseErrorMessage } from '../../types'
 import './CreateElectionForm.css'
 import InfoTooltip from '../../elements/Tooltip'
 import trashIcon from '/img/icons/trash.svg'
 import addIcon from '/img/icons/add.svg'
 import downloadIcon from '/img/icons/download.svg'
-import { PopupContext } from '../../context/Contexts'
+import { PopupContext, ToastContext } from '../../context/Contexts'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { generateResultsSpreadsheet } from '../../util/spreadsheetTools'
@@ -29,12 +29,12 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
      */
 	skipStatusCheck?: boolean}) => {
 
-	const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
 	const [electionType, setElectionType] = useState<ElectionType>('FPTP')
 	const [isElectionActive, setIsElectionActive] = useState<boolean>(false)
 	const [areResultsAvailable, setAreResultsAvailable] = useState<boolean>(false)
 	const [isRequestPending, startRequest] = useTransition()
 	const {createPopup} = use(PopupContext)
+	const {showToast} = use(ToastContext)
 	const {t} = useTranslation()
 	const navigate = useNavigate()
 
@@ -43,20 +43,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
 	const candidateNameMaxLength = 40
 
 	useEffect(() => {
-		if (!statusMessage) return
-
-		const timeout = setTimeout(() => {
-			setStatusMessage(null)
-		}, 5000)
-
-		// This clears the timeout when the component is unmounted
-		return () => clearTimeout(timeout)
-
-	}, [statusMessage])
-
-	useEffect(() => {
 		startRequest(async() => {
-			console.log('Fetching data')
 			if (skipStatusCheck) {
 				return
 			}
@@ -113,8 +100,12 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
 			try {
 				await createElection(values)
 				formikHelpers.resetForm()
-				setStatusMessage({status: 'success', message: t('status.electionCreateSuccess')})
 				setIsElectionActive(true)
+				showToast({
+					severity: 'success',
+					summary: t('status.electionCreateSuccess'),
+					closable: true
+				})
 			}
 			catch(e) {
 				if (e instanceof AxiosError) {
@@ -139,7 +130,11 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
 				await endElection()
 				setIsElectionActive(false)
 				setAreResultsAvailable(true)
-				setStatusMessage({status: 'success', message: t('status.electionEndSuccess')})
+				showToast({
+					severity: 'success',
+					summary: t('status.electionEndSuccess'),
+					closable: true
+				})
 			}
 			catch(e) {
 				if (e instanceof AxiosError) {
@@ -324,7 +319,6 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
 				</>)}
 			</Formik>
         
-			{statusMessage && <a data-testid={`status-${statusMessage.status}`}style={{color: statusMessage.status === 'success' ? 'green' : 'red'}}>{statusMessage.message}</a>}
 			<button type='button' className='downloadButton' data-testid='download-results-button' onClick={handleDownloadResults} disabled={!areResultsAvailable || isRequestPending}>
 				<div>
 					<img style={{opacity: areResultsAvailable ? '100%' : '50%'}} className='icon' width={35} src={downloadIcon} />

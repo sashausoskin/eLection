@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { ParticipantViewTab, PopupInfo } from '../types'
-import { PopupContext, SetParticipantViewContext } from './Contexts'
+import { PopupContext, SetParticipantViewContext, ToastContext } from './Contexts'
+import { Toast, ToastMessage } from 'primereact/toast'
 
 
 /**
@@ -38,3 +39,25 @@ export const SetParticipantViewContextProvider = (props: React.PropsWithChildren
 	)
 }
 
+export const ToastContextProvider = (props: React.PropsWithChildren) => {
+	const toastRef = useRef<Toast>(null)
+
+	const showToast = (message: ToastMessage) => {
+		message.life = 5000
+		toastRef.current?.show(message)
+
+		const toastElement = toastRef.current?.getElement()
+		if (toastElement){
+			toastElement.setAttribute('data-testid',`toast-${message.severity}`)
+		}
+	}
+
+	const contextValue = useMemo(() => ({showToast}), [])
+
+	return (
+		<ToastContext value={contextValue}>
+			<Toast ref={toastRef} position={'bottom-right'}/>
+			{props.children}
+		</ToastContext>
+	)
+}

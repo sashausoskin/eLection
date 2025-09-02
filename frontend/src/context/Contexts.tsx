@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, createContext } from 'react'
 import { ParticipantViewTab, PopupInfo } from '../types'
+import { ToastMessage } from 'primereact/toast'
 
 // The below is a workaround to avoid TypeScript's requiremenets. This context is always initialized through the provider, so this should be ok
 
@@ -46,6 +47,14 @@ export const PopupContext = createContext<{
 		popupInfo: PopupInfo,
 		createPopup: (popupInfo : PopupInfo) => void,
 		clearPopup: () => void
+	}
+)
+
+export const ToastContext = createContext<{
+	showToast: (message: ToastMessage) => void
+}>(
+	{} as {
+		showToast: (message: ToastMessage) => void
 	}
 )
 

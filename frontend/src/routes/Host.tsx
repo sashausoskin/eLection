@@ -9,6 +9,7 @@ import Loading from '../elements/Loading'
 import { PopupContext } from '../context/Contexts'
 import { useTranslation } from 'react-i18next'
 import { AxiosError } from 'axios'
+import { ToastContextProvider } from '../context/ContextProviders'
 
 /**
  * The host's view
@@ -72,16 +73,18 @@ const Host = () => {
 
 	return ( 
 		<>
-			<Authentication lobbyCode={lobbyCode} />
-			<button type='button' className='viewerOpen'onClick={() => window.open('/viewer', '_blank', 'popup=true')}>
-				<img src={linkIcon} className='icon' height={20} />{t('hostInstructions.openViewerWindow')}
-			</button>
-			<a>{t('hostInstructions.viewerWindowDesc')}</a>
-			<hr style={{width: '100%'}}/>
-			<CreateElectionForm />
-			<br />
-			<hr style={{width: '100%'}}/>
-			<button type='button' className='closeLobby' onClick={handleCloseLobbyClick} data-testid='close-lobby'>{t('hostInstructions.closeLobby')}</button>
+			<ToastContextProvider>
+				<Authentication lobbyCode={lobbyCode} />
+				<button type='button' className='viewerOpen'onClick={() => window.open('/viewer', '_blank', 'popup=true')}>
+					<img src={linkIcon} className='icon' height={20} />{t('hostInstructions.openViewerWindow')}
+				</button>
+				<a>{t('hostInstructions.viewerWindowDesc')}</a>
+				<hr style={{width: '100%'}}/>
+				<CreateElectionForm />
+				<br />
+				<hr style={{width: '100%'}}/>
+				<button type='button' className='closeLobby' onClick={handleCloseLobbyClick} data-testid='close-lobby'>{t('hostInstructions.closeLobby')}</button>
+			</ToastContextProvider>
 		</>
 	)
 }
