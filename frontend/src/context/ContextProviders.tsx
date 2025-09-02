@@ -43,7 +43,7 @@ export const ToastContextProvider = (props: React.PropsWithChildren) => {
 	const toastRef = useRef<Toast>(null)
 
 	const showToast = (message: ToastMessage) => {
-		message.life = 5000
+		if (!message.life) message.life = 5000
 		toastRef.current?.show(message)
 
 		const toastElement = toastRef.current?.getElement()

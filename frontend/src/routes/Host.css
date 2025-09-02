@@ -22,11 +22,11 @@
     justify-content: center;
     align-items: center;
     padding: 25px;
-    border-radius: 5px;
+    border-radius: 10px;
 }
 
 .p-toast-message {
-    border-radius: 5px;
+    border-radius: 10px;
     backdrop-filter: blur(8px);
     margin-top: 15px;
 }
@@ -43,6 +43,18 @@
     background-color: color-mix(in srgb, var(--confirm-button-color) 50%, #000000 50%);
 }
 
-.p-toast-icon-close:hover {
+.p-toast-message-success .p-toast-icon-close:hover {
     border-color: color-mix(in srgb, var(--confirm-button-color) 30%, #000000 70%);
+}
+
+.p-toast-message-error {
+    background-color: color-mix(in srgb, var(--cancel-button-color) 50%, #00000000 50%)
+}
+
+.p-toast-message-error .p-toast-icon-close {
+    background-color: color-mix(in srgb, var(--cancel-button-color) 50%, #000000 50%);
+}
+
+.p-toast-message-error .p-toast-icon-close:hover {
+    border-color: color-mix(in srgb, var(--cancel-button-color) 30%, #000000 70%);
 }
