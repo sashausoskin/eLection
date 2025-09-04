@@ -113,7 +113,7 @@ const LobbyView = () : JSX.Element => {
 	// This adds a vibration to the user whenever a new election starts.
 	useEffect(() => {
 		if (lobbyStatus?.status === 'VOTING'){
-			navigator.vibrate([200, 50, 200])
+			if (navigator.vibrate) navigator.vibrate([200, 50, 200])
 		}
 	}, [lobbyStatus])
 
