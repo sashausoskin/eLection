@@ -50,7 +50,15 @@ export const PopupContext = createContext<{
 	}
 )
 
+/**
+ * Context that handles toast messages that appear in the lower-right corner of the screen.
+ */
 export const ToastContext = createContext<{
+	/**
+	 * Shows a toast message on the screen. Right now only supports success and error toasts.
+	 * @param message The type and contents of the toast.
+	 * @returns null
+	 */
 	showToast: (message: ToastMessage) => void
 }>(
 	{} as {
