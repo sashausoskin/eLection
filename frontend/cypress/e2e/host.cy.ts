@@ -15,7 +15,7 @@ describe('In host view', () => {
 
 		cy.get('[data-testid=\'create-election-submit\']').click()
 
-		cy.get('[data-testid=\'status-success\']')
+		cy.get('[data-testid=\'toast-success\']')
 
 		cy.get('[data-testid=\'end-election-button\']').should('be.enabled')
 		cy.get('[data-testid=\'create-election-submit\']').should('be.disabled')
@@ -23,7 +23,7 @@ describe('In host view', () => {
 
 		cy.get('[data-testid=\'end-election-button\']').click()
 
-		cy.get('[data-testid=\'status-success\']')
+		cy.get('[data-testid=\'toast-success\']')
 
 		cy.get('[data-testid=\'end-election-button\']').should('be.disabled')
 		cy.get('[data-testid=\'create-election-submit\']').should('be.enabled')
@@ -39,7 +39,7 @@ describe('In host view', () => {
 
 		cy.get('[data-testid=\'create-election-submit\']').click()
 
-		cy.get('[data-testid=\'status-success\']')
+		cy.get('[data-testid=\'toast-success\']')
 
 	})
 

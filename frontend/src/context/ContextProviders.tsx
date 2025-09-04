@@ -46,8 +46,9 @@ export const ToastContextProvider = (props: React.PropsWithChildren) => {
 		if (!message.life) message.life = 5000
 		toastRef.current?.show(message)
 
-		const toastElement = toastRef.current?.getElement()
-		if (toastElement){
+		const toastDiv = toastRef.current?.getElement()
+		if (toastDiv){
+			const toastElement = toastDiv.lastChild as HTMLDivElement
 			toastElement.setAttribute('data-testid',`toast-${message.severity}`)
 		}
 	}

@@ -49,13 +49,13 @@ describe('Host view', () => {
 	})
 
 	it('should display an error when authenticating an invalid user', () => {
-		cy.get('[data-testid="status-message-error"]').should('not.exist')
+		cy.get('[data-testid="toast-error"]').should('not.exist')
 		cy.get('[data-testid="usercode-field"]').children().last().type('1234')
-		cy.get('[data-testid="status-message-error"]')
+		cy.get('[data-testid="toast-error"]')
 	})
 
 	it('should show a success message when a user is authenticated', async () => {
-		cy.get('[data-testid="status-message_success"]').should('not.exist')
+		cy.get('[data-testid="toast-success"]').should('not.exist')
 
 		// Is there a better way than nesting?
 		// For some reason Cypress doesn't let you use variables outside of promises
@@ -68,7 +68,7 @@ describe('Host view', () => {
 				const userCode = response.body.userCode
 
 				cy.get('[data-testid="usercode-field"]').children().last().type(userCode)
-				cy.get('[data-testid="status-message-success"]').should('exist')
+				cy.get('[data-testid="toast-success"]').should('exist')
 			})
 		})
 	})

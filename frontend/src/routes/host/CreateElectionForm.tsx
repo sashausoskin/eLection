@@ -42,18 +42,17 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
 	const candidateLimit = 20
 	const candidateNameMaxLength = 40
 
-	useEffect(() => {
-		startRequest(async() => {
-			if (skipStatusCheck) {
-				return
-			}
 
-			const lobbyStatus = await getLobbyStatus()
+	startRequest(async() => {
+		if (skipStatusCheck) {
+			return
+		}
 
-			setIsElectionActive(lobbyStatus.data.electionActive)
-			setAreResultsAvailable(lobbyStatus.data.resultsAvailable)
-		})
-	}, [])
+		const lobbyStatus = await getLobbyStatus()
+
+		setIsElectionActive(lobbyStatus.data.electionActive)
+		setAreResultsAvailable(lobbyStatus.data.resultsAvailable)
+	})
 	
 
 	const ElectionCreationSchema = Yup.object().shape({
