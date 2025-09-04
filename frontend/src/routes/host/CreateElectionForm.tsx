@@ -2,7 +2,7 @@ import { AxiosError } from 'axios'
 import { ErrorMessage, Field, FieldArray, Form, Formik, FormikHelpers } from 'formik'
 import * as Yup from 'yup'
 import { createElection, endElection, getElectionResults, getLobbyStatus } from '../../services/lobbyHostService'
-import { Fragment, use, useState, useTransition } from 'react'
+import { Fragment, use, useEffect, useState } from 'react'
 import { ElectionInfo,  ElectionType,  ErrorMessage as ResponseErrorMessage } from '../../types'
 import './CreateElectionForm.css'
 import InfoTooltip from '../../elements/Tooltip'
@@ -32,7 +32,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
 	const [electionType, setElectionType] = useState<ElectionType>('FPTP')
 	const [isElectionActive, setIsElectionActive] = useState<boolean>(false)
 	const [areResultsAvailable, setAreResultsAvailable] = useState<boolean>(false)
-	const [isRequestPending, startRequest] = useTransition()
+	const [isRequestPending, setIsRequestPending] = useState<boolean>(!skipStatusCheck)
 	const {createPopup} = use(PopupContext)
 	const {showToast} = use(ToastContext)
 	const {t} = useTranslation()
@@ -43,16 +43,21 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
 	const candidateNameMaxLength = 40
 
 
-	startRequest(async() => {
-		if (skipStatusCheck) {
-			return
+	useEffect(() => {
+		const fetchLobbyStatus = async () => {
+			if (skipStatusCheck) {
+				return
+			}
+
+			const lobbyStatus = await getLobbyStatus()
+
+			setIsElectionActive(lobbyStatus.data.electionActive)
+			setAreResultsAvailable(lobbyStatus.data.resultsAvailable)
+			setIsRequestPending(false)
 		}
-
-		const lobbyStatus = await getLobbyStatus()
-
-		setIsElectionActive(lobbyStatus.data.electionActive)
-		setAreResultsAvailable(lobbyStatus.data.resultsAvailable)
-	})
+		
+		fetchLobbyStatus()
+	}, [])
 	
 
 	const ElectionCreationSchema = Yup.object().shape({
@@ -95,59 +100,59 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
      * @param formikHelpers - Helper functions provided by {@link Formik}
      */
 	const defaultOnSubmit = async (values: ElectionInfo, formikHelpers: FormikHelpers<ElectionInfo>) => {
-		startRequest(async () => {
-			try {
-				await createElection(values)
-				formikHelpers.resetForm()
-				setIsElectionActive(true)
-				showToast({
-					severity: 'success',
-					summary: t('status.electionCreateSuccess'),
-					closable: true
-				})
-			}
-			catch(e) {
-				if (e instanceof AxiosError) {
-					if ((e.response?.data as ResponseErrorMessage).type === 'UNAUTHORIZED') {
-						handleUnauthorizedRequest()
-					}
-					else {
-						createPopup({type: 'alert', message: t('unexpectedError', {errorMessage: e.response?.data.message})})
-					}
+		setIsRequestPending(true)
+		try {
+			await createElection(values)
+			formikHelpers.resetForm()
+			setIsElectionActive(true)
+			showToast({
+				severity: 'success',
+				summary: t('status.electionCreateSuccess'),
+				closable: true
+			})
+		}
+		catch(e) {
+			if (e instanceof AxiosError) {
+				if ((e.response?.data as ResponseErrorMessage).type === 'UNAUTHORIZED') {
+					handleUnauthorizedRequest()
+				}
+				else {
+					createPopup({type: 'alert', message: t('unexpectedError', {errorMessage: e.response?.data.message})})
 				}
 			}
-
-		})
+		}
+		setIsRequestPending(false)
 	}
 	/**
      * This is called when the user tries to end an election and there was no {@link onEndElectionClick} provided.
      * Tries to send an election ending request to the backend server.
      */
 	const defaultOnEndElectionClick = async () => {
-		startRequest(async () => {
-			try {
-				await endElection()
-				setIsElectionActive(false)
-				setAreResultsAvailable(true)
-				showToast({
-					severity: 'success',
-					summary: t('status.electionEndSuccess'),
-					closable: true
-				})
-			}
-			catch(e) {
-				if (e instanceof AxiosError) {
-					switch((e.response?.data as ResponseErrorMessage).type) {
-						case 'NO_ACTIVE_ELECTION':
-							createPopup({type: 'alert', message: t('status.noActiveElection'), onConfirm: () => {
-								setIsElectionActive(false)
-							}})
-							break
-						case 'UNAUTHORIZED':
-							handleUnauthorizedRequest()
-					}
+		setIsRequestPending(true)
+		try {
+			await endElection()
+			setIsElectionActive(false)
+			setAreResultsAvailable(true)
+			showToast({
+				severity: 'success',
+				summary: t('status.electionEndSuccess'),
+				closable: true
+			})
+		}
+		catch(e) {
+			if (e instanceof AxiosError) {
+				switch((e.response?.data as ResponseErrorMessage).type) {
+					case 'NO_ACTIVE_ELECTION':
+						createPopup({type: 'alert', message: t('status.noActiveElection'), onConfirm: () => {
+							setIsElectionActive(false)
+						}})
+						break
+					case 'UNAUTHORIZED':
+						handleUnauthorizedRequest()
 				}
-			}})
+			}
+		}
+		setIsRequestPending(false)
 	}
 
 	const handleDownloadResults = async () => {
