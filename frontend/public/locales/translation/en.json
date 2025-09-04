@@ -3,8 +3,8 @@
   "status": {
     "loadingFiles": "Loading files...",
     "loading": "Loading...",
-    "userAuthenticated": "User is now authenticated!",
-    "userNotFound": "Could not find a user with the given code",
+    "userAuthenticated": "User {{userCode}} is now authenticated!",
+    "userNotFound": "Could not find a user with the code {{userCode}}",
     "unauthorisedHost": "You are not authorised to do this. This is probably due to the lobby being closed. You will now be redirected to the main menu.",
     "electionCreateSuccess": "Succesfully created the election",
     "electionEndSuccess": "Succesfully ended the election",

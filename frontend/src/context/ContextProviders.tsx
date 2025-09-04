@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { ParticipantViewTab, PopupInfo } from '../types'
-import { PopupContext, SetParticipantViewContext } from './Contexts'
+import { PopupContext, SetParticipantViewContext, ToastContext } from './Contexts'
+import { Toast, ToastMessage } from 'primereact/toast'
 
 
 /**
@@ -18,13 +19,25 @@ export const SetParticipantViewContextProvider = (props: React.PropsWithChildren
 			{props.children}
 		</SetParticipantViewContext>
 	)
-};export const PopupContextProvider = (props: React.PropsWithChildren) => {
+}
+/**
+ * @param props - React props 
+ * @returns Context provider for {@link PopupContext}
+ */
+export const PopupContextProvider = (props: React.PropsWithChildren) => {
 	const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null)
 
+	/**
+	 * Creates a popup.
+	 * @param popupInfo The information the popup should display. 
+	 */
 	const createPopup = (popupInfo: PopupInfo) => {
 		setPopupInfo(popupInfo)
 	}
 
+	/**
+	 * Clears the current popup. Called when the popup's confirm and cancel buttons are clicked.
+	 */
 	const clearPopup = () => {
 		setPopupInfo(null)
 	}
@@ -38,3 +51,36 @@ export const SetParticipantViewContextProvider = (props: React.PropsWithChildren
 	)
 }
 
+/**
+ * 
+ * @param props Props and children of the context provider
+ * @returns Context provider for {@link ToastContext}
+ */
+export const ToastContextProvider = (props: React.PropsWithChildren) => {
+	const toastRef = useRef<Toast>(null)
+
+
+	/**
+	 * Shows a toast in the bottom-right corner of the screen. Right now only supports success and error toasts.
+	 * @param message The contents and type of the toast.
+	 */
+	const showToast = (message: ToastMessage) => {
+		if (!message.life) message.life = 5000
+		toastRef.current?.show(message)
+
+		const toastDiv = toastRef.current?.getElement()
+		if (toastDiv){
+			const toastElement = toastDiv.lastChild as HTMLDivElement
+			toastElement.setAttribute('data-testid',`toast-${message.severity}`)
+		}
+	}
+
+	const contextValue = useMemo(() => ({showToast}), [])
+
+	return (
+		<ToastContext value={contextValue}>
+			<Toast ref={toastRef} position={'bottom-right'}/>
+			{props.children}
+		</ToastContext>
+	)
+}

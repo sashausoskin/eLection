@@ -19,11 +19,8 @@ describe('When creating a FTPT election', () => {
 		render(<CreateElectionForm onSubmitForm={mockFn} skipStatusCheck/>)
         
 		titleField = screen.getByTestId('title-field')
-        
 		candidateFields = screen.getAllByTestId('candidate-field')
-
 		submitButton = screen.getByTestId('create-election-submit')
-
 		addCandidateButton = screen.getByTestId('add-candidate-button')
 	})
 

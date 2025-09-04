@@ -1,10 +1,10 @@
 import { auhtenticateUserWithCode } from '../../services/lobbyHostService'
 import { use, useEffect, useRef, useState, useTransition } from 'react'
-import { ErrorMessage, StatusMessage } from '../../types'
+import { ErrorMessage } from '../../types'
 import { AxiosError } from 'axios'
 import { Mock } from 'vitest'
 import { useTranslation } from 'react-i18next'
-import { PopupContext } from '../../context/Contexts'
+import { PopupContext, ToastContext } from '../../context/Contexts'
 import { useNavigate } from 'react-router'
 import './Authentication.css'
 import { InputOtp } from 'primereact/inputotp'
@@ -23,27 +23,15 @@ export const Authentication = ({
 	 */
 	onSubmitUserCode?: ((userCode: string) => never ) | Mock;
 }): React.ReactElement => {
-	const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
 	const [inputtedUserCode, setInputtedUserCode] = useState<string>('')
 	const [isCheckingUserCode, startUserCodeCheck] = useTransition()
+	const [userCodeError, setUserCodeError] = useState<boolean>(false)
 	const otpInputRef = useRef<HTMLDivElement>(null)
 
 	const {t} = useTranslation()
 	const {createPopup} = use(PopupContext)
+	const {showToast} = use(ToastContext)
 	const navigate = useNavigate()
-
-	useEffect(() => {
-		// When the status message changes, make the message disappear after a certain time.
-		if (!statusMessage) return
-
-		const timeout = setTimeout(() => {
-			setStatusMessage(null)
-		}, 5000)
-
-		// This clears the timeout when the component is unmounted
-		return () => clearTimeout(timeout)
-
-	}, [statusMessage])
 
 	/**
 	 * Called when the host presses 'Submit' if {@link onSubmitUserCode} was not provided.
@@ -56,18 +44,19 @@ export const Authentication = ({
 
 		try {
 			await auhtenticateUserWithCode(userCode)
-			setStatusMessage({
-				status: 'success',
-				message: t('status.userAuthenticated'),
+			showToast({
+				severity: 'success',
+				detail: t('status.userAuthenticated', {userCode})
 			})
 			setInputtedUserCode('')
 		} catch (e) {
 			if (e instanceof AxiosError) {
 				switch((e.response?.data as ErrorMessage).type) {
 					case 'NOT_FOUND': 
-						setStatusMessage({
-							status: 'error',
-							message: t('status.userNotFound'),
+						showToast({
+							severity: 'error',
+							detail: t('status.userNotFound', {userCode}),
+							closable: true
 						})
 						setInputtedUserCode('')
 						break
@@ -106,14 +95,14 @@ export const Authentication = ({
 			<div className='userCodeField'>
 				<InputOtp
 					name="lobbyCode"
-					invalid={statusMessage !== null && statusMessage.status === 'error'}
+					invalid={userCodeError}
 					value={inputtedUserCode}
 					length={USER_CODE_LENGTH}
 					integerOnly={true}
 					className='userCodeInput'
 					pt={{root: {'data-testid': 'usercode-field', ref: otpInputRef}}}
 					onChange={(event) => {
-						setStatusMessage(null)
+						if (userCodeError) setUserCodeError(false)
 
 						if (!event.value) return
 						if (typeof event.value !== 'string') return
@@ -122,14 +111,6 @@ export const Authentication = ({
 					disabled={isCheckingUserCode}
 				/>
 			</div>
-			{statusMessage && (
-				<a
-					data-testid={`status-message-${statusMessage.status}`}
-					style={{ color: statusMessage.status === 'success' ? 'var(--confirm-button-color)' : 'var(--cancel-button-color)' }}
-				>
-					{statusMessage.message}
-				</a>
-			)}
 		</>
 	)
 }

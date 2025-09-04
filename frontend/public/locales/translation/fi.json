@@ -3,8 +3,8 @@
   "status": {
     "loadingFiles": "Ladataan tiedostoja...",
     "loading": "Ladataan...",
-    "userAuthenticated": "Käyttäjä vahvistettu!",
-    "userNotFound": "Ei löytynyt käyttäjää kyseisellä käyttäjätunnuksella",
+    "userAuthenticated": "Käyttäjä {{userCode}} vahvistettu!",
+    "userNotFound": "Ei löytynyt käyttäjää koodilla {{userCode}}",
     "unauthorisedHost": "Sinulla ei ole valtuutusta tehdä tätä. Tämä todennäköisesti johtuu siitä, että aula on suljettu. Sinut palautetaan nyt päävalikkoon.",
     "electionCreateSuccess": "Vaalit luotu onnistuneesti",
     "electionEndSuccess": "Vaalit päätetty onnistuneesti",
