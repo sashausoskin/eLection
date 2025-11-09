@@ -6,7 +6,7 @@
 		"module": "ESNext",
 		"skipLibCheck": true,
 
-		"types": ["vitest/globals", "cypress"],
+		"types": ["vitest/globals", "cypress", "node"],
 
 		/* Bundler mode */
 		"moduleResolution": "bundler",
