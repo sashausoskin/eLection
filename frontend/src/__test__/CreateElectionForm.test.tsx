@@ -3,7 +3,6 @@ import userEvent from '@testing-library/user-event'
 import CreateElectionForm from '../routes/host/CreateElectionForm'
 
 vi.mock('react-router', () => ({
-	// eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-prefix
 	useNavigate: () => vi.fn()
 }))
 
