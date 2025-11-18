@@ -2,7 +2,7 @@ import { AxiosError } from 'axios'
 import { ErrorMessage, Field, FieldArray, Form, Formik, FormikHelpers } from 'formik'
 import * as Yup from 'yup'
 import { createElection, endElection, getElectionResults, getLobbyStatus } from '../../services/lobbyHostService'
-import { Fragment, use, useEffect, useState } from 'react'
+import { Fragment, useContext, useEffect, useState } from 'react'
 import { ElectionInfo,  ElectionType,  ErrorMessage as ResponseErrorMessage } from '../../types'
 import './CreateElectionForm.css'
 import InfoTooltip from '../../elements/Tooltip'
@@ -33,8 +33,8 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
 	const [isElectionActive, setIsElectionActive] = useState<boolean>(false)
 	const [areResultsAvailable, setAreResultsAvailable] = useState<boolean>(false)
 	const [isRequestPending, setIsRequestPending] = useState<boolean>(!skipStatusCheck)
-	const {createPopup} = use(PopupContext)
-	const {showToast} = use(ToastContext)
+	const {createPopup} = useContext(PopupContext)
+	const {showToast} = useContext(ToastContext)
 	const {t} = useTranslation()
 	const navigate = useNavigate()
 

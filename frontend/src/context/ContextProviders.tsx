@@ -15,9 +15,9 @@ export const SetParticipantViewContextProvider = (props: React.PropsWithChildren
 	const contextValue = useMemo(() => ({viewTab, setViewTab}), [viewTab])
 
 	return (
-		<SetParticipantViewContext value={contextValue}>
+		<SetParticipantViewContext.Provider value={contextValue}>
 			{props.children}
-		</SetParticipantViewContext>
+		</SetParticipantViewContext.Provider>
 	)
 }
 /**
@@ -45,9 +45,9 @@ export const PopupContextProvider = (props: React.PropsWithChildren) => {
 	const contextValue = useMemo(() => ({popupInfo, createPopup, clearPopup}), [popupInfo])
 
 	return (
-		<PopupContext value={contextValue}>
+		<PopupContext.Provider value={contextValue}>
 			{props.children}
-		</PopupContext>
+		</PopupContext.Provider>
 	)
 }
 
@@ -78,9 +78,9 @@ export const ToastContextProvider = (props: React.PropsWithChildren) => {
 	const contextValue = useMemo(() => ({showToast}), [])
 
 	return (
-		<ToastContext value={contextValue}>
+		<ToastContext.Provider value={contextValue}>
 			<Toast ref={toastRef} position={'bottom-right'}/>
 			{props.children}
-		</ToastContext>
+		</ToastContext.Provider>
 	)
 }

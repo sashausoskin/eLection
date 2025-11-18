@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios'
 import * as participantService from '../../services/participantService'
-import { use, useEffect, useState, useTransition } from 'react'
+import { useContext, useEffect, useState, useTransition } from 'react'
 import { SetParticipantViewContext } from '../../context/Contexts'
 import { Mock } from 'vitest'
 import './JoinLobbyForm.css'
@@ -19,7 +19,7 @@ export const JoinLobbyForm = ({
 	 */
 	handleSubmitLobbyCode?: (lobbyCode: string) => never | Mock;
 }): React.ReactElement => {
-	const { setViewTab } = use(SetParticipantViewContext)
+	const { setViewTab } = useContext(SetParticipantViewContext)
 	const [error, setError] = useState<string | null>(null)
 	const [inputtedLobbyCode, setInputtedLobbyCode] = useState<string>('')
 	const [isCheckingLobbyCode, startLobbyCodeCheck] = useTransition()

@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Socket } from 'socket.io-client'
 import { createQueueSocket } from '../../sockets'
 import { SetParticipantViewContext } from '../../context/Contexts'
@@ -18,7 +18,7 @@ export const UserCode = ({ onAuthenticated }: {
 	onAuthenticated?: (userID: string) => void }) => {
 	const [isConnecting, setIsConnecting] = useState<boolean>(true)
 
-	const { setViewTab } = use(SetParticipantViewContext)
+	const { setViewTab } = useContext(SetParticipantViewContext)
 
 	const lobbyCode = getLobbyCode()
 	const userCode = getUserCode()
