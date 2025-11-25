@@ -1,9 +1,10 @@
 import { FPTPElectionInfo } from '../../../types'
 import './VotingViews.css'
-import { useState } from 'react'
+import { use, useState } from 'react'
 
 import voteIcon from '/img/icons/vote.svg'
 import { useTranslation } from 'react-i18next'
+import { PopupContext } from '../../../context/Contexts'
 
 /**
  * The view a participant sees when they are voting in a FPTP election.
@@ -25,9 +26,18 @@ const FPTPVotingView = ({electionInfo, canSubmitVote, onSubmitVote} : {
 	onSubmitVote : (voteContent: string | null) => Promise<void>}) => {
 	const [selectedCandidate, setSelectedCandidate] = useState<string | null>(null)
 	const {t} = useTranslation()
+	const {createPopup} = use(PopupContext)
 
 	const handleSubmit = () => {
-		onSubmitVote(selectedCandidate)
+		if (selectedCandidate === null) {
+			createPopup({type: 'confirm', message: t('voteSubmit.emptyVoteConfirm'), onConfirm: () => {
+				onSubmitVote(selectedCandidate)
+			},})
+		}
+		else {
+			onSubmitVote(selectedCandidate)
+		}
+
 	}
 
 	return<>
