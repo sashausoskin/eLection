@@ -1,4 +1,4 @@
-import { Fragment, useContext, useState } from 'react'
+import { Fragment, use, useState } from 'react'
 import { RankedElectionInfo } from '../../../types'
 import { useSprings, animated } from '@react-spring/web'
 import { useDrag } from '@use-gesture/react'
@@ -55,7 +55,7 @@ const RankedElectionView = ({electionInfo, onSubmitVote, canSubmitVote} : {
      */
 	canSubmitVote: boolean
 }) => {
-	const {createPopup} = useContext(PopupContext)
+	const {createPopup} = use(PopupContext)
 	const {t} = useTranslation()
 
 	const [candidateOrder, setCandidateOrder] = useState(electionInfo.candidates.map((_,index) => index))
