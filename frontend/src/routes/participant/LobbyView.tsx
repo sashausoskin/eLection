@@ -142,7 +142,7 @@ const LobbyView = () : JSX.Element => {
 						setLobbyStatus({status: 'STANDBY'})
 						break
 					default:
-						createPopup({type: 'alert', message: `${t('unexpectedError')}: ${e.response?.data.message}`, onConfirm: () => {
+						createPopup({type: 'alert', message: t('unexpectedError', {errorMessage: e.response?.data.message}), onConfirm: () => {
 							setCanSubmitVote(true)
 						}})
 				}

@@ -58,6 +58,7 @@ export const JoinLobbyForm = ({
 						setInputtedLobbyCode('')
 					} else {
 						setError(t('unexpectedError', {errorMessage: e.message}))
+						setInputtedLobbyCode('')
 					}
 				}
 			}

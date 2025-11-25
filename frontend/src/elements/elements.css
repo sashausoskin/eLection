@@ -58,6 +58,7 @@
 .popupContainer .popupText {
     color: var(--secondary-text-color);
     font-size: 1.5rem;
+    padding: 10vw;
     margin: auto;
 }
 
