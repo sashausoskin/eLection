@@ -63,6 +63,14 @@ describe('In participant view', () => {
 			cy.get('[data-testid=\'vote-submitted-header\']')
 		})
 
+		it('can submit an empty vote', () => {
+			cy.get('[data-testid=\'candidate-empty\']').click()
+			cy.get('[data-testid=\'vote-submit\'').click()
+			cy.get('[data-testid=\'confirm-button\']').click()
+
+			cy.get('[data-testid=\'vote-submitted-header\']')
+		})
+
 		it('cannot vote again after submitting vote', () => {
 			cy.get('[data-testid=\'candidate-radio\']').eq(0).click()
 			cy.get('[data-testid=\'vote-submit\'').click()

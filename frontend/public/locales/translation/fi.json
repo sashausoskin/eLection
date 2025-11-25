@@ -99,14 +99,12 @@
     "footer": "Kiitos osallistumisesta!",
     "unknown": "Tämä aula on suljettu tuntemattomasta syystä"
   },
-  "rankedElection": {
-    "emptyVoteConfirm": "Oletko varma, että haluat lähettää tyhjän äänen?"
-  },
   "votes_one": "1 ääni",
   "votes_other": "{{count}} ääntä",
   "voteSubmit": {
     "header": "Äänesi on onnistuneesti lähetetty!",
-    "message": "Kiitos osallistumisesta! :)"
+    "message": "Kiitos osallistumisesta! :)",
+    "emptyVoteConfirm": "Oletko varma, että haluat lähettää tyhjän äänen?"
   },
   "viewer": {
     "FPTPVotingInstructions": "Äänestä yhtä seuraavista:",

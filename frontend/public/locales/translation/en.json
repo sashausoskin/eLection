@@ -99,14 +99,12 @@
     "footer": "Thank you for participating! :)",
     "unknown": "This lobby has been closed due to an unknown reason"
   },
-  "rankedElection": {
-    "emptyVoteConfirm": "Are you sure you want to submit an empty vote?"
-  },
   "votes_one": "1 vote",
   "votes_other": "{{count}} votes",
   "voteSubmit": {
     "header": "Your vote has been succesfully submitted!",
-    "message": "Thank you for participating! :)"
+    "message": "Thank you for participating! :)",
+    "emptyVoteConfirm": "Are you sure you want to submit an empty vote?"
   },
   "viewer": {
     "FPTPVotingInstructions": "Vote for one of the following:",
