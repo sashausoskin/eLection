@@ -61,11 +61,19 @@ router.post('/createElection', (req, res) => {
         return res.status(400).send({type: 'MALFORMATTED_REQUEST', message: errors} as ErrorMessage)
     }
 
-    // This cannot be done with a JSON schema, so make sure that all of the candidate names aren't too long
+    const candidatesSet = new Set()
+
     electionInfo.candidates.forEach((candidate) => {
+        // This cannot be done with a JSON schema, so make sure that all of the candidate names aren't too long
         if (candidate.length > maxCandidateNameLength) {
             return res.status(400).send({type: 'MALFORMATTED_REQUEST', message: `The candidate name ${candidate} is too long. Make sure that it is not longer than ${maxCandidateNameLength} characters`} as ErrorMessage)
         }
+
+        if (candidatesSet.has(candidate)) {
+            return res.status(400).send({type: 'MALFORMATTED_REQUEST', message: `The candidate ${candidate} appears multiple times in the list of candidates. Makes sure that every candidate is only entered once.`} as ErrorMessage)
+        }
+
+        candidatesSet.add(candidate)
     })
 
     if (electionInfo.type === 'ranked') {
