@@ -100,6 +100,10 @@ describe('With a lobby created and one authenticated user in lobby', () => {
             //Candidate name is too long
             createElectionResponse = await testUtil.createElection(hostToken, {type: 'FPTP', title: 'Speaker of the painter union', candidates: ['Pablo Diego José Francisco de Paula Juan Nepomuceno Crispín Crispiniano María de los Remedios de la Santísima Trinidad Ruiz Picasso', 'Banksy']} as ElectionInfo)
             expect(createElectionResponse.status).toBe(400)
+
+            //Duplicates
+            createElectionResponse = await testUtil.createElection(hostToken, {type: 'FPTP', title: 'Most beautiful country in Asia', candidates: ['South Korea', 'Japan', 'Malaysia', 'Indonesia', 'Japan', 'Philippines']} as ElectionInfo)
+            expect(createElectionResponse.status).toBe(400)
         })
 
         test('Can create an election with valid info', async () => {
