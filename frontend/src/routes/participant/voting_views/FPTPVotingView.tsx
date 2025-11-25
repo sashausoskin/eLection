@@ -50,7 +50,7 @@ const FPTPVotingView = ({electionInfo, canSubmitVote, onSubmitVote} : {
 					<a className='candidateName'>{candidate}</a>
 				</div>
 			)}
-			<div className={`FPTPCandidate emptyCandidate ${selectedCandidate === null && 'selectedCandidate'}`} onClick={() => setSelectedCandidate(null)}>
+			<div className={`FPTPCandidate emptyCandidate ${selectedCandidate === null && 'selectedCandidate'}`} onClick={() => setSelectedCandidate(null)} data-testid='candidate-empty'>
 				<a className='candidateName'>{t('button.empty')}</a>
 			</div>
 		</div>
