@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useContext } from 'react'
 import { Socket } from 'socket.io-client'
 import { createQueueSocket } from '../../sockets'
 import { SetParticipantViewContext } from '../../context/Contexts'
