@@ -53,7 +53,7 @@ const RankedElectionView = ({electionInfo, onSubmitVote, canSubmitVote} : {
 	}
 
 	const handleEmptyVote = () => {
-		createPopup({type: 'confirm', message: t('rankedElection.emptyVoteConfirm'), onConfirm: () => {
+		createPopup({type: 'confirm', message: t('voteSubmit.emptyVoteConfirm'), onConfirm: () => {
 			onSubmitVote(null)
 		}})
 	}

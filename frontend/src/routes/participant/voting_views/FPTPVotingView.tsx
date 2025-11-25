@@ -27,7 +27,6 @@ const FPTPVotingView = ({electionInfo, canSubmitVote, onSubmitVote} : {
 	const {t} = useTranslation()
 
 	const handleSubmit = () => {
-		console.log('submitting')
 		onSubmitVote(selectedCandidate)
 	}
 
