@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState, JSX } from 'react'
+import { useCallback, use, useEffect, useRef, useState, JSX } from 'react'
 import { ErrorMessage, LobbyStatusInfo } from '../../types'
 import { createLobbySocket } from '../../sockets'
 import * as participantService from '../../services/participantService'
@@ -20,8 +20,8 @@ const LobbyView = () : JSX.Element => {
 	const [lobbyStatus, setLobbyStatus] = useState<LobbyStatusInfo | null>(null)
 	const [canSubmitVote, setCanSubmitVote] = useState<boolean>(true)
 	const [hasVoted, setHasVoted] = useState<boolean>(false)
-	const { setViewTab } = useContext(SetParticipantViewContext)
-	const { createPopup } = useContext(PopupContext)
+	const { setViewTab } = use(SetParticipantViewContext)
+	const { createPopup } = use(PopupContext)
 	const { t } = useTranslation()
 	const navigate = useNavigate()
 

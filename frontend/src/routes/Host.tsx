@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react'
+import { use, useEffect, useRef, useState } from 'react'
 import * as lobbyService from '../services/lobbyHostService'
 import { Authentication } from './host/Authentication'
 import CreateElectionForm from './host/CreateElectionForm'
@@ -17,7 +17,7 @@ import { ToastContextProvider } from '../context/ContextProviders'
 const Host = () => {
 	const [lobbyCode, setLobbyCode] = useState<string | null>(null)
 	const navigate = useNavigate()
-	const {createPopup} = useContext(PopupContext)
+	const {createPopup} = use(PopupContext)
 	const lobbyInitialised = useRef<boolean>(false)
 
 	const {t} = useTranslation()

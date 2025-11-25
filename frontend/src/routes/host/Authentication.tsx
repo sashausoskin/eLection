@@ -1,5 +1,5 @@
 import { auhtenticateUserWithCode } from '../../services/lobbyHostService'
-import { useContext, useEffect, useRef, useState, useTransition } from 'react'
+import { use, useEffect, useRef, useState, useTransition } from 'react'
 import { ErrorMessage } from '../../types'
 import { AxiosError } from 'axios'
 import { Mock } from 'vitest'
@@ -29,8 +29,8 @@ export const Authentication = ({
 	const otpInputRef = useRef<HTMLDivElement>(null)
 
 	const {t} = useTranslation()
-	const {createPopup} = useContext(PopupContext)
-	const {showToast} = useContext(ToastContext)
+	const {createPopup} = use(PopupContext)
+	const {showToast} = use(ToastContext)
 	const navigate = useNavigate()
 
 	/**

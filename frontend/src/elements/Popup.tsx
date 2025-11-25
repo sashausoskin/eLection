@@ -1,6 +1,6 @@
 import confirmIcon from '/img/icons/confirm.svg'
 import cancelIcon from '/img/icons/cancel.svg'
-import { useContext } from 'react'
+import { use } from 'react'
 import { PopupContext } from '../context/Contexts'
 import { useTransition, animated } from '@react-spring/web'
 
@@ -8,7 +8,7 @@ import { useTransition, animated } from '@react-spring/web'
  * A popup that covers the entire screen. Uses {@link PopupContext} to get information on what to show.
  */
 const Popup = () => {
-	const {popupInfo, clearPopup} = useContext(PopupContext)
+	const {popupInfo, clearPopup} = use(PopupContext)
 
 	const popupBackgroundAnimation = useTransition(popupInfo, {
 		from: {opacity: 0},
