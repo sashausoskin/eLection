@@ -8,6 +8,9 @@
     border-radius: 20px;
     flex-grow: 1;
     padding: 25px;
+    position: relative;
+    transition-property: box-shadow, scale;
+	transition-duration: 500ms
 }
 
 .votingInstructions {
@@ -76,11 +79,8 @@
 
 .rankedCandidatesContainer {
     position: relative;
-    justify-content: center; 
-    display: flex;
     flex-shrink: 0;
-    width: 100%;
-    margin: 5vh 0;
+    margin: 3vh 0;
 }
 
 

@@ -1,39 +1,20 @@
-import { Fragment, use, useState } from 'react'
+import { CSSProperties, Fragment, use, useState } from 'react'
 import { RankedElectionInfo } from '../../../types'
-import { useSprings, animated } from '@react-spring/web'
-import { useDrag } from '@use-gesture/react'
-import { clamp } from 'lodash'
 import { PopupContext } from '../../../context/Contexts'
 import { useTranslation } from 'react-i18next'
-import { move } from '../../../util/arrayUtil'
-
-import dragIcon from '/img/icons/drag.svg'
+import { closestCenter, DndContext, DragEndEvent, KeyboardSensor, MouseSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
+import RankedCandidate from './RankedCandidate'
 
 // Used React Spring's Draggable List example as base and inspiration: https://codesandbox.io/s/zfy9p
 
 // These would usually be defined in a .css-file, but because they are needed for the animation library, these are defined here
 const candidateContainerHeight = 50
 const candidateContainerPadding = 15
-const candidateContainerGap = 10
-const candidateContainerBorderWidth = 5
-const candidateContainerSpace = candidateContainerHeight + 2 * candidateContainerPadding + 2 * candidateContainerBorderWidth + candidateContainerGap
-
-const animateFn = (order: number[], active = false, originalIndex = 0, curIndex = 0, y = 0) => (index: number) => 
-	active && index === originalIndex
-		? {
-			y: curIndex * candidateContainerSpace + y,
-			scale: 1.1,
-			zIndex: 1,
-			shadow: 15,
-			immediate: (key :string) => key === 'y' || key === 'zIndex',
-		}
-		: {
-			y: order.indexOf(index) * (candidateContainerSpace),
-			scale: 1,
-			zIndex: 0,
-			shadow: 1,
-			immediate: false
-		}
+const candidateContainerMarginTop = 10
+const candidateContainerBorderWidth = 15
+const candidateContainerSpace = candidateContainerHeight + 2 * candidateContainerPadding + 2 * candidateContainerBorderWidth + candidateContainerMarginTop
 
 /**
  * The view a participant sees when they are voting in a ranked election
@@ -58,26 +39,17 @@ const RankedElectionView = ({electionInfo, onSubmitVote, canSubmitVote} : {
 	const {createPopup} = use(PopupContext)
 	const {t} = useTranslation()
 
-	const [candidateOrder, setCandidateOrder] = useState(electionInfo.candidates.map((_,index) => index))
-
-	const [springs, animationApi] = useSprings(candidateOrder.length, animateFn(candidateOrder))
-
-	const bind = useDrag(({args: [originalIndex], active, movement: [, y]}) => {
-		const curIndex = candidateOrder.indexOf(originalIndex)
-		const curRow = clamp(Math.round((curIndex * candidateContainerSpace + y) / candidateContainerSpace), 0, candidateOrder.length - 1)
-		const newOrder = move(candidateOrder, curIndex, curRow)
-		animationApi.start(animateFn(newOrder, active, originalIndex, curIndex, y))
-		if (!active) setCandidateOrder(newOrder)
-	})
+	const [candidateList, setCandidateList] = useState(electionInfo.candidates)
+	const sensors = useSensors(
+		useSensor(KeyboardSensor),
+		useSensor(MouseSensor),
+		useSensor(TouchSensor)
+	)
 
 	const handleButtonClick = () => {
-		const orderedCandidates : string[] = []
+		const votedCandidates = candidateList.slice(0, electionInfo.candidatesToRank)
 
-		candidateOrder.some((candidateOrderIndex, i) => {
-			orderedCandidates.push(electionInfo.candidates[candidateOrderIndex])
-			if (i >= electionInfo.candidatesToRank - 1) return true
-		})
-		onSubmitVote(orderedCandidates)
+		onSubmitVote(votedCandidates)
 	}
 
 	const handleEmptyVote = () => {
@@ -86,48 +58,44 @@ const RankedElectionView = ({electionInfo, onSubmitVote, canSubmitVote} : {
 		}})
 	}
 
+	const handleDragEvent = (event : DragEndEvent) => {
+		if (event.active.id !== event.over?.id) {
+			setCandidateList((candidateList) => {
+				if (event.over === null) return []
+				const oldIndex = candidateList.indexOf(event.active.id.toString())
+				const newIndex = candidateList.indexOf(event.over.id.toString())
+        
+				return arrayMove(candidateList, oldIndex, newIndex)
+			})
+		}
+	}
+
+	const candidateContainerStyle : CSSProperties = {
+		height: candidateContainerHeight,
+		padding: candidateContainerPadding,
+
+	}
+
 	return (
 		<>
 			<h2>{electionInfo.title}</h2>
 			<a className='votingInstructions secondaryColor'>{t('electionType.ranked.votingInstructions', {candidatesToRank: electionInfo.candidatesToRank})}</a>
-			<div className='rankedCandidatesContainer' style={{minHeight: candidateOrder.length * candidateContainerSpace}}>
-				{springs.map(({ zIndex, shadow, y, scale }, i) => {
-					const orderPosition = candidateOrder.indexOf(i)
-					const votes = electionInfo.candidatesToRank - orderPosition
-					return <Fragment key={`candidateFragment_${electionInfo.candidates[i]}`}>
-						<animated.div
-							key={`dragCandidate_${electionInfo.candidates[i]}`}
-							{...bind(i)}
-							data-testid={`candidate-drag-${i}`}
-							className={'candidateContainer rankedCandidate'}
-							style={{
-								height: candidateContainerHeight,
-								padding: candidateContainerPadding,
-								touchAction: 'none',
-								userSelect: 'none',
-								position: 'absolute',
-								zIndex,
-								boxShadow: shadow.to(s => `rgba(0, 0, 0, 0.15) 0px ${s}px ${2 * s}px 0px`),
-								y,
-								scale,
-							}}
-							children={<>
-								<img src={dragIcon} className={'icon dragIcon'}/>
-								<div className='candidatePosition'>
-									{votes > 0 && <a>{orderPosition + 1}.</a>}
-								</div>
-								<a className='candidateName'>{electionInfo.candidates[i]}</a>
-								<div className='candidateVotes'>
-									{votes > 0 && <a>{t('votes', {count: votes})}</a>}
-								</div>
-							</>}
-						/>
-					</Fragment>
-				})}
-				{electionInfo.candidatesToRank < electionInfo.candidates.length && 
-                <hr key='separator' style={{position: 'absolute', top: electionInfo.candidatesToRank * candidateContainerSpace - 2 * candidateContainerBorderWidth - candidateContainerGap / 2, width: '100%'}} />
-				}
-			</div>
+			<DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEvent} modifiers={[restrictToVerticalAxis]}>
+				<div className='rankedCandidatesContainer'>
+					<SortableContext items={candidateList} strategy={verticalListSortingStrategy}>
+						{candidateList.map((candidate, i) => {
+							const votes = electionInfo.candidatesToRank - i
+							return <Fragment key={`candidateFragment_${candidate}`}>
+								<RankedCandidate key={candidate} id={candidate} position={i + 1} candidate={candidate} votes={votes} containerStyle={candidateContainerStyle}/>
+								{i < candidateList.length - 1 && <img style={{height: `${candidateContainerMarginTop}`}}/>}
+							</Fragment>
+						})}
+						{electionInfo.candidatesToRank < electionInfo.candidates.length && 
+						<hr key='separator' style={{position: 'absolute', top: electionInfo.candidatesToRank * candidateContainerSpace - 2 * candidateContainerBorderWidth - candidateContainerMarginTop / 2, width: '100%'}} />
+						}
+					</SortableContext>
+				</div>
+			</DndContext>
 			<div className='submitContainer' >
 				<button type='button' disabled={!canSubmitVote} data-testid='cast-vote' onClick={handleButtonClick}>{t('button.submit')}</button>
 				<button type='button' disabled={!canSubmitVote} className='emptyVoteButton' data-testid='cast-empty-vote' onClick={handleEmptyVote}>{t('button.voteEmpty')}</button>
