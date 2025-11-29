@@ -6,6 +6,7 @@ This is the frontend of eLection. The frontend was developed using [TypeScript](
 - [Cypress](https://www.cypress.io/) for end-to-end tests.
 - [react-i18next](https://react.i18next.com/) for localisation.
 - [React Spring](https://www.react-spring.dev/) and [@use-gesture](https://github.com/pmndrs/use-gesture) for some animations.
+- [dndkit](https://www.dndkit.com) for handling list ordering.
 - [Formik](https://formik.org/) for handling forms.
 - [Yup](https://github.com/jquense/yup) for form validation.
 - [ExcelJS](https://github.com/exceljs/exceljs) for spreadsheet generation.
