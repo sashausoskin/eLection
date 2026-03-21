@@ -3,14 +3,10 @@ WORKDIR /usr/src/eLection-backend
 
 COPY . .
 
-RUN npm ci
-
-RUN npm run build:schema
-
-RUN npm test
-
-RUN npm run build
-
+RUN npm ci && \
+	npm run build:schema && \
+	npm test && \
+	npm run build
 
 FROM node:20-alpine
 COPY --from=build-stage /usr/src/eLection-backend/dist .

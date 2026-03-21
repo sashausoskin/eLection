@@ -7,15 +7,13 @@ ARG VITE_SOCKET_PATH=/socket.io/
 
 COPY . .
 
-RUN npm ci
-
-RUN CI=true npm test
-
 ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
 ENV VITE_SOCKET_URL=$VITE_SOCKET_URL
 ENV VITE_SOCKET_PATH=$VITE_SOCKET_PATH
 
-RUN npm run build
+RUN npm ci && \
+	CI=true npm test && \
+	npm run build
 
 FROM nginx:mainline-alpine
 
