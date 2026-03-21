@@ -1,4 +1,3 @@
-import { Socket } from 'socket.io-client'
 import * as lobbyService from '../services/lobbyservice'
 import request from 'supertest'
 import { app, server } from '../util/server'
@@ -12,7 +11,6 @@ describe('With a lobby created and one authenticated user in lobby', () => {
     let hostToken : string
     let hostID : string
     let lobbyCode : string
-    let lobbySocket : Socket
     let participantToken : string
 
     const exampleElectionInfo : ElectionInfo = {type: 'FPTP', title: 'Which language should we use?', candidates: ['Python', 'JavaScript']}
@@ -28,7 +26,6 @@ describe('With a lobby created and one authenticated user in lobby', () => {
 
     afterEach(() => {
         server.close()
-        if (lobbySocket) lobbySocket.disconnect()
     })
 
     const requestElectionStatus = async () => {
