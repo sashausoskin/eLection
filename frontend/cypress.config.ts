@@ -6,6 +6,7 @@ export default defineConfig({
 		port: 4174,
 		expose: {
 			backendUrl: "http://localhost:3000"
-		}
+		},
+		allowCypressEnv: false
 	},
 })
