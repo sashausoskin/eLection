@@ -33,6 +33,12 @@ jobs:
         - name: Check linting in frontend
           working-directory: ./frontend
           run: npm run lint
+        - name: Check for hardcoded strings
+          working-directory: ./frontend
+          run: npm run lint:translations
+        - name: Check for missing translations
+          working-directory: ./frontend
+          run: npm run test:translations
         - name: Run frontend unit tests
           working-directory: ./frontend
           run: npm test
