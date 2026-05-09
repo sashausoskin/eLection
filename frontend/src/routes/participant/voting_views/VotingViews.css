@@ -65,15 +65,14 @@
 }
 
 .FPTPCandidate .voteIcon {
-    scale: 0;
     transition: 500ms;
-    transform: rotate(180deg);
+    transform: rotate(180deg) scale(0,0);
     filter: opacity(0);
 }
 
 .selectedCandidate .voteIcon {
-    scale: 1;
-    transform: rotate(0);
+    scale: 100%;
+    transform: rotate(0) scale(1,1);
     filter: opacity(50%);
 }
 
