@@ -23,7 +23,7 @@ const Viewer = () => {
 	hostService.loadStoredValues()
 	const lobbyCode = hostService.getLobbyCode()
 	const hostToken = hostService.getAuthToken()
-	const viewerSocket = useRef<Socket | null>(null)
+	const viewerSocketRef = useRef<Socket | null>(null)
 
 	const handleConnect = () => {
 		setErrorText(null)
@@ -32,7 +32,7 @@ const Viewer = () => {
 	const handleConnectError = useCallback((errorMsg : Error) => {
 		console.error('An unexpected error occurred:', errorMsg)
 		setErrorText(t('status.viewerLoadError'))
-		if (viewerSocket.current) viewerSocket.current.disconnect()
+		if (viewerSocketRef.current) viewerSocketRef.current.disconnect()
 	}, [t])
 
 	const handleDisconnect = useCallback((reason : Socket.DisconnectReason) => {
@@ -61,27 +61,27 @@ const Viewer = () => {
 	useEffect(() => {
 		if (!lobbyCode || !hostToken) return
 
-		viewerSocket.current = createViewerSocket(hostToken)
-		viewerSocket.current.connect()
+		viewerSocketRef.current = createViewerSocket(hostToken)
+		viewerSocketRef.current.connect()
 
 		return (() => {
-			if (viewerSocket.current) viewerSocket.current.disconnect()
+			if (viewerSocketRef.current) viewerSocketRef.current.disconnect()
 		})
 	}, [hostToken, lobbyCode])
 
 	useEffect(() => {
-		if (!viewerSocket.current) return
+		if (!viewerSocketRef.current) return
 
-		viewerSocket.current.on('connect', handleConnect)
-		viewerSocket.current.on('connect_error', handleConnectError)
-		viewerSocket.current.on('status-change', handleStatusChange)
-		viewerSocket.current.on('disconnect', handleDisconnect)
-		viewerSocket.current.on('user-joined', handleUserJoin)
-		viewerSocket.current.on('vote-casted', handleVoteCast)
+		viewerSocketRef.current.on('connect', handleConnect)
+		viewerSocketRef.current.on('connect_error', handleConnectError)
+		viewerSocketRef.current.on('status-change', handleStatusChange)
+		viewerSocketRef.current.on('disconnect', handleDisconnect)
+		viewerSocketRef.current.on('user-joined', handleUserJoin)
+		viewerSocketRef.current.on('vote-casted', handleVoteCast)
 
 		return (() => {
-			if (!viewerSocket.current) return
-			viewerSocket.current.removeAllListeners()
+			if (!viewerSocketRef.current) return
+			viewerSocketRef.current.removeAllListeners()
 		})
 
 	}, [handleConnectError, handleDisconnect])

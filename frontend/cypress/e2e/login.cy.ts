@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 
 beforeEach(() => {
-	cy.request('post', `${Cypress.env('BACKEND_URL')}/testing/reset`)
+	cy.request('post', `${Cypress.expose('backendUrl')}/testing/reset`)
 })
 
 describe('Main menu', () => {
@@ -62,7 +62,7 @@ describe('Host view', () => {
 		cy.get('[data-testid="lobbycode"]').then((value) => {
 			const lobbyCode = value.text()
 
-			cy.request('post', `${Cypress.env('BACKEND_URL')}/lobby/joinLobby`, {
+			cy.request('post', `${Cypress.expose('backendUrl')}/lobby/joinLobby`, {
 				lobbyCode,
 			}).then((response) => {
 				const userCode = response.body.userCode
@@ -77,19 +77,19 @@ describe('Host view', () => {
 		cy.get('[data-testid="lobbycode"]').then((value) => {
 			const lobbyCode = value.text()
 
-			cy.request(`${Cypress.env('BACKEND_URL')}/testing/getParticipants`, {
+			cy.request(`${Cypress.expose('backendUrl')}/testing/getParticipants`, {
 				lobbyCode,
 			}).then((response) => {
 				expect(response.body.length).equal(0)
 			})
 
-			cy.request('post', `${Cypress.env('BACKEND_URL')}/lobby/joinLobby`, {
+			cy.request('post', `${Cypress.expose('backendUrl')}/lobby/joinLobby`, {
 				lobbyCode,
 			}).then((response) => {
 				const userCode = response.body.userCode
 				cy.get('[data-testid="usercode-field"]').children().last().type(userCode)
 
-				cy.request(`${Cypress.env('BACKEND_URL')}/testing/getParticipants`, {
+				cy.request(`${Cypress.expose('backendUrl')}/testing/getParticipants`, {
 					lobbyCode,
 				}).then((response) => {
 					expect(response.body.length).equal(1)
@@ -125,7 +125,7 @@ describe('Joining a lobby', () => {
 	})
 
 	it('shows the user code when entering a valid lobby', () => {
-		cy.request('post', `${Cypress.env('BACKEND_URL')}/lobby/createLobby`).then((res) => {
+		cy.request('post', `${Cypress.expose('backendUrl')}/lobby/createLobby`).then((res) => {
 			const lobbyCode: string = res.body.lobbyCode
 
 			cy.get('[data-testid="lobbycode-field"]').find('input').last().type(lobbyCode)

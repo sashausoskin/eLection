@@ -10,10 +10,16 @@ export default defineConfig({
 		setupFiles: ['./src/__test__/setupTests.ts']
 	},
 	build: {
-		rollupOptions: {
+		rolldownOptions: {
 			output: {
-				manualChunks: {
-					exceljs: ['exceljs']
+				codeSplitting: {
+					// Since the exceljs is massive, split it so that it only gets loaded when it is needed.
+					groups:[
+						{
+							test: /node_modules\/exceljs/,
+							name: 'exceljs'
+						}
+					]
 				}
 			}
 		},

@@ -27,7 +27,7 @@ const LobbyView = () : JSX.Element => {
 
 	const maxConnectionAttempts = 5
 
-	const lobbySocket = useRef<Socket | null>(null)
+	const lobbySocketRef = useRef<Socket | null>(null)
 
 	const participantToken = participantService.getAuthToken()
 
@@ -41,7 +41,7 @@ const LobbyView = () : JSX.Element => {
 		if (connectionAttempts >= maxConnectionAttempts) {
 			navigate('/')
 			createPopup({type: 'alert', message: t('status.serverConnectionError')})
-			lobbySocket.current?.disconnect()
+			lobbySocketRef.current?.disconnect()
 			return
 		}
 
@@ -83,12 +83,12 @@ const LobbyView = () : JSX.Element => {
 			return
 		}
 
-		lobbySocket.current = createLobbySocket(participantToken)
+		lobbySocketRef.current = createLobbySocket(participantToken)
 
-		lobbySocket.current?.connect()
+		lobbySocketRef.current?.connect()
 
 		const handleUnmount = () => {
-			if (lobbySocket.current) lobbySocket.current.disconnect()
+			if (lobbySocketRef.current) lobbySocketRef.current.disconnect()
 		}
         
 		return handleUnmount
@@ -97,16 +97,16 @@ const LobbyView = () : JSX.Element => {
 	// Assigns functions to socket events. This is done separately from the socket connection to make sure that the socket doesn't try to connect multiple times.
 	// When a client socket connects to the backend, the server sends a status-change event.
 	useEffect(() => {
-		lobbySocket.current?.on('status-change', onStatusChange)
-		lobbySocket.current?.on('connect_error', onConnectError)
-		lobbySocket.current?.on('disconnect', onDisconnect)
-		lobbySocket.current?.on('connect', onConnect)
+		lobbySocketRef.current?.on('status-change', onStatusChange)
+		lobbySocketRef.current?.on('connect_error', onConnectError)
+		lobbySocketRef.current?.on('disconnect', onDisconnect)
+		lobbySocketRef.current?.on('connect', onConnect)
 
 		return () => {
-			lobbySocket.current?.off('status-change', onStatusChange)
-			lobbySocket.current?.off('connect_error', onConnectError)
-			lobbySocket.current?.off('disconnect', onDisconnect)
-			lobbySocket.current?.off('connect', onConnect)
+			lobbySocketRef.current?.off('status-change', onStatusChange)
+			lobbySocketRef.current?.off('connect_error', onConnectError)
+			lobbySocketRef.current?.off('disconnect', onDisconnect)
+			lobbySocketRef.current?.off('connect', onConnect)
 		}
 	}, [onDisconnect, onConnectError])
 
@@ -186,7 +186,7 @@ const LobbyView = () : JSX.Element => {
 		case 'ELECTION_ENDED': 
 			return <ElectionEnded />
 		case 'CLOSING':
-			lobbySocket.current?.disconnect()
+			lobbySocketRef.current?.disconnect()
 			return <LobbyClose lobbyInfo={lobbyStatus} />
 	}
 

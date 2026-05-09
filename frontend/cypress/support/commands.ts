@@ -40,11 +40,11 @@ import '@4tw/cypress-drag-drop'
 import 'cypress-real-events'
 
 Cypress.Commands.add('resetServer', () => {
-	cy.request('post', `${Cypress.env('BACKEND_URL')}/testing/reset`)
+	cy.request('post', `${Cypress.expose('backendUrl')}/testing/reset`)
 })
 
 Cypress.Commands.add('createLobbyAndUser', (saveToStorage = true) => {
-	cy.request('post', `${Cypress.env('BACKEND_URL')}/testing/createLobbyWithUser`).then((res) => {
+	cy.request('post', `${Cypress.expose('backendUrl')}/testing/createLobbyWithUser`).then((res) => {
 		const lobbyCode = res.body.lobbyCode
 		const participantToken = res.body.participantToken
 		const hostToken = res.body.hostToken
@@ -69,7 +69,7 @@ Cypress.Commands.add('createElection', (electionInfo) => {
 		cy.get('@hostToken').then((hostToken) => {
 			cy.request({
 				method: 'post', 
-				url: `${Cypress.env('BACKEND_URL')}/host/createElection`,
+				url: `${Cypress.expose('backendUrl')}/host/createElection`,
 				headers: {Authorization: hostToken},
 				body: {lobbyCode,
 					electionInfo
@@ -83,7 +83,7 @@ Cypress.Commands.add('castVote', (voteContent) => {
 	cy.get('@participantToken').then((participantToken) => {
 		cy.request({
 			method: 'post',
-			url: `${Cypress.env('BACKEND_URL')}/participant/castVote`,
+			url: `${Cypress.expose('backendUrl')}/participant/castVote`,
 			headers: {Authorization: participantToken},
 			body: {voteContent}
 		})
@@ -93,13 +93,13 @@ Cypress.Commands.add('castVote', (voteContent) => {
 
 Cypress.Commands.add('createUser', () => {
 	cy.get('@lobbyCode').then((lobbyCode) => {
-		cy.request('post', `${Cypress.env('BACKEND_URL')}/lobby/joinLobby`, {lobbyCode}).then((res) => {
+		cy.request('post', `${Cypress.expose('backendUrl')}/lobby/joinLobby`, {lobbyCode}).then((res) => {
 			const userCode = res.body.userCode
 
 			cy.get('@hostToken').then((hostToken) => {
 				return cy.request({
 					method: 'post',
-					url: `${Cypress.env('BACKEND_URL')}/host/authenticateUser`,
+					url: `${Cypress.expose('backendUrl')}/host/authenticateUser`,
 					body: {lobbyCode, userCode},
 					headers: {
 						'Authorization': hostToken
@@ -113,7 +113,7 @@ Cypress.Commands.add('createUser', () => {
 Cypress.Commands.add('closeLobby', function () {
 	return cy.request({
 		method: 'post',
-		url: `${Cypress.env('BACKEND_URL')}/host/closeLobby`,
+		url: `${Cypress.expose('backendUrl')}/host/closeLobby`,
 		body: {lobbyCode: this.lobbyCode},
 		headers: {
 			'Authorization': this.hostToken
@@ -124,14 +124,14 @@ Cypress.Commands.add('closeLobby', function () {
 Cypress.Commands.add('startCleanup', function () {
 	return cy.request({
 		method: 'post',
-		url: `${Cypress.env('BACKEND_URL')}/testing/forceServerCleanup`,
+		url: `${Cypress.expose('backendUrl')}/testing/forceServerCleanup`,
 	})
 })
 
 Cypress.Commands.add('endElection', function () {
 	cy.request({
 		method: 'post',
-		url: `${Cypress.env('BACKEND_URL')}/host/endElection`,
+		url: `${Cypress.expose('backendUrl')}/host/endElection`,
 		body: {lobbyCode: this.lobbyCode},
 		headers: {
 			'Authorization': this.hostToken
@@ -140,21 +140,21 @@ Cypress.Commands.add('endElection', function () {
 })
 
 Cypress.Commands.add('getElectionResults', function () {
-	return cy.request(`${Cypress.env('BACKEND_URL')}/testing/getElectionResults`, {lobbyCode: this.lobbyCode})
+	return cy.request(`${Cypress.expose('backendUrl')}/testing/getElectionResults`, {lobbyCode: this.lobbyCode})
 })
 
 Cypress.Commands.add('setLobbyLastActive', function (lastActiveTime : number) {
-	return cy.request('post',`${Cypress.env('BACKEND_URL')}/testing/setLobbyLastActive`, {lobbyCode: this.lobbyCode, lastActiveTime})
+	return cy.request('post',`${Cypress.expose('backendUrl')}/testing/setLobbyLastActive`, {lobbyCode: this.lobbyCode, lastActiveTime})
 })
 
 Cypress.Commands.add('getNumberOfLobbies', function () {
-	return cy.request('get', `${Cypress.env('BACKEND_URL')}/testing/getNumberOfLobbies`)
+	return cy.request('get', `${Cypress.expose('backendUrl')}/testing/getNumberOfLobbies`)
 })
 
 Cypress.Commands.add('authenticateUser', function (userCode) {
 	return cy.request({
 		method: 'post',
-		url: `${Cypress.env('BACKEND_URL')}/host/authenticateUser`,
+		url: `${Cypress.expose('backendUrl')}/host/authenticateUser`,
 		body: {userCode},
 		headers: {
 			'Authorization': this.hostToken

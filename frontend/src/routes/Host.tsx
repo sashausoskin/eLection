@@ -18,7 +18,7 @@ const Host = () => {
 	const [lobbyCode, setLobbyCode] = useState<string | null>(null)
 	const navigate = useNavigate()
 	const {createPopup} = use(PopupContext)
-	const lobbyInitialised = useRef<boolean>(false)
+	const lobbyInitialisedRef = useRef<boolean>(false)
 
 	const {t} = useTranslation()
 
@@ -47,8 +47,8 @@ const Host = () => {
 		 */
 		const initLobby = async () => {
 			// This is a bit hacky, but this is to make sure that this function only gets called once.
-			if (lobbyInitialised.current) return
-			lobbyInitialised.current = true
+			if (lobbyInitialisedRef.current) return
+			lobbyInitialisedRef.current = true
 
 			setLobbyCode(null)
 			try {
