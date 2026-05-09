@@ -1,4 +1,4 @@
-FROM node:20-alpine AS build-stage
+FROM node:24-alpine AS build-stage
 WORKDIR /usr/src/eLection-front
 
 ARG VITE_BACKEND_URL=http://localhost:3000
