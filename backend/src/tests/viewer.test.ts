@@ -75,7 +75,7 @@ describe('With a created lobby and user', () => {
         const fakeAuth = encodeObject({
             id: hostID,
             lobbyCode: null
-        } as AuthenticationObject)
+        } as unknown as AuthenticationObject)
 
         testSocketConnection(done, fakeAuth, false)
     })
@@ -84,7 +84,7 @@ describe('With a created lobby and user', () => {
         const fakeAuth = encodeObject({
             id: null,
             lobbyCode
-        } as AuthenticationObject)
+        } as unknown as AuthenticationObject)
 
         testSocketConnection(done, fakeAuth, false)
     })
