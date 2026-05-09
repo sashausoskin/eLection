@@ -1,3 +1,5 @@
+// This is the config file for the deprecated i18next-parser. Delete this later.
+
 export default {
     contextSeparator: '_',
   
