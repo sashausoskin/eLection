@@ -1,12 +1,11 @@
-import { ExtendedError } from 'socket.io/dist/namespace'
 import * as lobbyService from '../services/lobbyservice'
 import * as socketservice from '../services/socketservice'
-import { Socket } from 'socket.io'
+import { QueueSocket } from '../types/socketTypes'
 
 /**
  * Checks if the user connecting to the socket is actually in the queue.
  */
-export const queueSocketAuthenticationMiddleware = async (socket : Socket, next: (err?: ExtendedError) => void) => {
+export const queueSocketAuthenticationMiddleware = async (socket : QueueSocket, next: (err?: Error) => void) => {
     const userCode = socket.handshake.auth.userCode
     const lobbyCode = socket.handshake.auth.lobbyCode
 
@@ -28,19 +27,22 @@ export const queueSocketAuthenticationMiddleware = async (socket : Socket, next:
         return
     }
 
-    socket['lobbyCode'] = lobbyCode
-    socket['userCode'] = userCode
+    socket.lobbyCode = lobbyCode
+    socket.userCode = userCode
 
     next()
 }
 
-export const handleQueueSocketConnection = (socket: Socket) => {
-    socketservice.assignSocketIdToQueueingUser(socket['userCode'], socket['lobbyCode'], socket.id)
+export const handleQueueSocketConnection = (socket: QueueSocket) => {
+    const lobbyCode = socket.lobbyCode as string
+    const userCode = socket.userCode as string
+
+    socketservice.assignSocketIdToQueueingUser(userCode, lobbyCode, socket.id)
 
     socket.on('disconnect', () => {
-        if (!lobbyService.isValidLobbyCode(socket['lobbyCode'])) return
-        if (!lobbyService.isUserInQueue(socket['userCode'], socket['lobbyCode'])) return
-        lobbyService.removeUserFromQueue(socket['lobbyCode'], socket['userCode'])
+        if (!lobbyService.isValidLobbyCode(lobbyCode)) return
+        if (!lobbyService.isUserInQueue(userCode, lobbyCode)) return
+        lobbyService.removeUserFromQueue(lobbyCode, userCode)
     })
 
 }

@@ -3,7 +3,7 @@ import { io } from '../util/server'
 import * as lobbyService from './lobbyservice'
 import * as socketservice from './socketservice'
 
-const defaultTimeoutDuration = (process.env.LOBBY_TIMEOUT_LENGTH && Number(process.env.LOBBY_TIMEOUT_LENGTH)) | 7200000
+const defaultTimeoutDuration = Number(process.env.LOBBY_TIMEOUT_LENGTH) || 7200000
 
 /**
  * First sends a message to the participants and the viewer that the lobby is closing, then deletes the lobby.
@@ -16,8 +16,12 @@ export const closeLobby = (lobbyCode : string, reason: LobbyCloseReason) => {
 
     const lobbyClosingMessage : LobbyStatusInfo = {status: 'CLOSING', reason}
 
-    io.of('/viewer').to(viewerSocket).emit('status-change', lobbyClosingMessage)
-    io.of('/viewer').in(viewerSocket).disconnectSockets(true)
+
+    if (viewerSocket) {
+        io.of('/viewer').to(viewerSocket).emit('status-change', lobbyClosingMessage)
+        io.of('/viewer').in(viewerSocket).disconnectSockets(true)
+    }
+
     participantSockets.forEach((socket) => {
         io.of('/lobby').to(socket).emit('status-change', lobbyClosingMessage)
         io.of('/lobby').in(socket).disconnectSockets(true)

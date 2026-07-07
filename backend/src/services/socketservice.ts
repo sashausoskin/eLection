@@ -1,4 +1,6 @@
+import { LobbyNotFoundError } from '../types/errorTypes'
 import { lobbyInfo } from './db'
+import { getLobby } from './lobbyservice'
 
 
 /**
@@ -17,7 +19,7 @@ export const getUserSocketID = (lobbyCode: string, userCode: string) => {
  */
 
 export const assignSocketIdToQueueingUser = (userCode: string, lobbyCode: string, socketID: string) => {
-    lobbyInfo[lobbyCode]['queuedUsers'][userCode] = socketID
+    getLobby(lobbyCode).queuedUsers[userCode] = socketID
 }
 /**
  * Checks if there is a socket instance connected to the queue.
@@ -97,6 +99,12 @@ export const getParticipantSocket = (lobbyCode: string, participantID: string) =
  */
 
 export const getAllParticipantSockets = (lobbyCode: string): string[] => {
-    return Object.values(lobbyInfo[lobbyCode]['participants'])
+    const lobby = getLobby(lobbyCode)
+
+    if (lobbyInfo[lobbyCode] === undefined) {
+        throw new LobbyNotFoundError(`Could not find a lobby with the lobby code ${lobbyCode}`)
+    }
+
+    return Object.values(lobby.participants).filter((val) => val !== null)
 }
 

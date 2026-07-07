@@ -47,7 +47,7 @@ describe('With a lobby created and one authenticated user in lobby', () => {
     })
 
     describe('When user is connecting to the lobby socket', () => {
-        const testSocketConnection = (participantToken? : string, done? : jest.DoneCallback, expectToConnect? : boolean) => {
+        const testSocketConnection = (participantToken? : string | null, done? : jest.DoneCallback | null, expectToConnect? : boolean) => {
             lobbySocket = ioc('http://localhost:3001/lobby', {auth: {token: participantToken ? `Bearer ${participantToken}` : null}})
             lobbySocket.on('connect_error', () => {
                 if (expectToConnect) expect(1).toBe(2)
@@ -89,7 +89,7 @@ describe('With a lobby created and one authenticated user in lobby', () => {
             const testToken = encodeObject({
                 lobbyCode: null,
                 id: participantID
-            } as AuthenticationObject)
+            })
 
             testSocketConnection(testToken, done, false)
         })
@@ -98,7 +98,7 @@ describe('With a lobby created and one authenticated user in lobby', () => {
             const testToken = encodeObject({
                 lobbyCode,
                 id: null
-            } as AuthenticationObject)
+            })
 
             testSocketConnection(testToken, done, false)
         })

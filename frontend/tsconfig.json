@@ -1,9 +1,10 @@
 {
 	"compilerOptions": {
-		"target": "ES2020",
+		"target": "ES2025",
 		"useDefineForClassFields": true,
-		"lib": ["ES2020", "DOM", "DOM.Iterable"],
+		"lib": ["ES2025", "DOM", "DOM.Iterable"],
 		"module": "ESNext",
+		"outDir": "dist",
 		"skipLibCheck": true,
 
 		"types": ["vitest/globals", "cypress", "node"],

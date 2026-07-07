@@ -18,7 +18,7 @@ export const createElection = async (hostToken : string, electionInfo : Election
  * @param lobbyCode The code of the lobby to join
  * @returns The user code generated for the user
  */
-export const joinLobby = async (lobbyCode : string) => {
+export const joinLobby = async (lobbyCode : string | undefined) => {
     return await request(app).post('/lobby/joinLobby')
         .send(lobbyCode !== undefined ? {lobbyCode} : {})
 }
@@ -42,7 +42,7 @@ export const authenticateUser = async (hostToken : string, userCode : string) =>
  * @param voteContent What the user is voting for
  * @returns 
  */
-export const castVote = async (participantToken : string, voteContent : string | string[] | null | undefined) => {
+export const castVote = async (participantToken : string | undefined, voteContent : string | string[] | null | undefined) => {
     return request(app).post('/participant/castVote')
         //Only set the Authorization header if the token is defined
         .set(participantToken !== undefined ? 'Authorization' : 'sink', `Bearer ${participantToken}`)
