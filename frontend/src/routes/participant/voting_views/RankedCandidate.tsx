@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import dragIcon from '/img/icons/drag.svg'
+import dragIcon from '../../../assets/icons/drag.svg'
 import { defaultAnimateLayoutChanges, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CSSProperties } from 'react'

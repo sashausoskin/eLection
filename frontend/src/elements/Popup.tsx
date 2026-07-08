@@ -1,5 +1,5 @@
-import confirmIcon from '/img/icons/confirm.svg'
-import cancelIcon from '/img/icons/cancel.svg'
+import confirmIcon from '../assets/icons/confirm.svg'
+import cancelIcon from '../assets/icons/cancel.svg'
 import { use } from 'react'
 import { PopupContext } from '../context/Contexts'
 import { useTransition, animated } from '@react-spring/web'
