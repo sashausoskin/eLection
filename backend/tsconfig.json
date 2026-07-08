@@ -2,13 +2,13 @@
     "compilerOptions": {
       "module": "nodenext",
       "esModuleInterop": true,
-      "target": "es6",
+      "target": "es2025",
       "moduleResolution": "nodenext",
       "sourceMap": true,
       "resolveJsonModule": true,
       "types": ["node", "jest", "express"]
     },
-    "lib": ["es6"],
+    "lib": ["es2025"],
     "ts-node": {
       "files": true
     }
