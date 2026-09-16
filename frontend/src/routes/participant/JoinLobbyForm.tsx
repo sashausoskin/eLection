@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios'
 import * as participantService from '../../services/participantService'
-import { use, useEffect, useState, useTransition } from 'react'
+import { use, useState, useTransition } from 'react'
 import { SetParticipantViewContext } from '../../context/Contexts'
 import { Mock } from 'vitest'
 import './JoinLobbyForm.css'
@@ -66,14 +66,14 @@ export const JoinLobbyForm = ({
 		
 	}
 
-	useEffect(() => {
-		console.log('Got input code', inputtedLobbyCode)
-		if (inputtedLobbyCode.length !== LOBBY_CODE_LENGTH) return
+	const handleLobbyCodeChange = (newValue: string) => {
+		setInputtedLobbyCode(newValue)
+		if (newValue.length !== LOBBY_CODE_LENGTH) return
 
 		startLobbyCodeCheck(async() =>{
-			await (handleSubmitLobbyCode ? handleSubmitLobbyCode : defaultHandleSubmitLobbyCode)(inputtedLobbyCode)
+			await (handleSubmitLobbyCode ? handleSubmitLobbyCode : defaultHandleSubmitLobbyCode)(newValue)
 		})
-	}, [inputtedLobbyCode])
+	}
 
 	return (
 		<>
@@ -95,7 +95,7 @@ export const JoinLobbyForm = ({
 
 						if (!event.value) return
 						if (typeof event.value !== 'string') return
-						setInputtedLobbyCode(event.value)
+						handleLobbyCodeChange(event.value)
 					}}
 					disabled={isCheckingLobbyCode}
 				/>
