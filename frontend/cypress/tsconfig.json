@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"target": "es5",
+		"target": "esnext",
 		"lib": ["es5", "dom"],
 		"types": ["cypress", "node", "./support/index.d.ts", "@4tw/cypress-drag-drop", "cypress-real-events"]
 	},

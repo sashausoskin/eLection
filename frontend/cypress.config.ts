@@ -7,6 +7,6 @@ export default defineConfig({
 		expose: {
 			backendUrl: "http://localhost:3000"
 		},
-		allowCypressEnv: false
+		defaultBrowser: 'chrome'
 	},
 })
