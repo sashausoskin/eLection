@@ -57,7 +57,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
 		}
 		
 		fetchLobbyStatus()
-	}, [])
+	}, [skipStatusCheck])
 	
 
 	const ElectionCreationSchema = Yup.object().shape({
