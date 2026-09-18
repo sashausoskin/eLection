@@ -6,7 +6,9 @@
       "moduleResolution": "nodenext",
       "sourceMap": true,
       "resolveJsonModule": true,
-      "types": ["node", "jest", "express"]
+      "types": ["node", "jest", "express"],
+      "outDir": "dist",
+      "rootDir": "./src"
     },
     "lib": ["es2025"],
     "ts-node": {
