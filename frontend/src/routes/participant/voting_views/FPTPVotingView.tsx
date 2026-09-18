@@ -2,7 +2,7 @@ import { FPTPElectionInfo } from '../../../types'
 import './VotingViews.css'
 import { use, useState } from 'react'
 
-import voteIcon from '/img/icons/vote.svg'
+import voteIcon from '../../../assets/icons/vote.svg'
 import { useTranslation } from 'react-i18next'
 import { PopupContext } from '../../../context/Contexts'
 

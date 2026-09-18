@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import dragIcon from '/img/icons/drag.svg'
+import dragIcon from '../../../assets/icons/drag.svg'
 import { defaultAnimateLayoutChanges, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CSSProperties } from 'react'
@@ -26,20 +26,25 @@ const RankedCandidate = (props : React.PropsWithChildren<RankedCandidateProps>) 
 		...props.containerStyle
 	}
 
-	return <div ref={setNodeRef} style={style} {...attributes} {...listeners}
+	return <div
+		ref={setNodeRef}
+		style={style}
+		{...attributes}
+		{...listeners}
 		data-testid={`candidate-drag-${props.position - 1}`}
 		className={'candidateContainer rankedCandidate'}
-		children={<>	
-			<img src={dragIcon} className={'icon dragIcon'}/>
-			<div className='candidatePosition'>
-				{props.votes > 0 && <a>{props.position}.</a>}
-			</div>
-			<a className='candidateName'>{props.candidate}</a>
-			<div className='candidateVotes'>
-				{props.votes > 0 && <a>{t('votes', {count: props.votes})}</a>}
-			</div>
-		</>}
-	/>
+	>
+	
+		<img src={dragIcon} className={'icon dragIcon'}/>
+		<div className='candidatePosition'>
+			{props.votes > 0 && <a>{props.position}.</a>}
+		</div>
+		<a className='candidateName'>{props.candidate}</a>
+		<div className='candidateVotes'>
+			{props.votes > 0 && <a>{t('votes', {count: props.votes})}</a>}
+		</div>
+
+	</div>
 }
 
 export default RankedCandidate

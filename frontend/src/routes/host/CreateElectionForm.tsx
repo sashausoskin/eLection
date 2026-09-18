@@ -6,9 +6,9 @@ import { Fragment, use, useEffect, useState } from 'react'
 import { ElectionInfo,  ElectionType,  ErrorMessage as ResponseErrorMessage } from '../../types'
 import './CreateElectionForm.css'
 import InfoTooltip from '../../elements/Tooltip'
-import trashIcon from '/img/icons/trash.svg'
-import addIcon from '/img/icons/add.svg'
-import downloadIcon from '/img/icons/download.svg'
+import trashIcon from '../../assets/icons/trash.svg'
+import addIcon from '../../assets/icons/add.svg'
+import downloadIcon from '../../assets/icons/download.svg'
 import { PopupContext, ToastContext } from '../../context/Contexts'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
@@ -57,7 +57,7 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
 		}
 		
 		fetchLobbyStatus()
-	}, [])
+	}, [skipStatusCheck])
 	
 
 	const ElectionCreationSchema = Yup.object().shape({

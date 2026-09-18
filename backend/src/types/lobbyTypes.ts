@@ -1,18 +1,30 @@
 
+interface LobbyInfoWithElectionInfo extends LobbyInfoBase {
+    status: Extract<LobbyStatus, 'VOTING' | 'ELECTION_ENDED'>
+    currentVote: LobbyVoteInfo
+}
 
-export interface LobbyInfo {
+interface LobbyInfoWithoutElectionInfo extends LobbyInfoBase {
+    status: Exclude<LobbyStatus, 'VOTING' | 'ELECTION_ENDED'>
+}
+
+interface LobbyVoteInfo {
+    electionInfo: ElectionInfo
+    results: ElectionResults
+}
+
+interface LobbyInfoBase {
     hostID: string
     lastActivity: number
     viewerSocket: string | null
-    status: LobbyStatus
     availableUserCodes: string[]
     queuedUsers: Record<string, string | null>
-    participants: Record<string, null | string>
-    currentVote: {
-        electionInfo: ElectionInfo
-        results: ElectionResults
-    } | null
+    participants: Record<string, string | null>
+    currentVote: LobbyVoteInfo | null
 }
+
+export type LobbyInfo = LobbyInfoWithElectionInfo | LobbyInfoWithoutElectionInfo
+
 export type LobbyStatus = 'STANDBY' | 'VOTING' | 'ELECTION_ENDED' | 'CLOSING'
 
 export type LobbyStatusInfo = {
@@ -67,7 +79,7 @@ interface RankedElectionInfo extends ElectionInfoBase {
 export type ElectionInfo = FPRPElectionInfo | RankedElectionInfo
 
 export interface ElectionResults {
-    votes: Record<string | null, number>
+    votes: Record<string, number>
     emptyVotes: number
     usersVoted: string[]
 }
@@ -79,3 +91,13 @@ export interface VoteInfo {
     participants: number
 }
 
+export interface LobbyActivity {
+    /**
+     * The code of the lobby
+     */
+    lobbyCode : string,
+    /**
+     * The {@link Date} on which the lobby has been last active
+     */
+    lastActivity: number
+}

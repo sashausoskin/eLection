@@ -21,13 +21,15 @@ router.use((req, res, next) => {
     if (!authToken) {
         return res.status(401).json({type: 'MISSING_AUTH_TOKEN', message: 'Did not receive an authorization token with the request'} as ErrorMessage)
     }
+    const authHeader = req.headers.authorization
 
-    let hostAuth
-    try {
-        hostAuth = decodeObject(req.headers.authorization.substring(7)) as AuthenticationObject
-    } catch {
+    if (!authHeader || authHeader.length < 7){
         return res.status(403).json({type: 'UNAUTHORIZED', message: 'Received an invalid authentication token'} as ErrorMessage)
     }
+
+
+    const hostAuth = decodeObject(authHeader.substring(7)) as AuthenticationObject
+
     
 
     const lobbyCode = hostAuth.lobbyCode
@@ -37,21 +39,21 @@ router.use((req, res, next) => {
     if (!lobbyService.isValidLobbyCode(lobbyCode)) return res.status(404).json({type: 'UNAUTHORIZED', message: 'Did not receive a valid lobby code'} as ErrorMessage)
     if (!lobbyService.isLobbyHost(lobbyCode, hostID)) return res.status(403).json({type: 'UNAUTHORIZED', message: 'You do not have access to this lobby!'} as ErrorMessage)
 
-    req['lobbyCode'] = lobbyCode
-    req['hostID'] = hostID
+    req.lobbyCode = lobbyCode
+    req.hostID = hostID
 
     next()
 })
 
 router.post('/createElection', (req, res) => {
     const electionInfo = req.body.electionInfo as ElectionInfo
-    const lobbyCode = req['lobbyCode']
+    const lobbyCode = req['lobbyCode'] as string
 
     const maxCandidateNameLength = 40
 
     const valid = ajv.validate(electioninfo_schema, electionInfo)
 
-    if (!valid) {
+    if (!valid && ajv.errors) {
         let errors = ''
 
         ajv.errors.forEach((error) => {
@@ -91,8 +93,10 @@ router.post('/createElection', (req, res) => {
 
     const viewerSocket = socketservice.getViewerSocket(lobbyCode)
 
-    io.of('/viewer').to(viewerSocket).emit('status-change', lobbyService.getLobbyStatus(lobbyCode, true))
-    io.of('/viewer').to(viewerSocket).emit('vote-casted', 0)
+    if (viewerSocket) {
+        io.of('/viewer').to(viewerSocket).emit('status-change', lobbyService.getLobbyStatus(lobbyCode, true))
+        io.of('/viewer').to(viewerSocket).emit('vote-casted', 0)
+    }
 
     lobbyService.updateLastActivity(lobbyCode)
 
@@ -100,7 +104,7 @@ router.post('/createElection', (req, res) => {
 })
 
 router.post('/endElection', (req,res) => {
-    const lobbyCode = req['lobbyCode']
+    const lobbyCode = req['lobbyCode'] as string
 
     if (!lobbyService.isElectionActive(lobbyCode)) {
         return res.status(405).json({type: 'NO_ACTIVE_ELECTION', message: 'There isn\'t currently an active election going on in this lobby!'} as ErrorMessage)
@@ -115,15 +119,17 @@ router.post('/endElection', (req,res) => {
     const lobbyStatus = lobbyService.getLobbyStatus(lobbyCode, true)
     const viewerSocket = socketservice.getViewerSocket(lobbyCode)
 
-    io.of('/viewer').to(viewerSocket).emit('status-change', lobbyStatus)
-
+    if (viewerSocket) {
+        io.of('/viewer').to(viewerSocket).emit('status-change', lobbyStatus)
+    }
+    
     lobbyService.updateLastActivity(lobbyCode)
 
     return res.send()
 })
 
 router.get('/getElectionResults', (req, res) => {
-    const lobbyCode = req['lobbyCode']
+    const lobbyCode = req['lobbyCode'] as string
 
     const lobbyStatus = lobbyService.getLobbyStatus(lobbyCode, true)
 
@@ -135,7 +141,7 @@ router.get('/getElectionResults', (req, res) => {
 })
 
 router.post('/closeLobby', (req,res) => {
-    const lobbyCode = req['lobbyCode']
+    const lobbyCode = req.lobbyCode as string
 
     cleanupService.closeLobby(lobbyCode, 'HOST_CLOSED')
 
@@ -143,13 +149,13 @@ router.post('/closeLobby', (req,res) => {
 })
 
 router.get('/getElectionStatus', (req, res) => {
-    const lobbyCode = req['lobbyCode']
+    const lobbyCode = req['lobbyCode'] as string
 
     return res.json({electionActive: lobbyService.isElectionActive(lobbyCode), resultsAvailable: lobbyService.areResultsAvailable(lobbyCode)})
 })
 
 router.post('/authenticateUser', async (req, res) => {
-    const lobbyCode = req['lobbyCode']
+    const lobbyCode = req.lobbyCode as string
     const userToAuthorize = req.body.userCode
 
     if (!userToAuthorize || typeof userToAuthorize !== 'string') {
@@ -175,7 +181,7 @@ router.post('/authenticateUser', async (req, res) => {
     const encodedUserAuth = encodeObject(newUserAuth)
 
     if (viewerSocket) io.of('/viewer').to(viewerSocket).emit('user-joined', lobbyService.getParticipants(lobbyCode).length)
-    io.of('/queue').to(userSocketID).emit('authorize', encodedUserAuth)
+    if (userSocketID) io.of('/queue').to(userSocketID).emit('authorize', encodedUserAuth)
 
     return res.status(200).send()
 })

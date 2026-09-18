@@ -1,8 +1,9 @@
 import { v4 as uuidv4 } from 'uuid'
-import { ElectionInfo } from '../types/lobbyTypes'
+import { ElectionInfo, LobbyActivity } from '../types/lobbyTypes'
 import { LobbyStatusInfo } from '../types/lobbyTypes'
 import { insertToRandomIndex } from '../util/shuffle'
 import { availableLobbyCodes, generateCodes, lobbyInfo, resetLobbyInfo, UserNotFound } from './db'
+import { LobbyNotFoundError, NoActiveElectionError, NoElectionResultsAvailable, OutOfLobbyCodesError, OutOfUserCodesError } from '../types/errorTypes'
 
 /**
  * Creates a new lobby
@@ -10,6 +11,12 @@ import { availableLobbyCodes, generateCodes, lobbyInfo, resetLobbyInfo, UserNotF
  */
 export const createNewLobby = (): {lobbyCode: string, hostID: string} => {
     const lobbyCode = availableLobbyCodes.pop()
+
+    if (lobbyCode === undefined) {
+        console.error('Attempted to create a new lobby, but ran out of lobby codes')
+        throw new OutOfLobbyCodesError()
+    }
+
     const hostID = uuidv4()
 
     const userCodes = generateCodes()
@@ -35,6 +42,12 @@ export const isValidLobbyCode = (lobbyCode: string) : boolean => {
  */
 export const getNewUserCode = (lobbyCode : string) : string => {
     const userCode = lobbyInfo[lobbyCode]['availableUserCodes'].pop()
+
+    if (userCode === undefined) {
+        console.error('Attempted to fetch a new user code, but ran out of available user codes.')
+        throw new OutOfUserCodesError()
+    }
+
     lobbyInfo[lobbyCode]['queuedUsers'][userCode] = null
 
     return userCode
@@ -138,6 +151,10 @@ export const resetLobbies = () => {
  * @returns Lobby's information
  */
 export const getLobby = (lobbyCode : string) => {
+    if (lobbyInfo[lobbyCode] === undefined) {
+        throw new LobbyNotFoundError(`Could not find a lobby with the lobby code ${lobbyCode}`)
+    }
+
     return lobbyInfo[lobbyCode]
 }
 /**
@@ -146,19 +163,22 @@ export const getLobby = (lobbyCode : string) => {
  * @returns The lobby's status. See {@link LobbyStatusInfo}
  */
 export const getLobbyStatus = (lobbyCode : string, isHost : boolean) : LobbyStatusInfo => {
-    const status = lobbyInfo[lobbyCode].status
+    const lobby = getLobby(lobbyCode)
+    const status = lobby.status
 
     switch (status) {
         case 'STANDBY': return { status }
-        case 'VOTING': return {status, electionInfo: lobbyInfo[lobbyCode].currentVote.electionInfo}
+        case 'VOTING': return {status, electionInfo: lobby.currentVote.electionInfo}
         case 'ELECTION_ENDED': 
             if (isHost) return {status, results: 
-            {title: lobbyInfo[lobbyCode].currentVote.electionInfo.title,
-            votes: lobbyInfo[lobbyCode].currentVote.results.votes,
-            type: lobbyInfo[lobbyCode].currentVote.electionInfo.type,
-            emptyVotes: lobbyInfo[lobbyCode].currentVote.results.emptyVotes}, }
+            {title: lobby.currentVote.electionInfo.title,
+            votes: lobby.currentVote.results.votes,
+            type: lobby.currentVote.electionInfo.type,
+            emptyVotes: lobby.currentVote.results.emptyVotes}, }
 
             return {status}
+        case 'CLOSING':
+            return {status, reason: 'HOST_CLOSED'}
     }
 } 
 /**
@@ -166,7 +186,13 @@ export const getLobbyStatus = (lobbyCode : string, isHost : boolean) : LobbyStat
  * @returns How many users have voted in the active election.
  */
 export const getNumberOfVotes = (lobbyCode : string) : number => {
-    return lobbyInfo[lobbyCode].currentVote.results.usersVoted.length
+    const lobby = getLobby(lobbyCode)
+
+    if (lobby.currentVote === null) {
+        throw new NoElectionResultsAvailable()
+    }
+
+    return lobby.currentVote.results.usersVoted.length
 }
 
 /**
@@ -175,13 +201,15 @@ export const getNumberOfVotes = (lobbyCode : string) : number => {
  * @param electionInfo 
  */
 export const createElection = (lobbyCode : string, electionInfo : ElectionInfo) => {
-    lobbyInfo[lobbyCode].status = 'VOTING'
-    lobbyInfo[lobbyCode].currentVote = {electionInfo, results: {votes: {}, usersVoted: [], emptyVotes: 0}}
+    const lobby = getLobby(lobbyCode)
 
-    lobbyInfo[lobbyCode].currentVote.results = {votes: {}, usersVoted: [], emptyVotes: 0}
+    lobby.status = 'VOTING'
+    lobby.currentVote = {electionInfo, results: {votes: {}, usersVoted: [], emptyVotes: 0}}
+
+    const results = lobby.currentVote.results
 
     electionInfo.candidates.forEach((candidate) => {
-        lobbyInfo[lobbyCode].currentVote.results.votes[candidate] = 0
+        results.votes[candidate] = 0
     })
 }
 
@@ -213,7 +241,11 @@ export const endElection = (lobbyCode : string) => {
  * @returns boolean
  */
 export const isValidCandidate = (lobbyCode : string, candidate : string) : boolean => {
-        return lobbyInfo[lobbyCode].currentVote.electionInfo.candidates.includes(candidate)
+    const lobby = getLobby(lobbyCode)
+    if (lobby.currentVote === null)
+        throw new NoElectionResultsAvailable(`There is no election active in lobby with lobby code ${lobbyCode}`)
+
+    return lobby.currentVote.electionInfo.candidates.includes(candidate)
 }
 
 /**
@@ -223,12 +255,18 @@ export const isValidCandidate = (lobbyCode : string, candidate : string) : boole
  * @param votes The number of votes to give to the candidate.
  */
 export const castVotes = (lobbyCode : string, candidate : string | null, votes : number) => {
+    const lobby = getLobby(lobbyCode)
+
+    if (!isElectionActive(lobbyCode) || lobby.currentVote === null) {
+        throw new NoActiveElectionError()
+    }
+
     if (candidate === null) {
-        lobbyInfo[lobbyCode].currentVote.results.emptyVotes += votes
+        lobby.currentVote.results.emptyVotes += votes
         return
     }
 
-    lobbyInfo[lobbyCode].currentVote.results.votes[candidate] += votes
+   lobby.currentVote.results.votes[candidate] += votes
 }
 
 /**
@@ -237,7 +275,11 @@ export const castVotes = (lobbyCode : string, candidate : string | null, votes :
  * @returns An object with the candidate name as key and the number of votes as value.
  */
 export const getElectionVotes = (lobbyCode : string) => {
-    return lobbyInfo[lobbyCode].currentVote.results.votes
+    const lobby = getLobby(lobbyCode)
+
+    if (!lobby.currentVote) throw new NoActiveElectionError()
+
+    return lobby.currentVote.results.votes
 }
 
 /**
@@ -247,8 +289,12 @@ export const getElectionVotes = (lobbyCode : string) => {
  * @returns How many users have voted in total
  */
 export const saveUserVoted = (lobbyCode : string, participantID : string) => {
-    lobbyInfo[lobbyCode].currentVote.results.usersVoted.push(participantID)
-    return lobbyInfo[lobbyCode].currentVote.results.usersVoted.length
+    const lobby = getLobby(lobbyCode)
+
+    if (!lobby.currentVote) throw new NoActiveElectionError()
+
+    lobby.currentVote.results.usersVoted.push(participantID)
+    return lobby.currentVote.results.usersVoted.length
 }
 /**
  * Checks if a participant has voted in an active election.
@@ -257,7 +303,11 @@ export const saveUserVoted = (lobbyCode : string, participantID : string) => {
  * @returns 
  */
 export const hasUserVoted = (lobbyCode : string, participantID : string) : boolean => {
-    return lobbyInfo[lobbyCode].currentVote.results.usersVoted.includes(participantID)
+    const lobby = getLobby(lobbyCode)
+
+    if (!lobby.currentVote) throw new NoActiveElectionError()
+
+    return lobby.currentVote.results.usersVoted.includes(participantID)
 }
 
 /**
@@ -282,21 +332,13 @@ export const updateLastActivity = (lobbyCode : string, lastActivityTime: number 
  * Gets the activity times of all open lobbies
  * @returns Object
  */
-export const getAllLobbyActivity = () : {
-    /**
-     * The code of the lobby
-     */
-    lobbyCode : string,
-    /**
-     * The {@link Date} on which the lobby has been last active
-     */
-    lastActivity: number}[] => {
-        const activityArray = []
-        Object.keys(lobbyInfo).forEach((lobbyCode) => {
-            activityArray.push({lobbyCode, lastActivity: getLastActivity(lobbyCode)})
-        })
+export const getAllLobbyActivity = () : LobbyActivity[] => {
+    const activityArray: LobbyActivity[] = []
+    Object.keys(lobbyInfo).forEach((lobbyCode) => {
+        activityArray.push({lobbyCode, lastActivity: getLastActivity(lobbyCode)})
+    })
 
-        return activityArray
+    return activityArray
 }
 
 /**

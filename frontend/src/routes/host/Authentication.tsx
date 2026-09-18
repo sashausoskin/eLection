@@ -76,15 +76,20 @@ export const Authentication = ({
 		}
 	}
 
-	useEffect(() => {
-		if (inputtedUserCode.length !== USER_CODE_LENGTH) return
+	const handleUserCodeChange = (newValue: string) => {
+		setInputtedUserCode(newValue)
+		if (newValue.length !== USER_CODE_LENGTH) return
 
 		// Do not make multiple checks at once. This is also to avoid React Strict Mode's restrictions
 		if (isCheckingUserCode) return
 
 		startUserCodeCheck(async () => {
-			(onSubmitUserCode ? onSubmitUserCode : defaultOnSubmitUserCode)(inputtedUserCode)
+			(onSubmitUserCode ? onSubmitUserCode : defaultOnSubmitUserCode)(newValue)
 		})
+	}
+
+	useEffect(() => {
+		
 	}, [inputtedUserCode])
 
 	return (
@@ -106,7 +111,7 @@ export const Authentication = ({
 
 						if (!event.value) return
 						if (typeof event.value !== 'string') return
-						setInputtedUserCode(event.value)
+						handleUserCodeChange(event.value)
 					}}
 					disabled={isCheckingUserCode}
 				/>

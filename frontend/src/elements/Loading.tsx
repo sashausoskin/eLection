@@ -1,4 +1,4 @@
-import loadingIcon from '/img/icons/loading.svg'
+import loadingIcon from '../assets/icons/loading.svg'
 import './elements.css'
 import { ReactNode } from 'react'
 

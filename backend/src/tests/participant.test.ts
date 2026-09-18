@@ -86,7 +86,7 @@ describe('With an active FPTP election', () => {
     })
 
     test('cannot vote without a lobby code', async () => {
-        const fakeAuth = encodeObject({lobbyCode: null, id: participantID} as AuthenticationObject)
+        const fakeAuth = encodeObject({lobbyCode: null, id: participantID})
 
         const voteCastRequest = await testUtil.castVote(fakeAuth, 'Joe Biden')
         
@@ -162,7 +162,7 @@ describe('With an active ranked election', () => {
         await createElection(exampleRankedElection)
     })
 
-    const castVote = async (voteContent) => {
+    const castVote = async (voteContent: string | string[] | null ) => {
         return await testUtil.castVote(participantToken, voteContent)
     }
 

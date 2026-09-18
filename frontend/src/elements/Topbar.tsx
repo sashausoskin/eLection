@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import icon from '/img/icon.svg'
-import languageIcon from '/img/icons/language.svg'
+import languageIcon from '../assets/icons/language.svg'
 
 /**
  * A bar that is showed at the top of the screen at all times. Is currently used to show the logo and control the language of the site.

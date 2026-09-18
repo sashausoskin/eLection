@@ -1,12 +1,11 @@
-import { Socket } from 'socket.io'
-import { ExtendedError } from 'socket.io/dist/namespace'
 import * as lobbyService from '../services/lobbyservice'
 import * as socketservice from '../services/socketservice'
 import { io } from '../util/server'
 import { decodeObject } from '../util/encryption'
 import { AuthenticationObject } from '../types/communicationTypes'
+import { QueueSocket } from '../types/socketTypes'
 
-export const getAuthenticationMiddleware = (socket : Socket, next: (err?: ExtendedError) => void) => {
+export const getAuthenticationMiddleware = (socket : QueueSocket, next: (err?: Error) => void) => {
     const hostAuth = socket.handshake.auth.token
 
     if (!hostAuth) {
@@ -45,7 +44,7 @@ export const getAuthenticationMiddleware = (socket : Socket, next: (err?: Extend
         return
     }
 
-    socket['lobbyCode'] = lobbyCode
+    socket.lobbyCode = lobbyCode
 
     const existingViewerSocket = socketservice.getViewerSocket(lobbyCode)
 
@@ -56,16 +55,16 @@ export const getAuthenticationMiddleware = (socket : Socket, next: (err?: Extend
     next()
 }
 
-export const handleViewerSocketConnection = (viewerSocket : Socket) => {
-    const lobbyCode = viewerSocket['lobbyCode']
+export const handleViewerSocketConnection = (viewerSocket : QueueSocket) => {
+    const lobbyCode = viewerSocket.lobbyCode as string
 
     viewerSocket.emit('status-change', lobbyService.getLobbyStatus(lobbyCode, true))
     viewerSocket.emit('user-joined', lobbyService.getParticipants(lobbyCode).length)
     if (lobbyService.isElectionActive(lobbyCode)) viewerSocket.emit('vote-casted', lobbyService.getNumberOfVotes(lobbyCode))
 
     viewerSocket.on('disconnect', () => {
-        if (!lobbyService.isValidLobbyCode(viewerSocket['lobbyCode'])) return
-        socketservice.removeViewerSocket(viewerSocket['lobbyCode'])
+        if (!lobbyService.isValidLobbyCode(lobbyCode)) return
+        socketservice.removeViewerSocket(lobbyCode)
     })
 }
 

@@ -9,6 +9,8 @@ vi.mock('react-router', () => ({
 	useNavigate: () => vi.fn()
 }))
 
+// This got broken after the authentication was switched to use OTP input.
+// These tests are no longer relevant.
 describe.skip('In authentication view', () => {
 	let submitCallback: Mock
 	let userCodeField: HTMLElement

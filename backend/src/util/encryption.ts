@@ -16,5 +16,5 @@ export const decodeObject = (objectToDecode : string) : object => {
         throw new Error('Authentication key not valid')
     } 
 
-    return rs.KJUR.jws.JWS.parse(objectToDecode).payloadObj
+    return rs.KJUR.jws.JWS.parse(objectToDecode).payloadObj as object
 }

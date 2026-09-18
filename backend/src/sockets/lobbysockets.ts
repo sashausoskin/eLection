@@ -1,16 +1,15 @@
-import { Socket } from 'socket.io'
-import { ExtendedError } from 'socket.io/dist/namespace'
 import * as lobbyService from '../services/lobbyservice'
 import * as socketservice from '../services/socketservice'
 import { LobbyStatusInfo } from '../types/lobbyTypes'
 import { decodeObject } from '../util/encryption'
 import { AuthenticationObject } from '../types/communicationTypes'
 import { io } from '../util/server'
+import { ParticipantSocket } from '../types/socketTypes'
 
 /**
  * Checks if the user connecting to the socket is actually a participant.
  */
-export const isParticipantMiddleware = async (socket : Socket, next: (err?: ExtendedError) => void) => {
+export const isParticipantMiddleware = async (socket : ParticipantSocket, next: (err?: Error) => void) => {
     const auth = socket.handshake.auth.token
 
     if (!auth) {
@@ -52,17 +51,17 @@ export const isParticipantMiddleware = async (socket : Socket, next: (err?: Exte
     }
 
 
-    socket['lobbyCode'] = lobbyCode
-    socket['participantID'] = userID
+    socket.lobbyCode = lobbyCode
+    socket.participantID = userID
 
     socketservice.assignSocketIDToParticipant(lobbyCode, userID, socket.id)
 
     next()
 }
 
-export const handleParticipantSocketConnection = (participantSocket : Socket) => {
-    const lobbyCode = participantSocket['lobbyCode']
-    const participantID = participantSocket['participantID']
+export const handleParticipantSocketConnection = (participantSocket : ParticipantSocket) => {
+    const lobbyCode = participantSocket.lobbyCode as string
+    const participantID = participantSocket.participantID as string
 
     const lobbyStatus = lobbyService.getLobbyStatus(lobbyCode, false)
 
@@ -75,7 +74,7 @@ export const handleParticipantSocketConnection = (participantSocket : Socket) =>
     }
 
     participantSocket.on('disconnect', () => {
-        if (!lobbyService.isValidLobbyCode(participantSocket['lobbyCode'])) return
-        socketservice.removeParticipantSocket(participantSocket['lobbyCode'], participantSocket['participantID'])
-    })
+        if (!lobbyService.isValidLobbyCode(lobbyCode)) return
+        socketservice.removeParticipantSocket(lobbyCode, participantID)}
+    )
 }

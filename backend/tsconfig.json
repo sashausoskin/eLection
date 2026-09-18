@@ -1,14 +1,15 @@
 {
     "compilerOptions": {
-      "module": "commonjs",
+      "module": "nodenext",
       "esModuleInterop": true,
-      "target": "es6",
-      "moduleResolution": "node",
+      "target": "es2025",
+      "moduleResolution": "nodenext",
       "sourceMap": true,
-      "outDir": "dist",
       "resolveJsonModule": true,
       "types": ["node", "jest", "express"]
     },
-    "lib": ["es6"]
+    "lib": ["es2025"],
+    "ts-node": {
+      "files": true
+    }
   }
-  

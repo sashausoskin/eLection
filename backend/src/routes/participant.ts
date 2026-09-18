@@ -30,15 +30,15 @@ router.use((req, res, next) => {
     if (!lobbyService.isValidLobbyCode(lobbyCode)) return res.status(404).json({type: 'UNAUTHORIZED', message: 'Did not receive a valid lobby token'} as ErrorMessage)
     if (!lobbyService.isParticipant(lobbyCode, userID)) return res.status(403).json({type: 'UNAUTHORIZED', message: 'You are not a participant in this lobby!'} as ErrorMessage)
 
-    req['lobbyCode'] = lobbyCode
-    req['userID'] = userID
+    req.lobbyCode = lobbyCode
+    req.userID = userID
     
     next()
 })
 
 router.post('/castVote', (req, res) => {
-    const lobbyCode = req['lobbyCode']
-    const userID = req['userID']
+    const lobbyCode = req.lobbyCode as string
+    const userID = req.userID as string
     const currentLobbyStatus = lobbyService.getLobbyStatus(lobbyCode, false)
 
     if (currentLobbyStatus.status !== 'VOTING') {
@@ -94,8 +94,8 @@ router.post('/castVote', (req, res) => {
     else lobbyService.castVotes(lobbyCode, null, 1)
 
     const usersVoted = lobbyService.saveUserVoted(lobbyCode, userID)
-
-    io.of('/viewer').to(socketservice.getViewerSocket(lobbyCode)).emit('vote-casted', usersVoted)
+    const viewerSocket = socketservice.getViewerSocket(lobbyCode)
+    if (viewerSocket) io.of('/viewer').to(viewerSocket).emit('vote-casted', usersVoted)
 
     return res.status(200).send()
 })

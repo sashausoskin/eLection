@@ -20,7 +20,7 @@ describe('In a clean state', () => {
 })
 
 describe('With one lobby created', () => {
-    let lobbyCode = null
+    let lobbyCode: string
 
     beforeEach(async () => {
         const lobbyCreationResponse = (await testUtil.createLobby()).body as LobbyCreationResponse
@@ -56,7 +56,7 @@ describe('With one lobby created and one user in queue', () => {
     let hostToken : string
     let hostID : string
     let userCode : string
-    let queueSocket : ClientSocket = null
+    let queueSocket : ClientSocket
 
     beforeAll((done) => {
         server.listen(3001, () => {
@@ -91,12 +91,12 @@ describe('With one lobby created and one user in queue', () => {
 
     test('host cannot authenticate with missing info', async () => {
         // No auth token
-        let authRequest = await testUtil.authenticateUser(undefined, userCode)
+        let authRequest = await testUtil.authenticateUser(undefined as unknown as string, userCode)
         
         expect(authRequest.status).toBe(401)
 
         // No user code
-        authRequest = await testUtil.authenticateUser(hostToken, undefined)
+        authRequest = await testUtil.authenticateUser(hostToken, undefined as unknown as string)
         
         expect(authRequest.status).toBe(400)
     })
@@ -164,7 +164,7 @@ describe('With one lobby created and one user in queue', () => {
         fakeAuth = encodeObject({
             id: null,
             lobbyCode
-        } as AuthenticationObject)
+        })
 
         hostValidationRequest = await testUtil.validateHost(fakeAuth)
         expect(hostValidationRequest.statusCode).toBe(400)
@@ -173,7 +173,7 @@ describe('With one lobby created and one user in queue', () => {
         fakeAuth = encodeObject({
             id: hostID,
             lobbyCode: null
-        } as AuthenticationObject)
+        })
 
         hostValidationRequest = await testUtil.validateHost(fakeAuth)
         expect(hostValidationRequest.statusCode).toBe(400)
