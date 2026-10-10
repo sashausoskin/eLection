@@ -1,5 +1,3 @@
-import { LobbyNotFoundError } from '../types/errorTypes'
-import { lobbyInfo } from './db'
 import { getLobby } from './lobbyservice'
 
 
@@ -10,7 +8,7 @@ import { getLobby } from './lobbyservice'
  */
 
 export const getUserSocketID = (lobbyCode: string, userCode: string) => {
-    return lobbyInfo[lobbyCode]['queuedUsers'][userCode]
+    return getLobby(lobbyCode).queuedUsers.get(userCode)
 }/**
  * Saves the socket ID of a queueing user.
  * @param userCode The code of the user.
@@ -19,7 +17,7 @@ export const getUserSocketID = (lobbyCode: string, userCode: string) => {
  */
 
 export const assignSocketIdToQueueingUser = (userCode: string, lobbyCode: string, socketID: string) => {
-    getLobby(lobbyCode).queuedUsers[userCode] = socketID
+    getLobby(lobbyCode).queuedUsers.set(userCode, socketID)
 }
 /**
  * Checks if there is a socket instance connected to the queue.
@@ -29,15 +27,19 @@ export const assignSocketIdToQueueingUser = (userCode: string, lobbyCode: string
  */
 
 export const isUserConnectedToQueue = (lobbyCode: string, userCode: string): boolean => {
-    return (lobbyInfo[lobbyCode].queuedUsers[userCode] !== null)
+    const socketID = getLobby(lobbyCode).queuedUsers.get(userCode)
+
+    return socketID !== null && socketID !== undefined
 }
+    
+
 /**
  * Save the socket ID of a viewer connected to the viewer socket.
  * @param lobbyCode The code of the lobby.
  * @param socketID The ID of the connected viewer socket.
  */
 export const assignViewerSocket = (lobbyCode: string, socketID: string) => {
-    lobbyInfo[lobbyCode]['viewerSocket'] = socketID
+    getLobby(lobbyCode).viewerSocket = socketID
 }
 /**
  * @param lobbyCode The code of the lobby.
@@ -45,7 +47,7 @@ export const assignViewerSocket = (lobbyCode: string, socketID: string) => {
  */
 
 export const getViewerSocket = (lobbyCode: string) => {
-    return lobbyInfo[lobbyCode].viewerSocket
+    return getLobby(lobbyCode).viewerSocket
 }
 /**
  * Removes the saved ID of the viewer socket.
@@ -53,7 +55,7 @@ export const getViewerSocket = (lobbyCode: string) => {
  */
 
 export const removeViewerSocket = (lobbyCode: string) => {
-    lobbyInfo[lobbyCode].viewerSocket = null
+    getLobby(lobbyCode).viewerSocket = null
 }
 /**
  * Checks if an authenticated participant is currently connected to the lobby through a socket.
@@ -63,7 +65,8 @@ export const removeViewerSocket = (lobbyCode: string) => {
  */
 
 export const isParticipantConnected = (lobbyCode: string, participantID: string) => {
-    return (lobbyInfo[lobbyCode]['participants'][participantID] !== null)
+    const participantSocketId = getLobby(lobbyCode).participants.get(participantID)
+    return participantSocketId !== null && participantSocketId !== undefined
 }
 /**
  * Saves the socket ID of a connected authorized participant.
@@ -73,7 +76,7 @@ export const isParticipantConnected = (lobbyCode: string, participantID: string)
  */
 
 export const assignSocketIDToParticipant = (lobbyCode: string, participantID: string, socketID: string) => {
-    lobbyInfo[lobbyCode]['participants'][participantID] = socketID
+    getLobby(lobbyCode).participants.set(participantID, socketID)
 }
 /**
  * Removes the saved socket ID of an authorized participant.
@@ -82,7 +85,7 @@ export const assignSocketIDToParticipant = (lobbyCode: string, participantID: st
  */
 
 export const removeParticipantSocket = (lobbyCode: string, participantID: string) => {
-    lobbyInfo[lobbyCode]['participants'][participantID] = null
+    getLobby(lobbyCode).participants.set(participantID, null)
 }
 /**
  * @param lobbyCode The code of the lobby.
@@ -91,7 +94,7 @@ export const removeParticipantSocket = (lobbyCode: string, participantID: string
  */
 
 export const getParticipantSocket = (lobbyCode: string, participantID: string) => {
-    return lobbyInfo[lobbyCode].participants[participantID]
+    return getLobby(lobbyCode).participants.get(participantID)
 }
 /**
  * @param lobbyCode The code of the lobby.
@@ -101,10 +104,6 @@ export const getParticipantSocket = (lobbyCode: string, participantID: string) =
 export const getAllParticipantSockets = (lobbyCode: string): string[] => {
     const lobby = getLobby(lobbyCode)
 
-    if (lobbyInfo[lobbyCode] === undefined) {
-        throw new LobbyNotFoundError(`Could not find a lobby with the lobby code ${lobbyCode}`)
-    }
-
-    return Object.values(lobby.participants).filter((val) => val !== null)
+    return lobby.participants.values().filter((val) => val !== null).toArray()
 }
 

@@ -46,7 +46,7 @@ export const isParticipantMiddleware = async (socket : ParticipantSocket, next: 
 
     const existingParticipantSocket = socketservice.getParticipantSocket(lobbyCode, userID)
 
-    if (existingParticipantSocket !== null) {
+    if (existingParticipantSocket !== null && existingParticipantSocket !== undefined) {
         io.of('/lobby').in(existingParticipantSocket).disconnectSockets()
     }
 

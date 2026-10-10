@@ -1,1 +1,2 @@
 process.env.LOBBY_TIMEOUT_LENGTH='3600000'
+process.env.CODE_LENGTH='4'

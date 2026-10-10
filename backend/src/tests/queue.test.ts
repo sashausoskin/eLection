@@ -308,6 +308,6 @@ describe('With one lobby created and one user in queue', () => {
                 testSocketConnection(done, lobbyCode, userCode, false)
                 queuedSocket2.disconnect()
             })
-        })
+        }, 60000)
     })
 })

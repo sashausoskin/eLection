@@ -2,8 +2,10 @@ import { v4 as uuidv4 } from 'uuid'
 import { ElectionInfo, LobbyActivity } from '../types/lobbyTypes'
 import { LobbyStatusInfo } from '../types/lobbyTypes'
 import { insertToRandomIndex } from '../util/shuffle'
-import { availableLobbyCodes, generateCodes, lobbyInfo, resetLobbyInfo, UserNotFound } from './db'
+import { availableLobbyCodes, CODE_LENGTH, generateCodes, lobbyInfo, resetLobbyInfo, UserNotFound } from './db'
 import { LobbyNotFoundError, NoActiveElectionError, NoElectionResultsAvailable, OutOfLobbyCodesError, OutOfUserCodesError } from '../types/errorTypes'
+
+const validCodeRegex = new RegExp(`^[0-9]{${CODE_LENGTH}}$`)
 
 /**
  * Creates a new lobby
@@ -22,7 +24,16 @@ export const createNewLobby = (): {lobbyCode: string, hostID: string} => {
     const userCodes = generateCodes()
 
 
-    lobbyInfo[lobbyCode] = {hostID: hostID, lastActivity: Date.now(), status: 'STANDBY', availableUserCodes: userCodes, queuedUsers: {}, participants: {}, currentVote: null, viewerSocket: null}
+    lobbyInfo.set(lobbyCode,
+        {hostID: hostID,
+        lastActivity: Date.now(),
+        status: 'STANDBY',
+        availableUserCodes: userCodes,
+        queuedUsers: new Map(),
+        participants: new Map(),
+        currentVote: null,
+        viewerSocket: null
+    })
 
     return {lobbyCode, hostID}
 }
@@ -32,7 +43,9 @@ export const createNewLobby = (): {lobbyCode: string, hostID: string} => {
  * @returns boolean
  */
 export const isValidLobbyCode = (lobbyCode: string) : boolean => {
-    return lobbyInfo[lobbyCode] !== undefined
+    const isValidCode = validCodeRegex.test(lobbyCode)
+
+    return isValidCode && lobbyInfo.has(lobbyCode)
 }
 
 /**
@@ -41,14 +54,14 @@ export const isValidLobbyCode = (lobbyCode: string) : boolean => {
  * @returns The user code.
  */
 export const getNewUserCode = (lobbyCode : string) : string => {
-    const userCode = lobbyInfo[lobbyCode]['availableUserCodes'].pop()
+    const userCode = lobbyInfo.get(lobbyCode)?.availableUserCodes.pop()
 
     if (userCode === undefined) {
         console.error('Attempted to fetch a new user code, but ran out of available user codes.')
         throw new OutOfUserCodesError()
     }
 
-    lobbyInfo[lobbyCode]['queuedUsers'][userCode] = null
+    lobbyInfo.get(lobbyCode)?.queuedUsers.set(userCode, null)
 
     return userCode
 }
@@ -59,7 +72,7 @@ export const getNewUserCode = (lobbyCode : string) : string => {
  * @returns Is the user in queue
  */
 export const isUserInQueue = (userCode : string, lobbyCode : string) : boolean => {
-    return (userCode in lobbyInfo[lobbyCode]['queuedUsers'])
+    return getLobby(lobbyCode).queuedUsers.has(userCode)
 }
 
 /**
@@ -67,7 +80,7 @@ export const isUserInQueue = (userCode : string, lobbyCode : string) : boolean =
  * @returns All of user codes queueing up for the lobby.
  */
 export const getUsersInQueue = (lobbyCode : string) : string[] => {
-    return Object.keys(lobbyInfo[lobbyCode]['queuedUsers'])
+    return Array.from(getLobby(lobbyCode).queuedUsers.keys())
 }
 
 /**
@@ -75,7 +88,7 @@ export const getUsersInQueue = (lobbyCode : string) : string[] => {
  * @returns All of the authentication tokens for authenticated users in the lobby.
  */
 export const getParticipants = (lobbyCode : string) : string[] => {
-    return Object.keys(lobbyInfo[lobbyCode]['participants'])
+    return Array.from(getLobby(lobbyCode).participants.keys())
 } 
 
 /**
@@ -86,7 +99,7 @@ export const getParticipants = (lobbyCode : string) : string[] => {
 export const createAuthenticatedUser = (lobbyCode : string) => {
     const newUserID = uuidv4()
 
-    lobbyInfo[lobbyCode]['participants'][newUserID] = null
+    getLobby(lobbyCode).participants.set(newUserID, null)
 
     return newUserID
 }
@@ -98,7 +111,7 @@ export const createAuthenticatedUser = (lobbyCode : string) => {
  * @returns boolean
  */
 export const isLobbyHost = (lobbyCode : string, hostID : string) => {
-    return lobbyInfo[lobbyCode]['hostID'] === hostID
+    return getLobby(lobbyCode).hostID === hostID
 }
 
 /**
@@ -107,12 +120,12 @@ export const isLobbyHost = (lobbyCode : string, hostID : string) => {
  * @param lobbyCode The code of the lobby.
  */
 export const removeUserFromQueue = (lobbyCode : string, userCode: string) => {
-    if (!(userCode in lobbyInfo[lobbyCode]['queuedUsers'])) {
+    if (!getLobby(lobbyCode).queuedUsers.has(userCode)) {
         throw new UserNotFound('Could not find a user with given userCode')
     }
 
-    delete lobbyInfo[lobbyCode]['queuedUsers'][userCode]
-    insertToRandomIndex(lobbyInfo[lobbyCode].availableUserCodes, userCode)
+    getLobby(lobbyCode).queuedUsers.delete(userCode)
+    insertToRandomIndex(getLobby(lobbyCode).availableUserCodes, userCode)
 }
 
 /**
@@ -122,18 +135,20 @@ export const removeUserFromQueue = (lobbyCode : string, userCode: string) => {
  * @returns boolean
  */
 export const isParticipant = (lobbyCode : string, userID : string) => {
-    if (!(lobbyCode in lobbyInfo)) {
+    if (!validCodeRegex.test(lobbyCode)) return false
+
+    if (!lobbyInfo.has(lobbyCode)) {
         return false
     }
 
-    return userID in lobbyInfo[lobbyCode]['participants']
+    return getLobby(lobbyCode).participants.has(userID)
 }
 /**
  * This is mainly used for testing.
  * @returns The number of existing lobbies.
  */
 export const getNumberOfLobbies = () => {
-    return Object.keys(lobbyInfo).length
+    return lobbyInfo.size
 }
 
 /**
@@ -151,11 +166,13 @@ export const resetLobbies = () => {
  * @returns Lobby's information
  */
 export const getLobby = (lobbyCode : string) => {
-    if (lobbyInfo[lobbyCode] === undefined) {
+    const lobby = lobbyInfo.get(lobbyCode)
+
+    if (lobby === undefined) {
         throw new LobbyNotFoundError(`Could not find a lobby with the lobby code ${lobbyCode}`)
     }
 
-    return lobbyInfo[lobbyCode]
+    return lobby
 }
 /**
  * @param lobbyCode The code of the lobby. 
@@ -219,11 +236,11 @@ export const createElection = (lobbyCode : string, electionInfo : ElectionInfo) 
  * @returns boolean
  */
 export const isElectionActive = (lobbyCode : string) : boolean => {
-    return lobbyInfo[lobbyCode].status === 'VOTING'
+    return getLobby(lobbyCode).status === 'VOTING'
 }
 
 export const areResultsAvailable = (lobbyCode : string) : boolean => {
-    return lobbyInfo[lobbyCode].status === 'ELECTION_ENDED'
+    return getLobby(lobbyCode).status === 'ELECTION_ENDED'
 }
 
 /**
@@ -231,7 +248,7 @@ export const areResultsAvailable = (lobbyCode : string) : boolean => {
  * @param lobbyCode The code of the lobby.
  */
 export const endElection = (lobbyCode : string) => {
-    lobbyInfo[lobbyCode].status = 'ELECTION_ENDED'
+    getLobby(lobbyCode).status = 'ELECTION_ENDED'
 }
 
 /**
@@ -316,7 +333,7 @@ export const hasUserVoted = (lobbyCode : string, participantID : string) : boole
  * @returns A {@link Date} object
  */
 export const getLastActivity = (lobbyCode : string) : number => {
-    return lobbyInfo[lobbyCode].lastActivity
+    return getLobby(lobbyCode).lastActivity
 }
 
 /**
@@ -325,7 +342,7 @@ export const getLastActivity = (lobbyCode : string) : number => {
  * @param lastActivityTime The date to which the last activity time should be set. If not provided, set to
  */
 export const updateLastActivity = (lobbyCode : string, lastActivityTime: number = Date.now()) => {
-    lobbyInfo[lobbyCode].lastActivity = lastActivityTime
+    getLobby(lobbyCode).lastActivity = lastActivityTime
 }
 
 /**
@@ -334,7 +351,7 @@ export const updateLastActivity = (lobbyCode : string, lastActivityTime: number 
  */
 export const getAllLobbyActivity = () : LobbyActivity[] => {
     const activityArray: LobbyActivity[] = []
-    Object.keys(lobbyInfo).forEach((lobbyCode) => {
+    lobbyInfo.keys().forEach((lobbyCode) => {
         activityArray.push({lobbyCode, lastActivity: getLastActivity(lobbyCode)})
     })
 
@@ -346,6 +363,7 @@ export const getAllLobbyActivity = () : LobbyActivity[] => {
  * @param lobbyCode 
  */
 export const deleteLobby = (lobbyCode : string) => {
-    delete lobbyInfo[lobbyCode]
+    lobbyInfo.delete(lobbyCode)
+    console.log(`Deleting lobby ${lobbyCode} due to inactivity`)
     insertToRandomIndex(availableLobbyCodes, lobbyCode)
 }
