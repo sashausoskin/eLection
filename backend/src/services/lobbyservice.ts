@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid'
+import { randomUUID } from 'crypto'
 import { ElectionInfo, LobbyActivity } from '../types/lobbyTypes'
 import { LobbyStatusInfo } from '../types/lobbyTypes'
 import { insertToRandomIndex } from '../util/shuffle'
@@ -19,7 +19,7 @@ export const createNewLobby = (): {lobbyCode: string, hostID: string} => {
         throw new OutOfLobbyCodesError()
     }
 
-    const hostID = uuidv4()
+    const hostID = randomUUID()
 
     const userCodes = generateCodes()
 
@@ -97,7 +97,7 @@ export const getParticipants = (lobbyCode : string) : string[] => {
  * @returns The ID of the now authenticated user.
  */
 export const createAuthenticatedUser = (lobbyCode : string) => {
-    const newUserID = uuidv4()
+    const newUserID = randomUUID()
 
     getLobby(lobbyCode).participants.set(newUserID, null)
 
