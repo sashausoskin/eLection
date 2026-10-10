@@ -18,8 +18,8 @@ interface LobbyInfoBase {
     lastActivity: number
     viewerSocket: string | null
     availableUserCodes: string[]
-    queuedUsers: Record<string, string | null>
-    participants: Record<string, string | null>
+    queuedUsers: Map<string, string | null>
+    participants: Map<string, string | null>
     currentVote: LobbyVoteInfo | null
 }
 

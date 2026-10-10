@@ -8,7 +8,8 @@
       "resolveJsonModule": true,
       "types": ["node", "jest", "express"],
       "outDir": "dist",
-      "rootDir": "./src"
+      "rootDir": "./src",
+      "isolatedModules": true
     },
     "lib": ["es2025"],
     "ts-node": {
