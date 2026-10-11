@@ -8,7 +8,7 @@ RUN npm ci && \
 	npm test && \
 	npm run build
 
-FROM node:20-alpine
+FROM node:24-alpine
 COPY --from=build-stage /usr/src/eLection-backend/dist .
 COPY ./package.json ./package.json 
 COPY ./package-lock.json ./package-lock.json 
