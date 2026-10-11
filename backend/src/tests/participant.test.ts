@@ -56,6 +56,15 @@ const connectToParticipantSocket = () : Socket => {
     return ioc('http://localhost:3001/lobby', {auth: {token: `Bearer ${participantToken}`}})
 }
 
+const checkElectionResults = async (expectedVotes: Record<string, number>, expectedEmptyVotes: number, expectedUsersVoted: number) => {
+    await testUtil.endElection(hostToken)
+    const results = lobbyService.getLobby(lobbyCode).currentVote?.results
+
+    expect(results?.votes).toEqual(expectedVotes)
+    expect(results?.emptyVotes).toEqual(expectedEmptyVotes)
+    expect(results?.usersVoted.length).toEqual(expectedUsersVoted)
+}
+
 beforeEach(async () => {
     lobbyService.resetLobbies()
 
@@ -76,6 +85,7 @@ describe('With an active FPTP election', () => {
         
         expect(voteCastRequest.status).toBe(401)
         expect(voteCastRequest.body.type).toBe('MISSING_AUTH_TOKEN')
+        await checkElectionResults({'Joe Biden': 0, 'Donald Trump': 0}, 0, 0)
     })
 
     test('cannot vote with an invalid authorization token', async () => {
@@ -83,6 +93,7 @@ describe('With an active FPTP election', () => {
         
         expect(voteCastRequest.status).toBe(403)
         expect(voteCastRequest.body.type).toBe('UNAUTHORIZED') 
+        await checkElectionResults({'Joe Biden': 0, 'Donald Trump': 0}, 0, 0)
     })
 
     test('cannot vote without a lobby code', async () => {
@@ -91,7 +102,8 @@ describe('With an active FPTP election', () => {
         const voteCastRequest = await testUtil.castVote(fakeAuth, 'Joe Biden')
         
         expect(voteCastRequest.status).toBe(400)
-        expect(voteCastRequest.body.type).toBe('MISSING_LOBBY_CODE') 
+        expect(voteCastRequest.body.type).toBe('MISSING_LOBBY_CODE')
+        await checkElectionResults({'Joe Biden': 0, 'Donald Trump': 0}, 0, 0)
     })
 
     test('cannot vote without a valid lobby code', async () => {
@@ -100,7 +112,8 @@ describe('With an active FPTP election', () => {
         const voteCastRequest = await testUtil.castVote(fakeAuth, 'Joe Biden')
         
         expect(voteCastRequest.status).toBe(404)
-        expect(voteCastRequest.body.type).toBe('UNAUTHORIZED') 
+        expect(voteCastRequest.body.type).toBe('UNAUTHORIZED')
+        await checkElectionResults({'Joe Biden': 0, 'Donald Trump': 0}, 0, 0)
     })
 
     test('cannot vote with an invalid ID', async () => {
@@ -109,33 +122,38 @@ describe('With an active FPTP election', () => {
         const voteCastRequest = await testUtil.castVote(fakeAuth, 'Joe Biden')
         
         expect(voteCastRequest.status).toBe(403)
-        expect(voteCastRequest.body.type).toBe('UNAUTHORIZED') 
+        expect(voteCastRequest.body.type).toBe('UNAUTHORIZED')
+        await checkElectionResults({'Joe Biden': 0, 'Donald Trump': 0}, 0, 0)
     })
 
     test('cannot vote without vote content', async () => {
         const voteCastRequest = await testUtil.castVote(participantToken, undefined)
 
         expect(voteCastRequest.status).toBe(400)
-        expect(voteCastRequest.body.type).toBe('MALFORMATTED_REQUEST') 
+        expect(voteCastRequest.body.type).toBe('MALFORMATTED_REQUEST')
+        await checkElectionResults({'Joe Biden': 0, 'Donald Trump': 0}, 0, 0)
     })
 
     test('cannot vote for a person that isn\'t a candidate', async () => {
         const voteCastRequest = await testUtil.castVote(participantToken, 'Barack Obama')
 
         expect(voteCastRequest.status).toBe(400)
-        expect(voteCastRequest.body.type).toBe('MALFORMATTED_REQUEST') 
+        expect(voteCastRequest.body.type).toBe('MALFORMATTED_REQUEST')
+        await checkElectionResults({'Joe Biden': 0, 'Donald Trump': 0}, 0, 0)
     })
 
     test('can vote with valid info', async () => {
         const voteCastRequest = await testUtil.castVote(participantToken, 'Joe Biden')
 
         expect(voteCastRequest.status).toBe(200)
+        await checkElectionResults({'Joe Biden': 1, 'Donald Trump': 0}, 0, 1)
     })
 
     test('can cast an empty vote', async () => {
         const voteCastRequest = await testUtil.castVote(participantToken, null)
 
         expect(voteCastRequest.status).toBe(200)
+        await checkElectionResults({'Joe Biden': 0, 'Donald Trump': 0}, 1, 1)
     })
 
     test('cannot vote twice', async () => {
@@ -147,6 +165,7 @@ describe('With an active FPTP election', () => {
 
         expect(voteCastRequest.status).toBe(403)
         expect(voteCastRequest.body.type).toBe('ALREADY_VOTED')
+        await checkElectionResults({'Joe Biden': 1, 'Donald Trump': 0}, 0, 1)
     })
 
     test('cannot vote for an array of candidates', async () => {
@@ -154,6 +173,7 @@ describe('With an active FPTP election', () => {
 
         expect(voteCastRequest.status).toBe(400)
         expect(voteCastRequest.body.type).toBe('MALFORMATTED_REQUEST')
+        await checkElectionResults({'Joe Biden': 0, 'Donald Trump': 0}, 0, 0)
     })
 })
 
@@ -170,6 +190,7 @@ describe('With an active ranked election', () => {
         const voteCastRequest = await castVote('Tampere')
         expect(voteCastRequest.statusCode).toBe(400)
         expect(voteCastRequest.body.type).toBe('MALFORMATTED_REQUEST')
+        await checkElectionResults({'Tampere': 0, 'Turku': 0, 'Oulu': 0}, 0, 0)
     })
 
     test('Cannot cast votes for an invalid number of candidates', async () => {
@@ -180,28 +201,38 @@ describe('With an active ranked election', () => {
         voteCastRequest = await castVote(['Tampere', 'Turku', 'Oulu'])
         expect(voteCastRequest.statusCode).toBe(400)
         expect(voteCastRequest.body.type).toBe('MALFORMATTED_REQUEST')
+
+        await checkElectionResults({'Tampere': 0, 'Turku': 0, 'Oulu': 0}, 0, 0)
     })
 
     test('Cannot have a candidate ranked two times', async () => {
         const voteCastRequest = await castVote(['Oulu', 'Oulu'])
         expect(voteCastRequest.statusCode).toBe(400)
         expect(voteCastRequest.body.type).toBe('MALFORMATTED_REQUEST')
+
+        await checkElectionResults({'Tampere': 0, 'Turku': 0, 'Oulu': 0}, 0, 0)
     })
 
     test('Cannot vote for someone that isn\'t on the ballot', async () => {
         const voteCastRequest = await castVote(['Tampere', 'Rovaniemi'])
         expect(voteCastRequest.statusCode).toBe(400)
         expect(voteCastRequest.body.type).toBe('MALFORMATTED_REQUEST')
+
+        await checkElectionResults({'Tampere': 0, 'Turku': 0, 'Oulu': 0}, 0, 0)
     })
 
     test('Can cast a valid vote', async () => {
         const voteCastRequest = await castVote(['Turku', 'Oulu'])
         expect(voteCastRequest.status).toBe(200)
+
+        await checkElectionResults({'Tampere': 0, 'Turku': 2, 'Oulu': 1}, 0, 1)
     })
 
     test('Can cast an empty vote', async () => {
         const voteCastRequest = await castVote(null)
         expect(voteCastRequest.statusCode).toBe(200)
+
+        await checkElectionResults({'Tampere': 0, 'Turku': 0, 'Oulu': 0}, 1, 1)
     })
 })
 
