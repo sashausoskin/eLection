@@ -75,11 +75,11 @@ router.post('/castVote', (req, res) => {
                 if (voteContent.length !== currentLobbyStatus.electionInfo.candidatesToRank) {
                     return res.status(400).json({type: 'MALFORMATTED_REQUEST', message: `Casted votes for ${voteContent.length} candidates, while expecting ${currentLobbyStatus.electionInfo.candidatesToRank} candidates`} as ErrorMessage)
                 }
-                voteContent.forEach((candidate) => {
+                for (const candidate of voteContent) {
                     if (!lobbyService.isValidCandidate(lobbyCode, candidate)) {
                         return res.status(400).json({type: 'MALFORMATTED_REQUEST', message: `${candidate} is not a candidate in this election`} as ErrorMessage)
                     }
-                })
+                }
 
                 if (voteContent.length !== new Set(voteContent).size) {
                     return res.status(400).json({type: 'MALFORMATTED_REQUEST', message: 'You can give only one rank to a candidate.'} as ErrorMessage)
