@@ -32,7 +32,14 @@ const limiter = rateLimit({
     skip: () => process.env.NODE_ENV === 'test'
 })
 
-app.use(cors())
+app.use(
+    cors({ origin: 
+        process.env.NODE_ENV === 'dev' ||
+        process.env.NODE_ENV === 'test' 
+            ? '*'
+            : process.env.CORS_ORIGIN 
+    })
+)
 app.use(express.json())
 app.use(limiter)
 app.use('/lobby', lobbyRouter)
