@@ -1,128 +1,125 @@
 {
-  "pageTitle": "eLection",
-  "status": {
-    "loadingFiles": "Loading files...",
-    "loading": "Loading...",
-    "userAuthenticated": "User {{userCode}} is now authenticated!",
-    "userNotFound": "Could not find a user with the code {{userCode}}",
-    "unauthorisedHost": "You are not authorised to do this. This is probably due to the lobby being closed. You will now be redirected to the main menu.",
-    "electionCreateSuccess": "Succesfully created the election",
-    "electionEndSuccess": "Succesfully ended the election",
-    "noActiveElection": "There is currently no ongoing election!",
-    "serverConnectionError": "Cannot connect to the server. Please check your connection and reload the page!",
-    "voteAlreadySubmitted": "You have already submitted your vote!",
-    "connecting": "Connecting...",
-    "reconnecting": "Failed to connect to the server. Retrying... {{currentAttempt}}/{{maxAttempts}}",
-    "waitingForElection": "Waiting for the next election...",
-    "viewerLoadError": "Could not load the results screen correctly. Please first create a lobby and only then open this window",
-    "viewerKick": "You were disconnected from the server. This is probably because you opened the results in another tab!"
-  },
-  "welcomeMessage": "Welcome to eLection!",
-  "host": "Host an election",
-  "participate": "Participate in an election",
-  "viewSource": "View source code on GitHub",
-  "hostInstructions": {
-    "closeLobbyConfirm": "Are you sure you want to close this lobby?",
-    "closeLobbyConfirmation": "The lobby has been succesfully closed.",
-    "openViewerWindow": "Open the results window",
-    "viewerWindowDesc": "The results window is a separate window that shows information on how to join the lobby, active elections and the results of elections. Place this window on a separate screen where everyone can see it.",
-    "closeLobby": "Close lobby",
-    "userAuthentication": "Let a user into the lobby by entering their user code below"
-  },
-  "unexpectedError": "An unexpected error occurred: {{errorMessage}}",
-  "fieldError": {
-    "missingUserCode": "Please enter the user code",
-    "onlyDigits": "Please enter only digits",
-    "notValidUserCode": "Please enter a valid user code",
-    "missingTitle": "Please enter a title for your election",
-    "titleTooLong": "The title cannot be more than {{limit}} characters long",
-    "emptyCandidate": "Please enter a name for the candidate or remove the candidate",
-    "nameTooLong": "A candidate's name cannot be more that {{limit}} characters long",
-    "noCandidates": "Please enter at least two candidates",
-    "tooManyCandidates": "There cannot be more than {{candidateLimit}} candidates",
-    "fewCandidatesToRank": "You have to rank at least 2 candidates. Otherwise, select FPTP election.",
-    "tooManyCandidatesToRank": "You cannot rank more candidates than there are candidates. Either reduce the number of candidates to rank or add more candidates.",
-    "lobbyNotFound": "Could not find a lobby with the given code. Please try again!",
-    "notValidLobbyCode": "Please enter a valid lobby code"
-  },
-  "lobbyCode": "Lobby code",
   "button": {
-    "submit": "Submit",
     "empty": "Empty vote",
-    "sendVote": "Send vote",
     "returnToMainMenu": "Return to main menu",
+    "sendVote": "Send vote",
+    "submit": "Submit",
     "voteEmpty": "Cast an empty vote"
-  },
-  "fieldInfo": {
-    "createElectionHeader": "Create an election",
-    "title": "Title",
-    "titlePlaceholder": "Next speaker",
-    "candidatesToRank": "Candidates to rank",
-    "candidatesToRankTooltip": "This determines how many candidates the participant should put in their top order. For example, if there are four candidates and the user has to rank two candidates, one candidate will receive 2 votes and another candidate 1 vote. The value has to be at least 2 and cannot be more than the number of candidates.",
-    "candidates": "Candidates",
-    "namePlaceholder": "Barack Obama",
-    "createElection": "Start election",
-    "endElection": "End election",
-    "downloadResults": "Download results (.xlsx)"
-  },
-  "electionType": {
-    "fptp": {
-      "name": "First-past-the-post election",
-      "info": "Participants can only cast a single vote.",
-      "votingInstructions": "Select your candidate of choice by clicking and press 'Send vote'"
-    },
-    "ranked": {
-      "name": "Ranked election",
-      "info": "Participants have to rank a number of candidates. The higher the rank, the more votes the candidate receives.",
-      "votingInstructions": "Rank your top {{candidatesToRank}} candidates by dragging and press 'Submit'. The higher a candidate's position, the more votes they receive from you."
-    }
-  },
-  "name": "Name",
-  "welcome": "Welcome!",
-  "joinLobby": {
-    "lobbyCodeInstructions": "Please enter a lobby code below",
-    "authenticated": "You are now registered as a voter!",
-    "userCodeHeader": "Here is your user code",
-    "userCodeInstructions": "Show this code to the host",
-    "awaitingAccess": "Waiting for access into the lobby..."
   },
   "disconnectReason": {
     "kicked": "You were kicked out of the server. This may happen if you open this website in another tab or if the lobby is closed",
     "lostConnection": "You lost connection to the server. Please check your connection and reload the page"
   },
   "electionEnd": "Election has ended!",
-  "lookAtResults": "Please look at the results screen!",
-  "lobbyClose": {
-    "header": "Lobby closing",
-    "hostClosed": "The host has closed this lobby.",
-    "inactivity": "This lobby has been closed due to inactivity.",
-    "footer": "Thank you for participating! :)",
-    "unknown": "This lobby has been closed due to an unknown reason"
-  },
-  "votes_one": "1 vote",
-  "votes_other": "{{count}} votes",
-  "voteSubmit": {
-    "header": "Your vote has been succesfully submitted!",
-    "message": "Thank you for participating! :)",
-    "emptyVoteConfirm": "Are you sure you want to submit an empty vote?"
-  },
-  "viewer": {
-    "FPTPVotingInstructions": "Vote for one of the following:",
-    "rankedVotingInstructions": "Rank your top {{candidatesToRank}} candidates from the following:",
-    "votingInstructions": "Vote on your device!",
-    "votingStats": "<0>{{votesCasted}}</0> <1>/</1> <2>{{participantAmount}}</2> <1> votes casted</1>",
-    "results": "Results",
-    "welcomeMessage": "Welcome to vote!",
-    "joiningInformation": "<0>Go to {{domain}}, select \"Participate\" and enter the lobby code</0><1>{{lobbyCode}}</1><0>on your device</0>",
-    "lobbyStats_one": "<0>{{count}}<0/> <1>participant in lobby<1/>",
-    "lobbyStats_other": "<0>{{count}}<0/> <1>participants in lobby<1/>"
+  "electionType": {
+    "fptp": {
+      "info": "Participants can only cast a single vote.",
+      "name": "First-past-the-post election",
+      "votingInstructions": "Select your candidate of choice by clicking and press 'Send vote'"
+    },
+    "ranked": {
+      "info": "Participants have to rank a number of candidates. The higher the rank, the more votes the candidate receives.",
+      "name": "Ranked election",
+      "votingInstructions": "Rank your top {{candidatesToRank}} candidates by dragging and press 'Submit'. The higher a candidate's position, the more votes they receive from you."
+    }
   },
   "emptyVotes_one": "1 empty vote",
   "emptyVotes_other": "{{count}} empty votes",
+  "fieldError": {
+    "emptyCandidate": "Please enter a name for the candidate or remove the candidate",
+    "fewCandidatesToRank": "You have to rank at least 2 candidates. Otherwise, select FPTP election.",
+    "lobbyNotFound": "Could not find a lobby with the given code. Please try again!",
+    "missingTitle": "Please enter a title for your election",
+    "nameTooLong": "A candidate's name cannot be more that {{limit}} characters long",
+    "noCandidates": "Please enter at least two candidates",
+    "titleTooLong": "The title cannot be more than {{limit}} characters long",
+    "tooManyCandidates": "There cannot be more than {{candidateLimit}} candidates",
+    "tooManyCandidatesToRank": "You cannot rank more candidates than there are candidates. Either reduce the number of candidates to rank or add more candidates."
+  },
+  "fieldInfo": {
+    "candidates": "Candidates",
+    "candidatesToRank": "Candidates to rank",
+    "candidatesToRankTooltip": "This determines how many candidates the participant should put in their top order. For example, if there are four candidates and the user has to rank two candidates, one candidate will receive 2 votes and another candidate 1 vote. The value has to be at least 2 and cannot be more than the number of candidates.",
+    "createElection": "Start election",
+    "createElectionHeader": "Create an election",
+    "downloadResults": "Download results (.xlsx)",
+    "endElection": "End election",
+    "namePlaceholder": "Barack Obama",
+    "title": "Title",
+    "titlePlaceholder": "Next speaker"
+  },
+  "host": "Host an election",
+  "hostInstructions": {
+    "closeLobby": "Close lobby",
+    "closeLobbyConfirm": "Are you sure you want to close this lobby?",
+    "closeLobbyConfirmation": "The lobby has been succesfully closed.",
+    "openViewerWindow": "Open the results window",
+    "userAuthentication": "Let a user into the lobby by entering their user code below",
+    "viewerWindowDesc": "The results window is a separate window that shows information on how to join the lobby, active elections and the results of elections. Place this window on a separate screen where everyone can see it."
+  },
+  "joinLobby": {
+    "authenticated": "You are now registered as a voter!",
+    "awaitingAccess": "Waiting for access into the lobby...",
+    "lobbyCodeInstructions": "Please enter a lobby code below",
+    "userCodeHeader": "Here is your user code",
+    "userCodeInstructions": "Show this code to the host"
+  },
+  "lobbyClose": {
+    "footer": "Thank you for participating! :)",
+    "header": "Lobby closing",
+    "hostClosed": "The host has closed this lobby.",
+    "inactivity": "This lobby has been closed due to inactivity.",
+    "unknown": "This lobby has been closed due to an unknown reason"
+  },
+  "lobbyCode": "Lobby code",
+  "lookAtResults": "Please look at the results screen!",
+  "name": "Name",
+  "pageTitle": "eLection",
+  "participate": "Participate in an election",
   "spreadsheet": {
-    "resultHeader": "{{electionTitle}} - Results",
     "candidate": "Candidate",
-    "votes": "Votes",
-    "emptyVotes": "Empty votes"
-  }
+    "emptyVotes": "Empty votes",
+    "resultHeader": "{{electionTitle}} - Results",
+    "votes": "Votes"
+  },
+  "status": {
+    "connecting": "Connecting...",
+    "electionCreateSuccess": "Succesfully created the election",
+    "electionEndSuccess": "Succesfully ended the election",
+    "loading": "Loading...",
+    "loadingFiles": "Loading files...",
+    "lobbyCreationTooManyRequests": "You have created too many lobbies recently. Please wait for a moment and try again!",
+    "noActiveElection": "There is currently no ongoing election!",
+    "reconnecting": "Failed to connect to the server. Retrying... {{currentAttempt}}/{{maxAttempts}}",
+    "serverConnectionError": "Cannot connect to the server. Please check your connection and reload the page!",
+    "unauthorisedHost": "You are not authorised to do this. This is probably due to the lobby being closed. You will now be redirected to the main menu.",
+    "userAuthenticated": "User {{userCode}} is now authenticated!",
+    "userNotFound": "Could not find a user with the code {{userCode}}",
+    "viewerKick": "You were disconnected from the server. This is probably because you opened the results in another tab!",
+    "viewerLoadError": "Could not load the results screen correctly. Please first create a lobby and only then open this window",
+    "voteAlreadySubmitted": "You have already submitted your vote!",
+    "waitingForElection": "Waiting for the next election..."
+  },
+  "unexpectedError": "An unexpected error occurred: {{errorMessage}}",
+  "viewer": {
+    "FPTPVotingInstructions": "Vote for one of the following:",
+    "joiningInformation": "<0>Go to {{domain}}, select \"Participate\" and enter the lobby code</0><1>{{lobbyCode}}</1><0>on your device</0>",
+    "lobbyStats_one": "<0>{{count}}<0/> <1>participant in lobby<1/>",
+    "lobbyStats_other": "<0>{{count}}<0/> <1>participants in lobby<1/>",
+    "rankedVotingInstructions": "Rank your top {{candidatesToRank}} candidates from the following:",
+    "results": "Results",
+    "votingInstructions": "Vote on your device!",
+    "votingStats": "<0>{{votesCasted}}</0> <1>/</1> <2>{{participantAmount}}</2> <1> votes casted</1>",
+    "welcomeMessage": "Welcome to vote!"
+  },
+  "viewSource": "View source code on GitHub",
+  "votes_one": "1 vote",
+  "votes_other": "{{count}} votes",
+  "voteSubmit": {
+    "emptyVoteConfirm": "Are you sure you want to submit an empty vote?",
+    "header": "Your vote has been succesfully submitted!",
+    "message": "Thank you for participating! :)"
+  },
+  "welcome": "Welcome!",
+  "welcomeMessage": "Welcome to eLection!"
 }

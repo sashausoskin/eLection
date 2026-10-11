@@ -6,7 +6,7 @@ export default defineConfig({
     "fi"
   ],
   "extract": {
-    "input": "./public/locales/$NAMESPACE/$LOCALE.json",
+    "input": ["src/**/*.{ts,tsx}"],
     "output": "./public/locales/{{namespace}}/{{language}}.json",
     "defaultNS": "translation",
     "keySeparator": ".",
@@ -22,7 +22,7 @@ export default defineConfig({
   },
   "types": {
     "input": [
-      "locales/{{language}}/{{namespace}}.json"
+      "src/**/*.{ts,tsx}"
     ],
     "output": "src/types/i18next.d.ts"
   }

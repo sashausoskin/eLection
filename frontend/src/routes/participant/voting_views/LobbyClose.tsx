@@ -11,7 +11,7 @@ const LobbyClose = ({lobbyInfo} : {lobbyInfo : LobbyStatusInfo}) => {
 	const {t} = useTranslation()
 
 	// This should never happen and is more for TypeScript
-	if (lobbyInfo.status !== 'CLOSING') return <a>{t('unexpectedError')}: Showing the LobbyClose view, but the received status is not 'CLOSING'</a>
+	if (lobbyInfo.status !== 'CLOSING') return <a>{t('unexpectedError', {errorMessage: 'Showing the LobbyClose view, but the received status is not \'CLOSING\''})}: </a>
 
 	return <>
 		<h2 data-testid='lobby-close-header'>{t('lobbyClose.header')}</h2>

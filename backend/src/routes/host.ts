@@ -26,9 +26,13 @@ router.use((req, res, next) => {
     if (!authHeader || authHeader.length < 7){
         return res.status(403).json({type: 'UNAUTHORIZED', message: 'Received an invalid authentication token'} as ErrorMessage)
     }
-
-
-    const hostAuth = decodeObject(authHeader.substring(7)) as AuthenticationObject
+    let hostAuth: AuthenticationObject
+    try {
+        hostAuth = decodeObject(authHeader.substring(7)) as AuthenticationObject
+    } catch {
+        return res.status(403).json({type: 'UNAUTHORIZED', message: 'Received an invalid authentication token'} as ErrorMessage)
+    }
+    
 
     
 
@@ -65,7 +69,7 @@ router.post('/createElection', (req, res) => {
 
     const candidatesSet = new Set()
 
-    electionInfo.candidates.forEach((candidate) => {
+    for (const candidate of electionInfo.candidates) {
         // This cannot be done with a JSON schema, so make sure that all of the candidate names aren't too long
         if (candidate.length > maxCandidateNameLength) {
             return res.status(400).send({type: 'MALFORMATTED_REQUEST', message: `The candidate name ${candidate} is too long. Make sure that it is not longer than ${maxCandidateNameLength} characters`} as ErrorMessage)
@@ -76,7 +80,7 @@ router.post('/createElection', (req, res) => {
         }
 
         candidatesSet.add(candidate)
-    })
+    }
 
     if (electionInfo.type === 'ranked') {
         // This cannot be validated with ajv, so validate manually that the candidatesToRank is not bigger than the amount of candidates.

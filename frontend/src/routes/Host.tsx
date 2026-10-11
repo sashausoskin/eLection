@@ -61,8 +61,12 @@ const Host = () => {
 					setLobbyCode(lobbyService.getLobbyCode())
 				}).catch((reason) => {
 					if (reason instanceof AxiosError) {
-						createPopup({type: 'alert', message: t('unexpectedError', {errorMessage: reason.message}), onConfirm: () => navigate('/')})
-					}
+						console.log(reason.status)
+						if (reason.status === 429) {
+							createPopup({type: 'alert', message: t('status.lobbyCreationTooManyRequests'), onConfirm: () => navigate('/')})
+						} else {
+							createPopup({type: 'alert', message: t('unexpectedError', {errorMessage: reason.message}), onConfirm: () => navigate('/')})
+						}}
 				})
 			}}
 		

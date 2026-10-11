@@ -1,13 +1,22 @@
-import express from 'express'
+import express, { Request, Response } from 'express'
 import * as lobbyService from '../services/lobbyservice'
 import { AuthenticationObject, ErrorMessage } from '../types/communicationTypes'
 import { decodeObject, encodeObject } from '../util/encryption'
 import { LobbyCreationResponse } from '../types/testTypes'
-
+import rateLimit from 'express-rate-limit'
 
 const router = express.Router()
 
-router.post<LobbyCreationResponse>('/createLobby', async (_req, res) => {
+const lobbyCreationLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 5,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    ipv6Subnet: 56,
+    skip: () => process.env.NODE_ENV === 'test',
+})
+
+router.post('/createLobby', lobbyCreationLimiter,  async (_req: Request, res: Response<LobbyCreationResponse>) => {
     const {lobbyCode, hostID} = lobbyService.createNewLobby()
     const hostAuth : AuthenticationObject = {
         id: hostID,
