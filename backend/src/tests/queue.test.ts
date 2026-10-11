@@ -17,6 +17,24 @@ describe('In a clean state', () => {
         await request(app).post('/lobby/createLobby')
         expect(lobbyService.getNumberOfLobbies()).toBe(1)
     })
+
+    test('Cannot create more than 5 lobbies in a 15 minute window', async () => {
+        // By default we don't do rate limiting when in testing mode, so temporarily
+        // override the environment variable 
+        process.env.NODE_ENV = 'test2'
+
+        for (let i = 0; i < 5; i++) {
+            const lobbyCreationResponse = await testUtil.createLobby()
+            expect(lobbyCreationResponse.statusCode).toEqual(200)
+        }
+
+        const lobbyCreationResponse = await testUtil.createLobby()
+        expect(lobbyCreationResponse.statusCode).toEqual(429)
+    })
+
+    afterAll(() => {
+        process.env.NODE_ENV = 'test'
+    })
 })
 
 describe('With one lobby created', () => {
