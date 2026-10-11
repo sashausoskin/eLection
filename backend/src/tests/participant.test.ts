@@ -1,6 +1,6 @@
 import request from 'supertest'
 import { app, server } from '../util/server'
-import { ElectionInfo, ElectionResults } from '../types/lobbyTypes'
+import { ElectionInfo } from '../types/lobbyTypes'
 import { LobbyStatusInfo } from '../types/lobbyTypes'
 import * as lobbyService from '../services/lobbyservice'
 import { Socket, io as ioc } from 'socket.io-client'
