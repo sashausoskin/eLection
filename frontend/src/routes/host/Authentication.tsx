@@ -67,7 +67,7 @@ export const Authentication = ({
 						}})
 						break
 					default:
-						console.error(t('unexpectedError'), e.response)
+						console.error(t('unexpectedError', {errorMessage: e.response}))
 				}
 			}
 		}

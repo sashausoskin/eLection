@@ -5,6 +5,7 @@ import { SetParticipantViewContext } from '../context/Contexts'
 import * as participantService from '../services/participantService'
 import LobbyView from './participant/LobbyView'
 import Loading from '../elements/Loading'
+import { useTranslation } from 'react-i18next'
 
 /**
  * The participant's view.
@@ -12,6 +13,7 @@ import Loading from '../elements/Loading'
 const ParticipantView: () => JSX.Element = () => {
 	const { viewTab, setViewTab } = use(SetParticipantViewContext)
 	const [isLoading, setIsLoading] = useState<boolean>(true)
+	const {t} = useTranslation()
 
 	useEffect(() => {
 		/**
@@ -33,7 +35,7 @@ const ParticipantView: () => JSX.Element = () => {
 		validateStoredValues()
 	}, [setViewTab])
 
-	if (isLoading) return <Loading><a>Loading....</a></Loading>
+	if (isLoading) return <Loading><a>{t('status.loading')}</a></Loading>
 
 	return (
 		<div>
