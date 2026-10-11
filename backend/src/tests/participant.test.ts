@@ -89,7 +89,7 @@ describe('With an active FPTP election', () => {
     })
 
     test('cannot vote with an invalid authorization token', async () => {
-        const voteCastRequest = await testUtil.castVote('1111111111-111111', 'Joe Biden')
+        const voteCastRequest = await testUtil.castVote('__proto__', 'Joe Biden')
         
         expect(voteCastRequest.status).toBe(403)
         expect(voteCastRequest.body.type).toBe('UNAUTHORIZED') 
