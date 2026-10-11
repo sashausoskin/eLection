@@ -60,5 +60,5 @@ io.of('/viewer').on('connection', handleViewerSocketConnection)
 io.of('/lobby').use(isParticipantMiddleware)
 io.of('/lobby').on('connection', handleParticipantSocketConnection)
 
-app.set('trust proxy', process.env.PROXY_TRUST_DEPTH || 1)
+app.set('trust proxy', Number(process.env.PROXY_TRUST_DEPTH ?? 1))
 
