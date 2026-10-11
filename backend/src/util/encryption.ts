@@ -12,7 +12,7 @@ export const encodeObject = (objectToCode : object) : string => {
 }
 
 export const decodeObject = (objectToDecode : string) : object => {
-    if (!rs.KJUR.jws.JWS.verify(objectToDecode, ENCRYPTION_KEY)) {
+    if (!rs.KJUR.jws.JWS.verify(objectToDecode, ENCRYPTION_KEY, ['HS512'])) {
         throw new Error('Authentication key not valid')
     } 
 
