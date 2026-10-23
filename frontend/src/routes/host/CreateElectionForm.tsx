@@ -218,7 +218,6 @@ const CreateElectionForm = ({onSubmitForm, onEndElectionClick, skipStatusCheck} 
 							className="field-error"
 							data-testid="radio-error"
 						/>
-						<br />
 						<div className='inputRow'>
 							<div className='leftAlign'>
 								<label htmlFor={'title'}>{t('fieldInfo.title')}</label>
