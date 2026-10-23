@@ -6,12 +6,13 @@ import { AuthenticationObject } from '../types/communicationTypes'
 import { decodeObject, encodeObject } from '../util/encryption'
 import { LobbyCreationResponse } from '../types/testTypes'
 import * as testUtil from './testUtil'
+import * as db from '../services/db'
 
 beforeEach(() => {
     lobbyService.resetLobbies()
 })
 
-describe('In a clean state', () => {
+describe('When creating lobbies', () => {
     test('can create a new lobby', async () => {
         expect(lobbyService.getNumberOfLobbies()).toBe(0)
         await request(app).post('/lobby/createLobby')
@@ -32,7 +33,18 @@ describe('In a clean state', () => {
         expect(lobbyCreationResponse.statusCode).toEqual(429)
     })
 
-    afterAll(() => {
+    test('Receives an error if the server runs out of user codes', async () => {
+        const savedCodes = db.availableLobbyCodes.splice(0)
+
+        try {
+            const response = await testUtil.createLobby()
+            expect(response.statusCode).toEqual(500)
+        } finally {
+            db.availableLobbyCodes.push(...savedCodes)
+        }
+    })
+
+    afterEach(() => {
         process.env.NODE_ENV = 'test'
     })
 })
@@ -229,6 +241,18 @@ describe('With one lobby created and one user in queue', () => {
             })
         })
     })
+
+    test('Receives an error if there are no more user codes', async () => {
+        const savedCodes = lobbyService.getLobby(lobbyCode).availableUserCodes.splice(0)
+
+        try {
+            const response = await testUtil.joinLobby(lobbyCode)
+            expect(response.statusCode).toEqual(500)
+        } finally {
+            lobbyService.getLobby(lobbyCode).availableUserCodes.push(...savedCodes)
+        }
+    })
+    
     test('user validation works', async () => {
         const userId = lobbyService.createAuthenticatedUser(lobbyCode)
 
