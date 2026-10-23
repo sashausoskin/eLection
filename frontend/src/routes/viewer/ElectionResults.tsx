@@ -41,8 +41,8 @@ const ElectionResults = ({results} : {
 	})
 
 	return <>
-		<h1>{results.title}</h1>
-		<h2 data-testid="results-header">{t('viewer.results')}</h2>
+		<h1 className='resultsTitle'>{results.title}</h1>
+		<h2 data-testid="results-header" className='resultsHeader'>{t('viewer.results')}</h2>
 
 		<div className='resultsContainer'>
 			{orderedResults.map((result, index) => {

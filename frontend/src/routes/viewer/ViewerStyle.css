@@ -71,6 +71,12 @@
     font-size: 75px;
 }
 
-h1 {
-    margin-top: 0;
+.resultsTitle {
+    margin-top: 0px;
+    margin-bottom: 12px;
+}
+
+.resultsHeader {
+    margin-top: 8px;
+    margin-bottom: 12px;
 }
