@@ -25,7 +25,7 @@ export const io = new Server(server, {
 
 const limiter = rateLimit({
     windowMs: 15*60*1000,
-    limit: 150,
+    limit: 1500,
     standardHeaders: 'draft-8',
     legacyHeaders: false,
     ipv6Subnet: 56,
@@ -41,13 +41,14 @@ app.use(
     })
 )
 app.use(express.json())
+app.get('/ping', (_req, res) => {
+    return res.send('pong')
+})
+
 app.use(limiter)
 app.use('/lobby', lobbyRouter)
 app.use('/host', hostRouter)
 app.use('/participant', participantRouter)
-app.get('/ping', (_req, res) => {
-    return res.send('pong')
-})
 
 if (process.env.NODE_ENV === 'test') app.use('/testing', testingRouter)
 
