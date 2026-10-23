@@ -15,9 +15,9 @@
   "main": "index.js",
   "scripts": {
     "test": "cross-env NODE_ENV=test jest --detectOpenHandles --forceExit",
-    "dev": "cross-env NODE_ENV=dev ts-node-dev --files src/index.ts",
+    "dev": "cross-env NODE_ENV=dev tsx watch src/index.ts",
     "build": "tsc",
-    "start:test": "cross-env NODE_ENV=test ts-node-dev --files src/index.ts",
+    "start:test": "cross-env NODE_ENV=test tsx watch src/index.ts",
     "start:prod": "tsc && cross-env NODE_ENV=production node dist/index.js",
     "lint": "eslint .",
     "build:schema": "ts-json-schema-generator --path ./src/types/lobbyTypes.ts --type ElectionInfo --out src/types/ElectionInfo_schema.json",
@@ -51,8 +51,13 @@
     "socket.io-client": "^4.7.5",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.3",
-    "ts-node-dev": "^2.0.0",
+    "tsx": "^4.23.15",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.1.0"
+  },
+  "allowScripts": {
+    "@parcel/watcher@2.6.0": true,
+    "esbuild@0.28.2": true,
+    "unrs-resolver@1.12.2": true
   }
 }

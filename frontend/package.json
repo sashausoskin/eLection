@@ -92,8 +92,8 @@
 		"vitest": "^5.0.1"
 	},
 	"allowScripts": {
-		"@swc/core@1.15.43": true,
-		"cypress@16.1.0": true
+		"@swc/core@1.16.20": true,
+		"cypress@16.2.0": true
 	},
 	"overrides": {
 		"exceljs": {
