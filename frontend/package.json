@@ -93,7 +93,7 @@
 	},
 	"allowScripts": {
 		"@swc/core@1.16.20": true,
-		"cypress@16.2.0": true
+		"cypress@16.2.1": true
 	},
 	"overrides": {
 		"exceljs": {
