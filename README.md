@@ -89,6 +89,8 @@ For example, this is the theme created for the North Ostrobothnian Nation:
 
 <img src=https://github.com/user-attachments/assets/cc01229c-2151-409d-b126-e8a0594021f4 width=500>
 
+`manifest.webmanifest` allows the users to install the app on their homescreens on mobile and desktop. The icons are based on the SVG icon above. The background color of the app icon is controlled in `frontend.env` and the properties of the app are controlled in this manifest. You should modify the names and descriptions of the app at the top to go along with your branding. You shouldn't touch the other parameters of the file.
+
 ### Updating
 The server does not auto-update itself. Instead, at least for now, the server needs to be restarted to be updated. If you want to disable auto-updates on restart, open `docker_compose.yml` and remove all of the `pull_policy` fields
 
