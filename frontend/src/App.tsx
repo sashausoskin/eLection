@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router'
 import { Home } from './routes/Home' 
 import { SetParticipantViewContextProvider } from './context/ContextProviders'
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import Loading from './elements/Loading'
 import Popup from './elements/Popup'
@@ -23,10 +23,14 @@ function App() {
 		document.title = t('pageTitle')
 	})
 
+	const primaryColor = useMemo(() => window.getComputedStyle(document.body).getPropertyValue('--primary-color'), [])
+
 	if (i18n.language !== i18n.resolvedLanguage) i18n.changeLanguage(i18n.resolvedLanguage)
 
 	return (
 		<>
+			{primaryColor && <meta name='theme-color' content={primaryColor} />}
+
 			<Popup/>
 			<Topbar />
 
