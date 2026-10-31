@@ -80,7 +80,7 @@ const RankedElectionView = ({electionInfo, onSubmitVote, canSubmitVote} : {
 		<>
 			<h2>{electionInfo.title}</h2>
 			<a className='votingInstructions secondaryColor'>{t('electionType.ranked.votingInstructions', {candidatesToRank: electionInfo.candidatesToRank})}</a>
-			<DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEvent} modifiers={[restrictToVerticalAxis]}>
+			<DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEvent} modifiers={[restrictToVerticalAxis]} autoScroll={{threshold: {x: 0, y: 0.2}}}>
 				<div className='rankedCandidatesContainer'>
 					<SortableContext items={candidateList} strategy={verticalListSortingStrategy}>
 						{candidateList.map((candidate, i) => {

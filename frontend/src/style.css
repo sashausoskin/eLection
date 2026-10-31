@@ -26,8 +26,8 @@ html {
     flex-direction: column;
     justify-items: safe center;
     align-items: center;
-    height: 70vh;
-    width: 80vw;
+    height: 70dvh;
+    width: 80dvw;
     overflow-x: hidden;
     overflow-y: auto;
     border-radius: 25px;
@@ -35,7 +35,7 @@ html {
     border-style: solid;
     border-color: var(--secondary-color);
     background-color: var(--main-container-color);
-    padding: 5vh 5vw;
+    padding: 5dvh 5dvw;
 }
 
 .mainContainer > div {
