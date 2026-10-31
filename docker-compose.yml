@@ -26,6 +26,12 @@ services:
             -   type: bind
                 source: ./icon.svg
                 target: /usr/share/nginx/html/img/icon.svg
+            -   type: bind
+                source: ./manifest.webmanifest
+                target: /usr/share/nginx/html/manifest.webmanifest
+            -   type: bind
+                source: ./frontend.env
+                target: /prod.env
         depends_on:
           - backend
         restart: always

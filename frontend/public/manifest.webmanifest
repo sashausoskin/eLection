@@ -1,0 +1,54 @@
+{
+  "short_name": "eLection",
+  "name": "eLection - Electronic election system",
+  "icons": [
+    {
+      "src": "/img/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/img/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/img/icon-maskable-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/img/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#4f1848",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#671c67",
+  "orientation": "portrait",
+  "id": "/",
+  "shortcuts": [
+    {
+      "name": "Participate in an election",
+      "short_name": "Participate",
+      "description": "Participate in an election",
+      "url": "/participant",
+      "icons": [{ "src": "/img/icon-96.png", "sizes": "96x96", "type": "image/png" }]
+    },
+    {
+      "name": "Host an election",
+      "short_name": "Host",
+      "description": "Host an election",
+      "url": "/host",
+      "icons": [{ "src": "/img/icon-96.png", "sizes": "96x96", "type": "image/png" }]
+    }
+  ],
+  "description": "An electronic election system for hosting real-time elections. Easy to use and secure!"
+}

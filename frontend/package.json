@@ -20,6 +20,7 @@
 		"build": "tsc && vite build",
 		"build:test": "cross-env VITE_SKIP_ANIMATIONS=true npm run build",
 		"build:production": "tsc && cross-env NODE_ENV=production vite build",
+		"build:icons": "bash generate-icons.sh ./public/img",
 		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
 		"lint:translations": "i18next-cli lint",
 		"preview": "vite preview  --host",
@@ -92,8 +93,8 @@
 		"vitest": "^5.0.1"
 	},
 	"allowScripts": {
-		"@swc/core@1.16.20": true,
-		"cypress@16.2.1": true
+		"cypress@16.2.1": true,
+		"@swc/core@1.16.21": true
 	},
 	"overrides": {
 		"exceljs": {

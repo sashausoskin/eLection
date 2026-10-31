@@ -25,6 +25,8 @@ This is the frontend of eLection. The frontend was developed using [TypeScript](
 ## Setup
 Here is how to set up the frontend for development.
 1. Duplicate the `.env.template` file and rename it to `.env`. These are environment variables that control some functionality in frontend. By default, they shold work for developing on a local machine. You can open the file to see what each variable does.
+
+You may also want to do the same for `prod.env.template`. These are environment variables that control behaviour in production, whereas `.env` only controls variables that are applied during build.
 2. Install dependencies with
 ```bash
 npm install
@@ -61,6 +63,12 @@ Same as previous, but builds a version specifically for production.
 npm run build:test
 ```
 Builds a static version of the app meant for testing. The testing version disables React Spring animations.
+<br/><br/>
+
+```bash
+npm run build:icons
+```
+Builds icons needed for the Web Manifest to work correctly on iOS and Android. Requires rsvg-convert to be installed. On Windows, WSL is also required.
 <br/><br/>
 
 ```bash

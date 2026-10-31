@@ -24,6 +24,7 @@ dist-ssr
 *.sw?
 
 .env
+prod.env
 
 # Cypress temp files
 /cypress/screenshots

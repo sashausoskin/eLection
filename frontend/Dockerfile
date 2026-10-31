@@ -17,5 +17,10 @@ RUN npm ci && \
 
 FROM nginx:mainline-alpine
 
+RUN apk add --no-cache rsvg-convert
+
+ENV IMG=/usr/share/nginx/html/img
+
 COPY --from=build-stage /usr/src/eLection-front/dist /usr/share/nginx/html
 COPY ./nginx.conf /etc/nginx/nginx.conf
+COPY --chmod=755 ./generate-icons.sh /docker-entrypoint.d/
