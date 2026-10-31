@@ -9,6 +9,8 @@ if (!fs.existsSync('./dockerTemplate')) {
 fs.copyFileSync('./frontend/public/stylesheet.css', './dockerTemplate/stylesheet.css')
 fs.copyFileSync('./docker-compose.yml', './dockerTemplate/docker-compose.yml')
 fs.copyFileSync('./frontend/public/img/icon.svg', './dockerTemplate/icon.svg')
+fs.copyFileSync('./frontend/public/manifest.webmanifest', './dockerTemplate/manifest.webmanifest')
+fs.copyFileSync('./frontend/prod.env.template', './dockerTemplate/frontend.env')
 fs.copyFileSync('./nginx.conf', './dockerTemplate/nginx.conf')
 fs.copyFileSync('./frontend/public/img/bg.png', './dockerTemplate/bg.png')
 fs.copyFileSync('./backend/.env.template', './dockerTemplate/backend.env')
