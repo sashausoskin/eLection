@@ -1,6 +1,7 @@
 {
-  "short_name": "eLection",
+  "short_name": "eLection", 
   "name": "eLection - Electronic election system",
+  "description": "An electronic election system for hosting real-time elections. Easy to use and secure!",
   "icons": [
     {
       "src": "/img/icon-192.png",
@@ -49,6 +50,5 @@
       "url": "/host",
       "icons": [{ "src": "/img/icon-96.png", "sizes": "96x96", "type": "image/png" }]
     }
-  ],
-  "description": "An electronic election system for hosting real-time elections. Easy to use and secure!"
+  ]
 }
